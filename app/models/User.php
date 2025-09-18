@@ -167,4 +167,103 @@ class User
                           ORDER BY p.voornaam, p.achternaam");
         return $this->db->resultSet();
     }
+
+    // Zoek gebruiker op email
+    public function findUserByEmail($email)
+    {
+        $this->db->query("SELECT * FROM users WHERE email = :email");
+        $this->db->bind(':email', $email);
+        return $this->db->single();
+    }
+
+    // Statistieken methoden voor eigenaar
+    public function getTotaalGebruikers()
+    {
+        $this->db->query("SELECT COUNT(*) as count FROM users WHERE is_active = 1");
+        $result = $this->db->single();
+        return $result->count ?? 0;
+    }
+
+    public function getActieveInstructeurs()
+    {
+        $this->db->query("SELECT COUNT(*) as count FROM users WHERE role = 'instructeur' AND is_active = 1");
+        $result = $this->db->single();
+        return $result->count ?? 0;
+    }
+
+    public function getNieuweGebruikersDezeMaand()
+    {
+        $this->db->query("SELECT COUNT(*) as count FROM users 
+                          WHERE MONTH(created_at) = MONTH(CURDATE()) 
+                          AND YEAR(created_at) = YEAR(CURDATE())");
+        $result = $this->db->single();
+        return $result->count ?? 0;
+    }
+
+    public function getAlleGebruikers($filter = 'alle', $zoekterm = '')
+    {
+        $whereClause = "WHERE 1=1";
+        
+        if ($filter !== 'alle') {
+            $whereClause .= " AND u.role = :filter";
+        }
+        
+        if (!empty($zoekterm)) {
+            $whereClause .= " AND (u.email LIKE :zoekterm OR p.voornaam LIKE :zoekterm OR p.achternaam LIKE :zoekterm)";
+        }
+        
+        $this->db->query("SELECT u.*, p.voornaam, p.achternaam, p.telefoon 
+                          FROM users u 
+                          LEFT JOIN personen p ON u.id = p.user_id 
+                          {$whereClause}
+                          ORDER BY u.created_at DESC");
+        
+        if ($filter !== 'alle') {
+            $this->db->bind(':filter', $filter);
+        }
+        
+        if (!empty($zoekterm)) {
+            $this->db->bind(':zoekterm', '%' . $zoekterm . '%');
+        }
+        
+        return $this->db->resultSet();
+    }
+
+    public function getNieuweGebruikers($limit = 5)
+    {
+        $this->db->query("SELECT u.*, p.voornaam, p.achternaam 
+                          FROM users u 
+                          LEFT JOIN personen p ON u.id = p.user_id 
+                          ORDER BY u.created_at DESC 
+                          LIMIT :limit");
+        $this->db->bind(':limit', $limit);
+        return $this->db->resultSet();
+    }
+
+    public function getGebruikersRapport($periode, $datum)
+    {
+        // Voorbeeld implementatie
+        $this->db->query("SELECT DATE(created_at) as datum, COUNT(*) as aantal
+                          FROM users 
+                          WHERE MONTH(created_at) = MONTH(:datum)
+                          AND YEAR(created_at) = YEAR(:datum)
+                          GROUP BY DATE(created_at)
+                          ORDER BY datum ASC");
+        $this->db->bind(':datum', $datum);
+        return $this->db->resultSet();
+    }
+
+    public function getInstructeursRapport($periode, $datum)
+    {
+        // Voorbeeld implementatie
+        $this->db->query("SELECT u.*, p.voornaam, p.achternaam,
+                          COUNT(r.id) as totaal_lessen
+                          FROM users u
+                          LEFT JOIN personen p ON u.id = p.user_id
+                          LEFT JOIN reserveringen r ON p.id = r.instructeur_id
+                          WHERE u.role = 'instructeur'
+                          GROUP BY u.id
+                          ORDER BY totaal_lessen DESC");
+        return $this->db->resultSet();
+    }
 }

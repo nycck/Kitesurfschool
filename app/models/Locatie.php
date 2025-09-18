@@ -71,4 +71,17 @@ class Locatie
         $this->db->query("SELECT * FROM locaties ORDER BY naam ASC");
         return $this->db->resultSet();
     }
+
+    // Haal populairste locatie op
+    public function getPopulairsteLocatie()
+    {
+        $this->db->query("SELECT l.naam, COUNT(r.id) as aantal_reserveringen
+                          FROM locaties l
+                          LEFT JOIN reserveringen r ON l.id = r.locatie_id
+                          GROUP BY l.id, l.naam
+                          ORDER BY aantal_reserveringen DESC
+                          LIMIT 1");
+        $result = $this->db->single();
+        return $result ? $result->naam : 'Geen data';
+    }
 }

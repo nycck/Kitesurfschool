@@ -85,4 +85,17 @@ class Lespakket
         $this->db->query("SELECT * FROM lespakketten ORDER BY naam ASC");
         return $this->db->resultSet();
     }
+
+    // Haal populairste lespakket op
+    public function getPopulairsteLespakket()
+    {
+        $this->db->query("SELECT lp.naam, COUNT(r.id) as aantal_reserveringen
+                          FROM lespakketten lp
+                          LEFT JOIN reserveringen r ON lp.id = r.lespakket_id
+                          GROUP BY lp.id, lp.naam
+                          ORDER BY aantal_reserveringen DESC
+                          LIMIT 1");
+        $result = $this->db->single();
+        return $result ? $result->naam : 'Geen data';
+    }
 }

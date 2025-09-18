@@ -585,4 +585,204 @@ class Reservering
         $this->db->bind(':datum', $datum);
         return $this->db->resultSet();
     }
+
+    // Extra methoden voor instructeur/eigenaar statistieken
+    public function getTotaalLessenGegeven($instructeur_id)
+    {
+        $this->db->query("SELECT COUNT(*) as count FROM reserveringen 
+                          WHERE instructeur_id = :instructeur_id AND status = 'afgerond'");
+        $this->db->bind(':instructeur_id', $instructeur_id);
+        $result = $this->db->single();
+        return $result->count ?? 0;
+    }
+
+    public function getLessenDezeMaand($instructeur_id)
+    {
+        $this->db->query("SELECT COUNT(*) as count FROM reserveringen 
+                          WHERE instructeur_id = :instructeur_id 
+                          AND MONTH(bevestigde_datum) = MONTH(CURDATE())
+                          AND YEAR(bevestigde_datum) = YEAR(CURDATE())");
+        $this->db->bind(':instructeur_id', $instructeur_id);
+        $result = $this->db->single();
+        return $result->count ?? 0;
+    }
+
+    public function getGemiddeldeBeoordelingInstructeur($instructeur_id)
+    {
+        // Simulatie - in werkelijkheid zou dit uit een beoordelingen tabel komen
+        return 4.2;
+    }
+
+    public function getNieuweKlantenDezeMaand($instructeur_id)
+    {
+        $this->db->query("SELECT COUNT(DISTINCT persoon_id) as count FROM reserveringen 
+                          WHERE instructeur_id = :instructeur_id 
+                          AND MONTH(aangemaakt_op) = MONTH(CURDATE())
+                          AND YEAR(aangemaakt_op) = YEAR(CURDATE())");
+        $this->db->bind(':instructeur_id', $instructeur_id);
+        $result = $this->db->single();
+        return $result->count ?? 0;
+    }
+
+    public function getVoltooidelessenDezeMaand()
+    {
+        $this->db->query("SELECT COUNT(*) as count FROM reserveringen 
+                          WHERE status = 'afgerond'
+                          AND MONTH(bijgewerkt_op) = MONTH(CURDATE())
+                          AND YEAR(bijgewerkt_op) = YEAR(CURDATE())");
+        $result = $this->db->single();
+        return $result->count ?? 0;
+    }
+
+    public function getGemiddeldeBeoordeling()
+    {
+        // Simulatie - in werkelijkheid zou dit uit een beoordelingen tabel komen
+        return 4.5;
+    }
+
+    public function getVoltooideReserveringen()
+    {
+        $this->db->query("SELECT COUNT(*) as count FROM reserveringen WHERE status = 'afgerond'");
+        $result = $this->db->single();
+        return $result->count ?? 0;
+    }
+
+    public function getAlleBetalingen($filter = 'alle', $maand = null)
+    {
+        $whereClause = "WHERE 1=1";
+        
+        if ($filter !== 'alle') {
+            $whereClause .= " AND r.betaal_status = :filter";
+        }
+        
+        if ($maand) {
+            $whereClause .= " AND DATE_FORMAT(r.aangemaakt_op, '%Y-%m') = :maand";
+        }
+        
+        $this->db->query("SELECT r.*, 
+                          lp.naam as lespakket_naam, lp.prijs,
+                          l.naam as locatie_naam,
+                          CONCAT(p.voornaam, ' ', p.achternaam) as klant_naam,
+                          u.email as klant_email
+                          FROM reserveringen r
+                          LEFT JOIN lespakketten lp ON r.lespakket_id = lp.id
+                          LEFT JOIN locaties l ON r.locatie_id = l.id
+                          LEFT JOIN personen p ON r.persoon_id = p.id
+                          LEFT JOIN users u ON p.user_id = u.id
+                          {$whereClause}
+                          ORDER BY r.aangemaakt_op DESC");
+        
+        if ($filter !== 'alle') {
+            $this->db->bind(':filter', $filter);
+        }
+        
+        if ($maand) {
+            $this->db->bind(':maand', $maand);
+        }
+        
+        return $this->db->resultSet();
+    }
+
+    public function getTotaalOmzet($maand = null)
+    {
+        $whereClause = "WHERE r.betaal_status = 'betaald'";
+        
+        if ($maand) {
+            $whereClause .= " AND DATE_FORMAT(r.aangemaakt_op, '%Y-%m') = :maand";
+        }
+        
+        $this->db->query("SELECT SUM(lp.prijs) as omzet
+                          FROM reserveringen r
+                          LEFT JOIN lespakketten lp ON r.lespakket_id = lp.id
+                          {$whereClause}");
+        
+        if ($maand) {
+            $this->db->bind(':maand', $maand);
+        }
+        
+        $result = $this->db->single();
+        return $result->omzet ?? 0;
+    }
+
+    public function getOpenstaandeBetalingen()
+    {
+        $this->db->query("SELECT SUM(lp.prijs) as bedrag
+                          FROM reserveringen r
+                          LEFT JOIN lespakketten lp ON r.lespakket_id = lp.id
+                          WHERE r.betaal_status = 'wachtend'");
+        
+        $result = $this->db->single();
+        return $result->bedrag ?? 0;
+    }
+
+    public function getNieuweReserveringen($limit = 5)
+    {
+        $this->db->query("SELECT r.*, 
+                          lp.naam as lespakket_naam,
+                          CONCAT(p.voornaam, ' ', p.achternaam) as klant_naam
+                          FROM reserveringen r
+                          LEFT JOIN lespakketten lp ON r.lespakket_id = lp.id
+                          LEFT JOIN personen p ON r.persoon_id = p.id
+                          ORDER BY r.aangemaakt_op DESC 
+                          LIMIT :limit");
+        $this->db->bind(':limit', $limit);
+        return $this->db->resultSet();
+    }
+
+    public function getRecenteBetalingen($limit = 5)
+    {
+        $this->db->query("SELECT r.*, 
+                          lp.naam as lespakket_naam, lp.prijs,
+                          CONCAT(p.voornaam, ' ', p.achternaam) as klant_naam
+                          FROM reserveringen r
+                          LEFT JOIN lespakketten lp ON r.lespakket_id = lp.id
+                          LEFT JOIN personen p ON r.persoon_id = p.id
+                          WHERE r.betaal_status = 'betaald'
+                          ORDER BY r.bijgewerkt_op DESC 
+                          LIMIT :limit");
+        $this->db->bind(':limit', $limit);
+        return $this->db->resultSet();
+    }
+
+    public function getOmzetRapport($periode, $datum)
+    {
+        // Voorbeeld implementatie voor omzet rapport
+        $this->db->query("SELECT DATE(r.aangemaakt_op) as datum, SUM(lp.prijs) as omzet
+                          FROM reserveringen r
+                          LEFT JOIN lespakketten lp ON r.lespakket_id = lp.id
+                          WHERE r.betaal_status = 'betaald'
+                          AND MONTH(r.aangemaakt_op) = MONTH(:datum)
+                          AND YEAR(r.aangemaakt_op) = YEAR(:datum)
+                          GROUP BY DATE(r.aangemaakt_op)
+                          ORDER BY datum ASC");
+        $this->db->bind(':datum', $datum);
+        return $this->db->resultSet();
+    }
+
+    public function getLessenRapport($periode, $datum)
+    {
+        // Voorbeeld implementatie voor lessen rapport
+        $this->db->query("SELECT DATE(r.bevestigde_datum) as datum, COUNT(*) as aantal_lessen
+                          FROM reserveringen r
+                          WHERE r.status IN ('bevestigd', 'afgerond')
+                          AND MONTH(r.bevestigde_datum) = MONTH(:datum)
+                          AND YEAR(r.bevestigde_datum) = YEAR(:datum)
+                          GROUP BY DATE(r.bevestigde_datum)
+                          ORDER BY datum ASC");
+        $this->db->bind(':datum', $datum);
+        return $this->db->resultSet();
+    }
+
+    // Beschikbaarheid methoden
+    public function updateInstructeurBeschikbaarheid($data)
+    {
+        // Simulatie - in werkelijkheid zou dit een beschikbaarheid tabel gebruiken
+        return true;
+    }
+
+    public function getInstructeurBeschikbaarheid($instructeur_id)
+    {
+        // Simulatie - in werkelijkheid zou dit uit een beschikbaarheid tabel komen
+        return [];
+    }
 }
