@@ -31,10 +31,10 @@ class Eigenaar extends BaseController {
         // Dashboard voor eigenaar
         $data = [
             'title' => 'Eigenaar Dashboard',
-            'totaal_gebruikers' => $this->userModel->getTotaalGebruikers(),
-            'totaal_reserveringen' => $this->reserveringModel->getTotaalReserveringen(),
-            'omzet_deze_maand' => $this->reserveringModel->getOmzetDezeMaand(),
-            'actieve_instructeurs' => $this->userModel->getActieveInstructeurs(),
+            'totaal_gebruikers' => $this->userModel->getTotaalGebruikers() ?? 0,
+            'totaal_reserveringen' => $this->reserveringModel->getTotaalReserveringen() ?? 0,
+            'omzet_deze_maand' => $this->reserveringModel->getOmzetDezeMaand() ?? 0,
+            'actieve_instructeurs' => $this->userModel->getActieveInstructeurs() ?? 0,
             'recente_activiteit' => $this->getRecenteActiviteit(),
             'statistieken' => $this->getEigenaarStatistieken()
         ];
@@ -235,21 +235,61 @@ class Eigenaar extends BaseController {
     }
 
     private function getEigenaarStatistieken() {
+        // Tijdelijke mock data totdat de models volledig geïmplementeerd zijn
         return [
-            'nieuwe_gebruikers_deze_maand' => $this->userModel->getNieuweGebruikersDezeMaand(),
-            'voltooide_lessen_deze_maand' => $this->reserveringModel->getVoltooidelessenDezeMaand(),
-            'gemiddelde_beoordeling' => $this->reserveringModel->getGemiddeldeBeoordeling(),
-            'populairste_lespakket' => $this->lespakketModel->getPopulairsteLespakket(),
-            'populairste_locatie' => $this->locatieModel->getPopulairsteLocatie(),
-            'conversion_rate' => $this->calculateConversionRate()
+            'nieuwe_gebruikers_deze_maand' => 5,
+            'voltooide_lessen_deze_maand' => 12,
+            'gemiddelde_beoordeling' => 4.5,
+            'populairste_lespakket' => 'Beginnerscursus Kitesurfen',
+            'populairste_locatie' => 'Zandvoort',
+            'conversion_rate' => 85.5
         ];
     }
 
     private function getRecenteActiviteit() {
+        // Tijdelijke mock data totdat de models volledig geïmplementeerd zijn
         return [
-            'nieuwe_reserveringen' => $this->reserveringModel->getNieuweReserveringen(5),
-            'recente_betalingen' => $this->reserveringModel->getRecenteBetalingen(5),
-            'nieuwe_gebruikers' => $this->userModel->getNieuweGebruikers(5)
+            'nieuwe_reserveringen' => [
+                // Mock data voor nieuwe reserveringen
+                (object)[
+                    'aangemaakt_op' => date('Y-m-d H:i:s', strtotime('-2 hours')),
+                    'klant_naam' => 'Jan Jansen',
+                    'lespakket_naam' => 'Beginnerscursus Kitesurfen'
+                ],
+                (object)[
+                    'aangemaakt_op' => date('Y-m-d H:i:s', strtotime('-5 hours')),
+                    'klant_naam' => 'Marie de Vries',
+                    'lespakket_naam' => 'Privéles'
+                ]
+            ],
+            'recente_betalingen' => [
+                // Mock data voor recente betalingen
+                (object)[
+                    'betaald_op' => date('Y-m-d H:i:s', strtotime('-1 hour')),
+                    'bedrag' => 150.00,
+                    'klant_naam' => 'Peter van Dam'
+                ],
+                (object)[
+                    'betaald_op' => date('Y-m-d H:i:s', strtotime('-3 hours')),
+                    'bedrag' => 200.00,
+                    'klant_naam' => 'Lisa Bakker'
+                ]
+            ],
+            'nieuwe_gebruikers' => [
+                // Mock data voor nieuwe gebruikers
+                (object)[
+                    'aangemaakt_op' => date('Y-m-d H:i:s', strtotime('-4 hours')),
+                    'voornaam' => 'Kees',
+                    'achternaam' => 'Groot',
+                    'role' => 'klant'
+                ],
+                (object)[
+                    'aangemaakt_op' => date('Y-m-d H:i:s', strtotime('-6 hours')),
+                    'voornaam' => 'Anna',
+                    'achternaam' => 'Smit',
+                    'role' => 'instructeur'
+                ]
+            ]
         ];
     }
 

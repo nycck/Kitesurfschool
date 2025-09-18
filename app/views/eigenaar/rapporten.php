@@ -1,17 +1,17 @@
 <?php require_once APPROOT . '/views/includes/header.php'; ?>
 
-<div class="container-fluid">
+<div class="container-fluid dashboard-dark py-4">
     <div class="row">
         <div class="col-md-12">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1><?php echo $data['title']; ?></h1>
-                <a href="<?php echo URLROOT; ?>/eigenaar" class="btn btn-secondary">
+                <h1 class="text-light"><?php echo $data['title']; ?></h1>
+                <a href="<?php echo URLROOT; ?>/eigenaar" class="btn btn-outline-secondary btn-dark-theme">
                     <i class="fas fa-arrow-left"></i> Terug naar Dashboard
                 </a>
             </div>
 
             <!-- Filter en Selectie -->
-            <div class="card mb-4">
+            <div class="card mb-4 border-0 shadow-lg card-dark">
                 <div class="card-body">
                     <form method="GET" action="<?php echo URLROOT; ?>/eigenaar/rapporten" class="row g-3">
                         <div class="col-md-3">
@@ -53,10 +53,10 @@
                 <div class="col-md-12">
                     <?php if($data['type'] == 'omzet'): ?>
                         <!-- Omzet Rapport -->
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="card-title mb-0">
-                                    <i class="fas fa-euro-sign"></i> Omzet Analyse - <?php echo date('F Y', strtotime($data['datum'])); ?>
+                        <div class="card border-0 shadow-lg card-dark">
+                            <div class="card-header bg-transparent border-0">
+                                <h5 class="card-title mb-0 text-light">
+                                    <i class="fas fa-euro-sign text-success me-2"></i>Omzet Analyse - <?php echo date('F Y', strtotime($data['datum'])); ?>
                                 </h5>
                             </div>
                             <div class="card-body">
@@ -88,9 +88,9 @@
                                 </div>
                                 
                                 <?php if(!empty($data['rapport_data']['dagelijkse_omzet'])): ?>
-                                    <h6>Dagelijkse Omzet Overzicht</h6>
+                                    <h6 class="text-light">Dagelijkse Omzet Overzicht</h6>
                                     <div class="table-responsive">
-                                        <table class="table table-sm">
+                                        <table class="table table-sm table-dark">
                                             <thead>
                                                 <tr>
                                                     <th>Datum</th>
@@ -151,8 +151,8 @@
                                 
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <h6>Verdeling per Rol</h6>
-                                        <table class="table table-sm">
+                                        <h6 class="text-light">Verdeling per Rol</h6>
+                                        <table class="table table-sm table-dark">
                                             <tbody>
                                                 <tr>
                                                     <td>Klanten</td>
@@ -170,9 +170,9 @@
                                         </table>
                                     </div>
                                     <div class="col-md-6">
-                                        <h6>Registraties per Week</h6>
+                                        <h6 class="text-light">Registraties per Week</h6>
                                         <?php if(!empty($data['rapport_data']['wekelijkse_registraties'])): ?>
-                                            <table class="table table-sm">
+                                            <table class="table table-sm table-dark">
                                                 <thead>
                                                     <tr>
                                                         <th>Week</th>
@@ -231,9 +231,9 @@
                                 </div>
                                 
                                 <?php if(!empty($data['rapport_data']['populaire_pakketten'])): ?>
-                                    <h6>Populairste Lespakketten</h6>
+                                    <h6 class="text-light">Populairste Lespakketten</h6>
                                     <div class="table-responsive">
-                                        <table class="table table-sm">
+                                        <table class="table table-sm table-dark">
                                             <thead>
                                                 <tr>
                                                     <th>Lespakket</th>
@@ -267,7 +267,7 @@
                             <div class="card-body">
                                 <?php if(!empty($data['rapport_data']['instructeur_stats'])): ?>
                                     <div class="table-responsive">
-                                        <table class="table table-striped">
+                                        <table class="table table-striped table-dark">
                                             <thead>
                                                 <tr>
                                                     <th>Instructeur</th>
@@ -316,12 +316,12 @@
             <!-- Export en Acties -->
             <div class="row mt-4">
                 <div class="col-md-12">
-                    <div class="card">
+                    <div class="card border-0 shadow-lg card-dark">
                         <div class="card-body">
-                            <h5 class="card-title">Export Opties</h5>
+                            <h5 class="card-title text-light">Export Opties</h5>
                             <div class="btn-group" role="group">
                                 <a href="<?php echo URLROOT; ?>/eigenaar/export_rapport?type=<?php echo $data['type']; ?>&periode=<?php echo $data['periode']; ?>&datum=<?php echo $data['datum']; ?>&format=pdf" 
-                                   class="btn btn-danger">
+                                   class="btn btn-outline-danger btn-dark-theme">
                                     <i class="fas fa-file-pdf"></i> Export als PDF
                                 </a>
                                 <a href="<?php echo URLROOT; ?>/eigenaar/export_rapport?type=<?php echo $data['type']; ?>&periode=<?php echo $data['periode']; ?>&datum=<?php echo $data['datum']; ?>&format=excel" 
@@ -340,6 +340,58 @@
         </div>
     </div>
 </div>
+
+<style>
+/* Dark Theme Styles */
+.dashboard-dark {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    min-height: 100vh;
+}
+
+.card-dark {
+    background: rgba(30, 30, 50, 0.9) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(10px);
+}
+
+.text-light-emphasis {
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.btn-dark-theme {
+    background: transparent !important;
+    color: #fff !important;
+    border-color: currentColor !important;
+    transition: all 0.3s ease;
+}
+
+.btn-dark-theme:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: #fff !important;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+}
+
+.card-dark .form-control,
+.card-dark .form-select {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #fff;
+}
+
+.card-dark .form-label {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.card-dark .table {
+    color: #fff;
+}
+
+.card-dark .table th,
+.card-dark .table td {
+    border-color: rgba(255, 255, 255, 0.1);
+}
+</style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {

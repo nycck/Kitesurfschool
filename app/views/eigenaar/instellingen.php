@@ -1,11 +1,11 @@
 <?php require_once APPROOT . '/views/includes/header.php'; ?>
 
-<div class="container-fluid">
+<div class="container-fluid dashboard-dark py-4">
     <div class="row">
         <div class="col-md-12">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1><?php echo $data['title']; ?></h1>
-                <a href="<?php echo URLROOT; ?>/eigenaar" class="btn btn-secondary">
+                <h1 class="text-light"><?php echo $data['title']; ?></h1>
+                <a href="<?php echo URLROOT; ?>/eigenaar" class="btn btn-outline-secondary btn-dark-theme">
                     <i class="fas fa-arrow-left"></i> Terug naar Dashboard
                 </a>
             </div>
@@ -13,10 +13,10 @@
             <div class="row">
                 <!-- Bedrijf Instellingen -->
                 <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="card-title mb-0">
-                                <i class="fas fa-building"></i> Bedrijf Instellingen
+                    <div class="card border-0 shadow-lg card-dark">
+                        <div class="card-header bg-transparent border-0">
+                            <h5 class="card-title mb-0 text-light">
+                                <i class="fas fa-building text-primary me-2"></i>Bedrijf Instellingen
                             </h5>
                         </div>
                         <div class="card-body">
@@ -68,10 +68,10 @@
 
                 <!-- Systeem Instellingen -->
                 <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="card-title mb-0">
-                                <i class="fas fa-cogs"></i> Systeem Instellingen
+                    <div class="card border-0 shadow-lg card-dark">
+                        <div class="card-header bg-transparent border-0">
+                            <h5 class="card-title mb-0 text-light">
+                                <i class="fas fa-cogs text-success me-2"></i>Systeem Instellingen
                             </h5>
                         </div>
                         <div class="card-body">
@@ -128,10 +128,10 @@
             <!-- Database Beheer -->
             <div class="row mt-4">
                 <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="card-title mb-0">
-                                <i class="fas fa-database"></i> Database Beheer
+                    <div class="card border-0 shadow-lg card-dark">
+                        <div class="card-header bg-transparent border-0">
+                            <h5 class="card-title mb-0 text-light">
+                                <i class="fas fa-database text-info me-2"></i>Database Beheer
                             </h5>
                         </div>
                         <div class="card-body">
@@ -176,10 +176,10 @@
 
                 <!-- Onderhoud & Monitoring -->
                 <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="card-title mb-0">
-                                <i class="fas fa-tools"></i> Onderhoud & Monitoring
+                    <div class="card border-0 shadow-lg card-dark">
+                        <div class="card-header bg-transparent border-0">
+                            <h5 class="card-title mb-0 text-light">
+                                <i class="fas fa-tools text-warning me-2"></i>Onderhoud & Monitoring
                             </h5>
                         </div>
                         <div class="card-body">
@@ -230,10 +230,10 @@
             <!-- Beveiliging -->
             <div class="row mt-4">
                 <div class="col-md-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="card-title mb-0">
-                                <i class="fas fa-shield-alt"></i> Beveiliging & Toegang
+                    <div class="card border-0 shadow-lg card-dark">
+                        <div class="card-header bg-transparent border-0">
+                            <h5 class="card-title mb-0 text-light">
+                                <i class="fas fa-shield-alt text-danger me-2"></i>Beveiliging & Toegang
                             </h5>
                         </div>
                         <div class="card-body">
@@ -411,5 +411,69 @@ function terminateAllSessions() {
     }
 }
 </script>
+
+<style>
+/* Dark Theme Styles */
+.dashboard-dark {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    min-height: 100vh;
+}
+
+.card-dark {
+    background: rgba(30, 30, 50, 0.9) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(10px);
+}
+
+.text-light-emphasis {
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.btn-dark-theme {
+    background: transparent !important;
+    color: #fff !important;
+    border-color: currentColor !important;
+    transition: all 0.3s ease;
+}
+
+.btn-dark-theme:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: #fff !important;
+}
+
+.card-dark .form-control,
+.card-dark .form-select,
+.card-dark textarea {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #fff;
+}
+
+.card-dark .form-control:focus,
+.card-dark .form-select:focus,
+.card-dark textarea:focus {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-color: #0d6efd;
+    color: #fff;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.card-dark .form-label {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.card-dark .form-check-label {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.card-dark .table {
+    color: #fff;
+}
+
+.card-dark .table th,
+.card-dark .table td {
+    border-color: rgba(255, 255, 255, 0.1);
+}
+</style>
 
 <?php require_once APPROOT . '/views/includes/footer.php'; ?>

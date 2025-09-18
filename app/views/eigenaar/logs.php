@@ -1,17 +1,17 @@
 <?php require_once APPROOT . '/views/includes/header.php'; ?>
 
-<div class="container-fluid">
+<div class="container-fluid dashboard-dark py-4">
     <div class="row">
         <div class="col-md-12">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1><?php echo $data['title']; ?></h1>
-                <a href="<?php echo URLROOT; ?>/eigenaar" class="btn btn-secondary">
+                <h1 class="text-light"><?php echo $data['title']; ?></h1>
+                <a href="<?php echo URLROOT; ?>/eigenaar" class="btn btn-outline-secondary btn-dark-theme">
                     <i class="fas fa-arrow-left"></i> Terug naar Dashboard
                 </a>
             </div>
 
             <!-- Filter Sectie -->
-            <div class="card mb-4">
+            <div class="card mb-4 border-0 shadow-lg card-dark">
                 <div class="card-body">
                     <form method="GET" action="<?php echo URLROOT; ?>/eigenaar/logs" class="row g-3">
                         <div class="col-md-3">
@@ -52,15 +52,15 @@
             <!-- Log Statistieken -->
             <div class="row mb-4">
                 <div class="col-md-3">
-                    <div class="card bg-info text-white">
+                    <div class="card border-0 shadow-lg card-dark">
                         <div class="card-body">
                             <div class="d-flex justify-content-between">
                                 <div>
-                                    <h4><?php echo count(array_filter($data['logs'], function($log) { return $log['type'] == 'info'; })); ?></h4>
-                                    <p class="mb-0">Info Logs</p>
+                                    <h4 class="text-light"><?php echo count(array_filter($data['logs'], function($log) { return $log['type'] == 'info'; })); ?></h4>
+                                    <p class="mb-0 text-light-emphasis">Info Logs</p>
                                 </div>
                                 <div class="align-self-center">
-                                    <i class="fas fa-info-circle fa-2x"></i>
+                                    <i class="fas fa-info-circle fa-2x text-info"></i>
                                 </div>
                             </div>
                         </div>
@@ -68,15 +68,15 @@
                 </div>
                 
                 <div class="col-md-3">
-                    <div class="card bg-warning text-white">
+                    <div class="card border-0 shadow-lg card-dark">
                         <div class="card-body">
                             <div class="d-flex justify-content-between">
                                 <div>
-                                    <h4><?php echo count(array_filter($data['logs'], function($log) { return $log['type'] == 'warning'; })); ?></h4>
-                                    <p class="mb-0">Waarschuwingen</p>
+                                    <h4 class="text-light"><?php echo count(array_filter($data['logs'], function($log) { return $log['type'] == 'warning'; })); ?></h4>
+                                    <p class="mb-0 text-light-emphasis">Waarschuwingen</p>
                                 </div>
                                 <div class="align-self-center">
-                                    <i class="fas fa-exclamation-triangle fa-2x"></i>
+                                    <i class="fas fa-exclamation-triangle fa-2x text-warning"></i>
                                 </div>
                             </div>
                         </div>
@@ -84,15 +84,15 @@
                 </div>
                 
                 <div class="col-md-3">
-                    <div class="card bg-danger text-white">
+                    <div class="card border-0 shadow-lg card-dark">
                         <div class="card-body">
                             <div class="d-flex justify-content-between">
                                 <div>
-                                    <h4><?php echo count(array_filter($data['logs'], function($log) { return $log['type'] == 'error'; })); ?></h4>
-                                    <p class="mb-0">Fouten</p>
+                                    <h4 class="text-light"><?php echo count(array_filter($data['logs'], function($log) { return $log['type'] == 'error'; })); ?></h4>
+                                    <p class="mb-0 text-light-emphasis">Fouten</p>
                                 </div>
                                 <div class="align-self-center">
-                                    <i class="fas fa-times-circle fa-2x"></i>
+                                    <i class="fas fa-times-circle fa-2x text-danger"></i>
                                 </div>
                             </div>
                         </div>
@@ -100,15 +100,15 @@
                 </div>
                 
                 <div class="col-md-3">
-                    <div class="card bg-dark text-white">
+                    <div class="card border-0 shadow-lg card-dark">
                         <div class="card-body">
                             <div class="d-flex justify-content-between">
                                 <div>
-                                    <h4><?php echo count(array_filter($data['logs'], function($log) { return $log['type'] == 'security'; })); ?></h4>
-                                    <p class="mb-0">Beveiliging</p>
+                                    <h4 class="text-light"><?php echo count(array_filter($data['logs'], function($log) { return $log['type'] == 'security'; })); ?></h4>
+                                    <p class="mb-0 text-light-emphasis">Beveiliging</p>
                                 </div>
                                 <div class="align-self-center">
-                                    <i class="fas fa-shield-alt fa-2x"></i>
+                                    <i class="fas fa-shield-alt fa-2x text-dark"></i>
                                 </div>
                             </div>
                         </div>
@@ -117,9 +117,9 @@
             </div>
 
             <!-- Logs Tabel -->
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="card-title mb-0">
+            <div class="card border-0 shadow-lg card-dark">
+                <div class="card-header bg-transparent border-0">
+                    <h5 class="card-title mb-0 text-light">
                         Systeem Logs - <?php echo date('d-m-Y', strtotime($data['datum'])); ?>
                     </h5>
                 </div>
@@ -192,10 +192,10 @@
             </div>
 
             <!-- Live Log Monitoring -->
-            <div class="card mt-4">
-                <div class="card-header">
+            <div class="card mt-4 border-0 shadow-lg card-dark">
+                <div class="card-header bg-transparent border-0">
                     <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="card-title mb-0">Live Log Monitoring</h5>
+                        <h5 class="card-title mb-0 text-light">Live Log Monitoring</h5>
                         <div>
                             <button type="button" class="btn btn-sm btn-success" id="startMonitoring">
                                 <i class="fas fa-play"></i> Start
@@ -271,6 +271,60 @@
         </div>
     </div>
 </div>
+
+<style>
+/* Dark Theme Styles */
+.dashboard-dark {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    min-height: 100vh;
+}
+
+.card-dark {
+    background: rgba(30, 30, 50, 0.9) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(10px);
+}
+
+.text-light-emphasis {
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.btn-dark-theme {
+    background: transparent !important;
+    color: #fff !important;
+    border-color: currentColor !important;
+    transition: all 0.3s ease;
+}
+
+.btn-dark-theme:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: #fff !important;
+}
+
+.card-dark .form-control,
+.card-dark .form-select {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #fff;
+}
+
+.card-dark .form-label {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.card-dark .table {
+    color: #fff;
+}
+
+.card-dark .table th,
+.card-dark .table td {
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.card-dark .table tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+</style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {

@@ -1,11 +1,11 @@
 <?php require_once APPROOT . '/views/includes/header.php'; ?>
 
-<div class="container-fluid">
+<div class="container-fluid dashboard-dark py-4">
     <div class="row">
         <div class="col-md-12">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1><?php echo $data['title']; ?></h1>
-                <a href="<?php echo URLROOT; ?>/eigenaar" class="btn btn-secondary">
+                <h1 class="text-light"><?php echo $data['title']; ?></h1>
+                <a href="<?php echo URLROOT; ?>/eigenaar" class="btn btn-outline-secondary btn-dark-theme">
                     <i class="fas fa-arrow-left"></i> Terug naar Dashboard
                 </a>
             </div>
@@ -13,15 +13,15 @@
             <!-- Statistieken Cards -->
             <div class="row mb-4">
                 <div class="col-md-3">
-                    <div class="card bg-success text-white">
+                    <div class="card border-0 shadow-lg card-dark">
                         <div class="card-body">
                             <div class="d-flex justify-content-between">
                                 <div>
-                                    <h4>€<?php echo number_format($data['totaal_omzet'], 2); ?></h4>
-                                    <p class="mb-0">Totale Omzet</p>
+                                    <h4 class="text-light">€<?php echo number_format($data['totaal_omzet'], 2); ?></h4>
+                                    <p class="mb-0 text-light-emphasis">Totale Omzet</p>
                                 </div>
                                 <div class="align-self-center">
-                                    <i class="fas fa-euro-sign fa-2x"></i>
+                                    <i class="fas fa-euro-sign fa-2x text-success"></i>
                                 </div>
                             </div>
                         </div>
@@ -29,15 +29,15 @@
                 </div>
                 
                 <div class="col-md-3">
-                    <div class="card bg-warning text-white">
+                    <div class="card border-0 shadow-lg card-dark">
                         <div class="card-body">
                             <div class="d-flex justify-content-between">
                                 <div>
-                                    <h4>€<?php echo number_format($data['openstaand'], 2); ?></h4>
-                                    <p class="mb-0">Openstaand</p>
+                                    <h4 class="text-light">€<?php echo number_format($data['openstaand'], 2); ?></h4>
+                                    <p class="mb-0 text-light-emphasis">Openstaand</p>
                                 </div>
                                 <div class="align-self-center">
-                                    <i class="fas fa-clock fa-2x"></i>
+                                    <i class="fas fa-clock fa-2x text-warning"></i>
                                 </div>
                             </div>
                         </div>
@@ -45,15 +45,15 @@
                 </div>
                 
                 <div class="col-md-3">
-                    <div class="card bg-info text-white">
+                    <div class="card border-0 shadow-lg card-dark">
                         <div class="card-body">
                             <div class="d-flex justify-content-between">
                                 <div>
-                                    <h4><?php echo count($data['betalingen']); ?></h4>
-                                    <p class="mb-0">Totaal Betalingen</p>
+                                    <h4 class="text-light"><?php echo count($data['betalingen']); ?></h4>
+                                    <p class="mb-0 text-light-emphasis">Totaal Betalingen</p>
                                 </div>
                                 <div class="align-self-center">
-                                    <i class="fas fa-receipt fa-2x"></i>
+                                    <i class="fas fa-receipt fa-2x text-info"></i>
                                 </div>
                             </div>
                         </div>
@@ -61,15 +61,15 @@
                 </div>
                 
                 <div class="col-md-3">
-                    <div class="card bg-primary text-white">
+                    <div class="card border-0 shadow-lg card-dark">
                         <div class="card-body">
                             <div class="d-flex justify-content-between">
                                 <div>
-                                    <h4><?php echo date('m-Y', strtotime($data['maand'])); ?></h4>
-                                    <p class="mb-0">Geselecteerde Maand</p>
+                                    <h4 class="text-light"><?php echo date('m-Y', strtotime($data['maand'])); ?></h4>
+                                    <p class="mb-0 text-light-emphasis">Geselecteerde Maand</p>
                                 </div>
                                 <div class="align-self-center">
-                                    <i class="fas fa-calendar fa-2x"></i>
+                                    <i class="fas fa-calendar fa-2x text-primary"></i>
                                 </div>
                             </div>
                         </div>
@@ -78,11 +78,11 @@
             </div>
 
             <!-- Filter Sectie -->
-            <div class="card mb-4">
+            <div class="card mb-4 border-0 shadow-lg card-dark">
                 <div class="card-body">
                     <form method="GET" action="<?php echo URLROOT; ?>/eigenaar/betalingen" class="row g-3">
                         <div class="col-md-3">
-                            <label for="filter" class="form-label">Filter op Status</label>
+                            <label for="filter" class="form-label text-light">Filter op Status</label>
                             <select name="filter" id="filter" class="form-select">
                                 <option value="alle" <?php echo ($data['filter'] == 'alle') ? 'selected' : ''; ?>>Alle Betalingen</option>
                                 <option value="betaald" <?php echo ($data['filter'] == 'betaald') ? 'selected' : ''; ?>>Betaald</option>
@@ -91,12 +91,12 @@
                             </select>
                         </div>
                         <div class="col-md-3">
-                            <label for="maand" class="form-label">Maand</label>
+                            <label for="maand" class="form-label text-light">Maand</label>
                             <input type="month" name="maand" id="maand" class="form-control" 
                                    value="<?php echo $data['maand']; ?>">
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label">&nbsp;</label>
+                            <label class="form-label text-light">&nbsp;</label>
                             <div class="d-grid">
                                 <button type="submit" class="btn btn-primary">
                                     <i class="fas fa-search"></i> Filteren
@@ -104,7 +104,7 @@
                             </div>
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label">&nbsp;</label>
+                            <label class="form-label text-light">&nbsp;</label>
                             <div class="d-grid">
                                 <a href="<?php echo URLROOT; ?>/eigenaar/export_betalingen?maand=<?php echo $data['maand']; ?>&filter=<?php echo $data['filter']; ?>" 
                                    class="btn btn-success">
@@ -117,7 +117,7 @@
             </div>
 
             <!-- Betalingen Tabel -->
-            <div class="card">
+            <div class="card border-0 shadow-lg card-dark">
                 <div class="card-body">
                     <?php if(!empty($data['betalingen'])): ?>
                         <div class="table-responsive">
@@ -148,7 +148,15 @@
                                             <td>
                                                 <?php echo htmlspecialchars($betaling->lespakket_naam); ?>
                                                 <br>
-                                                <small class="text-muted"><?php echo date('d-m-Y', strtotime($betaling->gewenste_datum)); ?></small>
+                                                <small class="text-muted">
+                                                    <?php 
+                                                    if(isset($betaling->gewenste_datum) && $betaling->gewenste_datum) {
+                                                        echo date('d-m-Y', strtotime($betaling->gewenste_datum));
+                                                    } else {
+                                                        echo 'Datum onbekend';
+                                                    }
+                                                    ?>
+                                                </small>
                                             </td>
                                             <td>
                                                 <strong>€<?php echo number_format($betaling->bedrag, 2); ?></strong>
@@ -162,11 +170,17 @@
                                                 </span>
                                             </td>
                                             <td>
-                                                <?php echo date('d-m-Y H:i', strtotime($betaling->aangemaakt_op)); ?>
+                                                <?php 
+                                                if(isset($betaling->aangemaakt_op) && $betaling->aangemaakt_op) {
+                                                    echo date('d-m-Y H:i', strtotime($betaling->aangemaakt_op));
+                                                } else {
+                                                    echo 'Datum onbekend';
+                                                }
+                                                ?>
                                             </td>
                                             <td>
                                                 <?php 
-                                                if($betaling->betaald_op) {
+                                                if(isset($betaling->betaald_op) && $betaling->betaald_op) {
                                                     echo date('d-m-Y H:i', strtotime($betaling->betaald_op));
                                                 } else {
                                                     echo '<span class="text-muted">Nog niet betaald</span>';
@@ -333,5 +347,74 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+
+<style>
+/* Dark Theme Styles */
+.dashboard-dark {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    min-height: 100vh;
+}
+
+.card-dark {
+    background: rgba(30, 30, 50, 0.9) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(10px);
+}
+
+.text-light-emphasis {
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.btn-dark-theme {
+    background: transparent !important;
+    color: #fff !important;
+    border-color: currentColor !important;
+    transition: all 0.3s ease;
+}
+
+.btn-dark-theme:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: #fff !important;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+}
+
+.table-dark th,
+.table-dark td {
+    color: #fff !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.card-dark .table {
+    color: #fff;
+}
+
+.card-dark .table th {
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.card-dark .table td {
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.card-dark .form-control,
+.card-dark .form-select {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #fff;
+}
+
+.card-dark .form-control:focus,
+.card-dark .form-select:focus {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-color: #0d6efd;
+    color: #fff;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.card-dark .form-label {
+    color: rgba(255, 255, 255, 0.9);
+}
+</style>
 
 <?php require_once APPROOT . '/views/includes/footer.php'; ?>

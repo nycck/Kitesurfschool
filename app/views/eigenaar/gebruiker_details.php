@@ -1,12 +1,12 @@
 <?php require_once APPROOT . '/views/includes/header.php'; ?>
 
-<div class="container-fluid">
+<div class="container-fluid dashboard-dark py-4">
     <div class="row">
         <div class="col-md-12">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1><?php echo $data['title']; ?></h1>
+                <h1 class="text-light"><?php echo $data['title']; ?></h1>
                 <div>
-                    <a href="<?php echo URLROOT; ?>/eigenaar/gebruikers" class="btn btn-secondary">
+                    <a href="<?php echo URLROOT; ?>/eigenaar/gebruikers" class="btn btn-outline-secondary btn-dark-theme">
                         <i class="fas fa-arrow-left"></i> Terug naar Gebruikers
                     </a>
                 </div>
@@ -15,10 +15,10 @@
             <div class="row">
                 <!-- Gebruiker Informatie -->
                 <div class="col-md-4">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="card-title mb-0">
-                                <i class="fas fa-user"></i> Gebruiker Informatie
+                    <div class="card border-0 shadow-lg card-dark">
+                        <div class="card-header bg-transparent border-0">
+                            <h5 class="card-title mb-0 text-light">
+                                <i class="fas fa-user text-primary me-2"></i>Gebruiker Informatie
                             </h5>
                         </div>
                         <div class="card-body">
@@ -63,13 +63,21 @@
                                 </tr>
                                 <tr>
                                     <td><strong>Aangemeld:</strong></td>
-                                    <td><?php echo date('d-m-Y H:i', strtotime($data['gebruiker']->aangemaakt_op)); ?></td>
+                                    <td>
+                                        <?php 
+                                        if(isset($data['gebruiker']->aangemaakt_op) && $data['gebruiker']->aangemaakt_op) {
+                                            echo date('d-m-Y H:i', strtotime($data['gebruiker']->aangemaakt_op));
+                                        } else {
+                                            echo 'Datum onbekend';
+                                        }
+                                        ?>
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td><strong>Laatste login:</strong></td>
                                     <td>
                                         <?php 
-                                        if($data['gebruiker']->laatste_login) {
+                                        if(isset($data['gebruiker']->laatste_login) && $data['gebruiker']->laatste_login) {
                                             echo date('d-m-Y H:i', strtotime($data['gebruiker']->laatste_login));
                                         } else {
                                             echo 'Nog niet ingelogd';
@@ -99,10 +107,10 @@
 
                 <!-- Persoonlijke Informatie -->
                 <div class="col-md-4">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="card-title mb-0">
-                                <i class="fas fa-address-card"></i> Persoonlijke Informatie
+                    <div class="card border-0 shadow-lg card-dark">
+                        <div class="card-header bg-transparent border-0">
+                            <h5 class="card-title mb-0 text-light">
+                                <i class="fas fa-address-card text-info me-2"></i>Persoonlijke Informatie
                             </h5>
                         </div>
                         <div class="card-body">
@@ -116,7 +124,7 @@
                                         <td><strong>Geboortedatum:</strong></td>
                                         <td>
                                             <?php 
-                                            if($data['persoon']->geboortedatum) {
+                                            if(isset($data['persoon']->geboortedatum) && $data['persoon']->geboortedatum) {
                                                 echo date('d-m-Y', strtotime($data['persoon']->geboortedatum));
                                                 $leeftijd = date('Y') - date('Y', strtotime($data['persoon']->geboortedatum));
                                                 echo " ({$leeftijd} jaar)";
@@ -165,10 +173,10 @@
 
                 <!-- Reserveringen -->
                 <div class="col-md-4">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="card-title mb-0">
-                                <i class="fas fa-calendar-check"></i> Reserveringen 
+                    <div class="card border-0 shadow-lg card-dark">
+                        <div class="card-header bg-transparent border-0">
+                            <h5 class="card-title mb-0 text-light">
+                                <i class="fas fa-calendar-check text-success me-2"></i>Reserveringen 
                                 <span class="badge bg-primary"><?php echo count($data['reserveringen']); ?></span>
                             </h5>
                         </div>
@@ -181,7 +189,13 @@
                                                 <div>
                                                     <h6 class="mb-1"><?php echo htmlspecialchars($reservering->lespakket_naam); ?></h6>
                                                     <small class="text-muted">
-                                                        <?php echo date('d-m-Y', strtotime($reservering->gewenste_datum)); ?>
+                                                        <?php 
+                                                        if(isset($reservering->gewenste_datum) && $reservering->gewenste_datum) {
+                                                            echo date('d-m-Y', strtotime($reservering->gewenste_datum));
+                                                        } else {
+                                                            echo 'Datum onbekend';
+                                                        }
+                                                        ?>
                                                     </small>
                                                     <br>
                                                     <small class="text-muted">
@@ -285,5 +299,49 @@
         </div>
     </div>
 </div>
+
+<style>
+/* Dark Theme Styles */
+.dashboard-dark {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    min-height: 100vh;
+}
+
+.card-dark {
+    background: rgba(30, 30, 50, 0.9) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(10px);
+}
+
+.text-light-emphasis {
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.btn-dark-theme {
+    background: transparent !important;
+    color: #fff !important;
+    border-color: currentColor !important;
+    transition: all 0.3s ease;
+}
+
+.btn-dark-theme:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: #fff !important;
+}
+
+.card-dark .table {
+    color: #fff;
+}
+
+.card-dark .table th,
+.card-dark .table td {
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.card-dark .table-borderless th,
+.card-dark .table-borderless td {
+    color: #fff;
+}
+</style>
 
 <?php require_once APPROOT . '/views/includes/footer.php'; ?>

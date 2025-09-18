@@ -1,17 +1,17 @@
 <?php require_once APPROOT . '/views/includes/header.php'; ?>
 
-<div class="container-fluid">
+<div class="container-fluid dashboard-dark py-4">
     <div class="row">
         <div class="col-md-12">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1><?php echo $data['title']; ?></h1>
-                <a href="<?php echo URLROOT; ?>/eigenaar" class="btn btn-secondary">
+                <h1 class="text-light"><?php echo $data['title']; ?></h1>
+                <a href="<?php echo URLROOT; ?>/eigenaar" class="btn btn-outline-secondary btn-dark-theme">
                     <i class="fas fa-arrow-left"></i> Terug naar Dashboard
                 </a>
             </div>
 
             <!-- Filter en Zoek Sectie -->
-            <div class="card mb-4">
+            <div class="card mb-4 border-0 shadow-lg card-dark">
                 <div class="card-body">
                     <form method="GET" action="<?php echo URLROOT; ?>/eigenaar/gebruikers" class="row g-3">
                         <div class="col-md-3">
@@ -42,20 +42,20 @@
             </div>
 
             <!-- Gebruikers Tabel -->
-            <div class="card">
+            <div class="card border-0 shadow-lg card-dark">
                 <div class="card-body">
                     <?php if(!empty($data['gebruikers'])): ?>
                         <div class="table-responsive">
-                            <table class="table table-striped table-hover">
-                                <thead class="table-dark">
+                            <table class="table table-hover">
+                                <thead class="border-bottom border-secondary">
                                     <tr>
-                                        <th>ID</th>
-                                        <th>Naam</th>
-                                        <th>Email</th>
-                                        <th>Rol</th>
-                                        <th>Status</th>
-                                        <th>Aangemeld op</th>
-                                        <th>Acties</th>
+                                        <th class="text-light">ID</th>
+                                        <th class="text-light">Naam</th>
+                                        <th class="text-light">Email</th>
+                                        <th class="text-light">Rol</th>
+                                        <th class="text-light">Status</th>
+                                        <th class="text-light">Aangemeld op</th>
+                                        <th class="text-light">Acties</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -79,7 +79,15 @@
                                                     <?php echo $gebruiker->is_active ? 'Actief' : 'Inactief'; ?>
                                                 </span>
                                             </td>
-                                            <td><?php echo date('d-m-Y H:i', strtotime($gebruiker->aangemaakt_op)); ?></td>
+                                            <td>
+                                                <?php 
+                                                if(isset($gebruiker->aangemaakt_op) && $gebruiker->aangemaakt_op) {
+                                                    echo date('d-m-Y H:i', strtotime($gebruiker->aangemaakt_op));
+                                                } else {
+                                                    echo 'Datum onbekend';
+                                                }
+                                                ?>
+                                            </td>
                                             <td>
                                                 <div class="btn-group" role="group">
                                                     <a href="<?php echo URLROOT; ?>/eigenaar/gebruiker_details/<?php echo $gebruiker->id; ?>" 
@@ -106,8 +114,8 @@
                     <?php else: ?>
                         <div class="text-center py-5">
                             <i class="fas fa-users fa-3x text-muted mb-3"></i>
-                            <h5 class="text-muted">Geen gebruikers gevonden</h5>
-                            <p class="text-muted">Probeer andere filterinstellingen of zoektermen.</p>
+                            <h5 class="text-light-emphasis">Geen gebruikers gevonden</h5>
+                            <p class="text-light-emphasis">Probeer andere filterinstellingen of zoektermen.</p>
                         </div>
                     <?php endif; ?>
                 </div>
@@ -180,5 +188,59 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+
+<style>
+/* Dark Theme Styles */
+.dashboard-dark {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    min-height: 100vh;
+}
+
+.card-dark {
+    background: rgba(30, 30, 50, 0.9) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(10px);
+}
+
+.text-light-emphasis {
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.btn-dark-theme {
+    background: transparent !important;
+    color: #fff !important;
+    border-color: currentColor !important;
+    transition: all 0.3s ease;
+}
+
+.btn-dark-theme:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: #fff !important;
+}
+
+.card-dark .table {
+    color: #fff;
+}
+
+.card-dark .table th,
+.card-dark .table td {
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.card-dark .table tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.card-dark .form-control,
+.card-dark .form-select {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #fff;
+}
+
+.card-dark .form-label {
+    color: rgba(255, 255, 255, 0.9);
+}
+</style>
 
 <?php require_once APPROOT . '/views/includes/footer.php'; ?>
