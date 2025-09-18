@@ -85,4 +85,52 @@ class Persoon
         $this->db->bind(':user_id', $userId);
         return $this->db->execute();
     }
+
+    // Maak nieuwe persoon aan voor reservering
+    public function createPersoon($userId, $voornaam, $tussenvoegsel, $achternaam, $geboortedatum, $telefoon)
+    {
+        // Check of persoon al bestaat
+        $this->db->query("SELECT id FROM personen WHERE user_id = :user_id");
+        $this->db->bind(':user_id', $userId);
+        $existing = $this->db->single();
+
+        if ($existing) {
+            // Update bestaande persoon
+            $this->db->query("UPDATE personen SET 
+                              voornaam = :voornaam, 
+                              tussenvoegsel = :tussenvoegsel, 
+                              achternaam = :achternaam, 
+                              geboortedatum = :geboortedatum, 
+                              telefoon = :telefoon 
+                              WHERE user_id = :user_id");
+                              
+            $this->db->bind(':voornaam', $voornaam);
+            $this->db->bind(':tussenvoegsel', $tussenvoegsel);
+            $this->db->bind(':achternaam', $achternaam);
+            $this->db->bind(':geboortedatum', $geboortedatum);
+            $this->db->bind(':telefoon', $telefoon);
+            $this->db->bind(':user_id', $userId);
+
+            if ($this->db->execute()) {
+                return $existing->id;
+            }
+        } else {
+            // Maak nieuwe persoon aan
+            $this->db->query("INSERT INTO personen (user_id, voornaam, tussenvoegsel, achternaam, geboortedatum, telefoon) 
+                              VALUES (:user_id, :voornaam, :tussenvoegsel, :achternaam, :geboortedatum, :telefoon)");
+                              
+            $this->db->bind(':user_id', $userId);
+            $this->db->bind(':voornaam', $voornaam);
+            $this->db->bind(':tussenvoegsel', $tussenvoegsel);
+            $this->db->bind(':achternaam', $achternaam);
+            $this->db->bind(':geboortedatum', $geboortedatum);
+            $this->db->bind(':telefoon', $telefoon);
+
+            if ($this->db->execute()) {
+                return $this->db->lastInsertId();
+            }
+        }
+
+        return false;
+    }
 }
