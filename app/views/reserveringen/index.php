@@ -1,6 +1,8 @@
 <?php require_once APPROOT . '/views/includes/header.php'; ?>
 
 <div class="container py-5">
+    <?php flash('reservering_message'); ?>
+    
     <div class="row">
         <div class="col-lg-12">
             <div class="d-flex justify-content-between align-items-center mb-4">
@@ -11,8 +13,6 @@
                     <i class="fas fa-plus me-2"></i>Nieuwe Reservering
                 </a>
             </div>
-
-            <?php flash('reservering_message'); ?>
 
             <?php if (empty($data['reserveringen'])): ?>
                 <div class="text-center py-5">

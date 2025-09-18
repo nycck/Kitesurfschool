@@ -16,6 +16,64 @@
     
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="<?= URLROOT ?>/img/favicon.ico">
+    <style>
+        /* Flash message improvements */
+        .flash-message {
+            animation: slideInDown 0.5s ease-out;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: none;
+            border-left: 4px solid;
+        }
+        
+        .flash-message.alert-success {
+            border-left-color: #28a745;
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .flash-message.alert-danger {
+            border-left-color: #dc3545;
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .flash-message.alert-warning {
+            border-left-color: #ffc107;
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .flash-message.alert-info {
+            border-left-color: #17a2b8;
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        @keyframes slideInDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .flash-message.fade.show {
+            opacity: 1;
+        }
+        
+        .flash-message .btn-close {
+            font-size: 0.75rem;
+        }
+        
+        /* Ensure flash messages are always visible */
+        .container .flash-message {
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+    </style>
 </head>
 <body>
     <!-- Navigation -->

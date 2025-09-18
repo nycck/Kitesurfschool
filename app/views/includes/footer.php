@@ -1,4 +1,4 @@
-    </main>
+</main>
 
     <!-- Footer -->
     <footer class="bg-dark text-light py-5 mt-5">
@@ -65,15 +65,6 @@
     
     <!-- Custom JavaScript -->
     <script>
-        // Auto-dismiss alerts after 5 seconds
-        setTimeout(function() {
-            var alerts = document.querySelectorAll('.alert');
-            alerts.forEach(function(alert) {
-                var bsAlert = new bootstrap.Alert(alert);
-                bsAlert.close();
-            });
-        }, 5000);
-        
         // Confirm delete actions
         function confirmDelete(message) {
             return confirm(message || 'Weet je zeker dat je dit wilt verwijderen?');

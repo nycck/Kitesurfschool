@@ -53,11 +53,26 @@ function flash($name = '', $message = '', $class = 'alert-info')
             $_SESSION[$name] = $message;
             $_SESSION[$name . '_class'] = $class;
         } elseif (empty($message) && !empty($_SESSION[$name])) {
-            $class = !empty($_SESSION[$name . '_class']) ? $_SESSION[$name . '_class'] : '';
-            echo '<div class="alert ' . $class . ' alert-dismissible fade show" role="alert">';
-            echo $_SESSION[$name];
-            echo '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>';
+            $class = !empty($_SESSION[$name . '_class']) ? $_SESSION[$name . '_class'] : 'alert-info';
+            echo '<div class="alert ' . $class . ' alert-dismissible fade show flash-message" role="alert" style="position: sticky; top: 20px; z-index: 1050; margin-bottom: 20px;">';
+            echo '<div class="d-flex align-items-center">';
+            
+            // Add icon based on alert type
+            if (strpos($class, 'success') !== false) {
+                echo '<i class="fas fa-check-circle me-2"></i>';
+            } elseif (strpos($class, 'danger') !== false) {
+                echo '<i class="fas fa-exclamation-triangle me-2"></i>';
+            } elseif (strpos($class, 'warning') !== false) {
+                echo '<i class="fas fa-exclamation-circle me-2"></i>';
+            } else {
+                echo '<i class="fas fa-info-circle me-2"></i>';
+            }
+            
+            echo '<span>' . $_SESSION[$name] . '</span>';
             echo '</div>';
+            echo '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
+            echo '</div>';
+            
             unset($_SESSION[$name]);
             unset($_SESSION[$name . '_class']);
         }

@@ -1,6 +1,8 @@
 <?php require_once APPROOT . '/views/includes/header.php'; ?>
 
 <div class="container py-5">
+    <?php flash('reservering_message'); ?>
+    
     <div class="row justify-content-center">
         <div class="col-lg-8">
             <div class="d-flex align-items-center mb-4">
@@ -11,8 +13,6 @@
                     <i class="fas fa-file-alt me-3"></i>Reservering Details
                 </h1>
             </div>
-
-            <?php flash('reservering_message'); ?>
 
             <div class="card shadow">
                 <div class="card-header d-flex justify-content-between align-items-center">

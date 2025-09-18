@@ -1,6 +1,8 @@
 <?php require_once APPROOT . '/views/includes/header.php'; ?>
 
 <div class="container py-4">
+    <?php flash('message'); ?>
+    
     <!-- Welcome Section -->
     <div class="row mb-4">
         <div class="col-12">
