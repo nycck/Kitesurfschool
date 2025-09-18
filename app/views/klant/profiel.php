@@ -158,8 +158,18 @@
                                         <i class="fas fa-info-circle me-2"></i>Account Status
                                     </h6>
                                     <p class="mb-0">
-                                        <strong>Aangemaakt:</strong> <?= date('d-m-Y', strtotime($data['user']->aangemaakt_op)) ?><br>
-                                        <strong>Laatste login:</strong> <?= isset($data['user']->laatste_login) ? date('d-m-Y H:i', strtotime($data['user']->laatste_login)) : 'Nooit' ?>
+                                        <strong>Aangemaakt:</strong> 
+                                        <?php if (isset($data['user']->created_at) && !empty($data['user']->created_at)): ?>
+                                            <?= date('d-m-Y', strtotime($data['user']->created_at)) ?>
+                                        <?php else: ?>
+                                            Onbekend
+                                        <?php endif; ?><br>
+                                        <strong>Laatste login:</strong> 
+                                        <?php if (isset($data['user']->last_login) && !empty($data['user']->last_login)): ?>
+                                            <?= date('d-m-Y H:i', strtotime($data['user']->last_login)) ?>
+                                        <?php else: ?>
+                                            Nooit
+                                        <?php endif; ?>
                                     </p>
                                 </div>
                                 <div class="col-md-6">

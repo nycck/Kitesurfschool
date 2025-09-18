@@ -102,7 +102,20 @@ class Klant extends BaseController
             
             $this->view('klant/profiel', $viewData);
         } else {
+            // Get user with person data
             $user = $this->userModel->getUserById($userId);
+            $persoon = $this->persoonModel->getPersoonByUserId($userId);
+            
+            // Merge user and person data for the view
+            if ($persoon) {
+                $user->voornaam = $persoon->voornaam;
+                $user->achternaam = $persoon->achternaam;
+                $user->adres = $persoon->adres;
+                $user->postcode = $persoon->postcode;
+                $user->woonplaats = $persoon->woonplaats;
+                $user->geboortedatum = $persoon->geboortedatum;
+                $user->telefoon = $persoon->telefoon;
+            }
             
             $data = [
                 'title' => 'Mijn Profiel',

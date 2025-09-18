@@ -22,6 +22,8 @@
                 </div>
                 <div class="card-body">
                     <form action="<?php echo URLROOT; ?>/reserveringen/maken" method="POST">
+                        <input type="hidden" name="csrf_token" value="<?= generateCSRFToken() ?>">
+                        
                         <div class="row">
                             <!-- Lespakket Selection -->
                             <div class="col-md-6 mb-4">

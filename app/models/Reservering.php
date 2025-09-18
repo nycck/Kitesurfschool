@@ -291,8 +291,8 @@ class Reservering
     // Voeg nieuwe reservering toe (nieuwe versie voor uitgebreid systeem)
     public function addReservering($data)
     {
-        $this->db->query("INSERT INTO reserveringen (persoon_id, lespakket_id, locatie_id, gewenste_datum, opmerking, duo_partner_id, status, betaal_status) 
-                          VALUES (:persoon_id, :lespakket_id, :locatie_id, :gewenste_datum, :opmerking, :duo_partner_id, :status, :betaal_status)");
+        $this->db->query("INSERT INTO reserveringen (persoon_id, lespakket_id, locatie_id, gewenste_datum, opmerking, duo_partner_id, status, betaal_status, aangemaakt_op) 
+                          VALUES (:persoon_id, :lespakket_id, :locatie_id, :gewenste_datum, :opmerking, :duo_partner_id, :status, :betaal_status, NOW())");
         
         $this->db->bind(':persoon_id', $data['persoon_id']);
         $this->db->bind(':lespakket_id', $data['lespakket_id']);
@@ -310,7 +310,7 @@ class Reservering
     public function getReserveringenByUserId($userId)
     {
         $this->db->query("SELECT r.*, 
-                          lp.naam as lespakket_naam, lp.prijs as lespakket_prijs,
+                          lp.naam as lespakket_naam, lp.prijs_per_persoon as lespakket_prijs,
                           l.naam as locatie_naam,
                           CONCAT(dp.voornaam, ' ', dp.achternaam) as duo_partner_naam
                           FROM reserveringen r

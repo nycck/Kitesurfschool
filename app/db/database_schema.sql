@@ -1,14 +1,16 @@
 -- Database schema voor Kitesurfschool Windkracht-12
-CREATE DATABASE IF NOT EXISTS kitesurfschool_windkracht12;
+DROP DATABASE IF EXISTS kitesurfschool_windkracht12;
+CREATE DATABASE kitesurfschool_windkracht12;
 USE kitesurfschool_windkracht12;
 
 -- Gebruikers tabel
-CREATE TABLE IF NOT EXISTS users (
+DROP TABLE IF EXISTS users;
+CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     email VARCHAR(191) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
     role ENUM('klant', 'instructeur', 'eigenaar') DEFAULT 'klant',
-    is_active BOOLEAN DEFAULT FALSE,
+    is_active BOOLEAN DEFAULT TRUE,
     activation_token VARCHAR(191),
     reset_token VARCHAR(191),
     reset_token_expires DATETIME,
@@ -16,8 +18,9 @@ CREATE TABLE IF NOT EXISTS users (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- Personen tabel (uitgebreide informatie)
-CREATE TABLE IF NOT EXISTS personen (
+-- Personen tabel
+DROP TABLE IF EXISTS personen;
+CREATE TABLE personen (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT UNIQUE,
     voornaam VARCHAR(100) NOT NULL,
@@ -34,50 +37,63 @@ CREATE TABLE IF NOT EXISTS personen (
 );
 
 -- Locaties tabel
-CREATE TABLE IF NOT EXISTS locaties (
+DROP TABLE IF EXISTS locaties;
+CREATE TABLE locaties (
     id INT AUTO_INCREMENT PRIMARY KEY,
     naam VARCHAR(100) NOT NULL,
     adres VARCHAR(255),
     beschrijving TEXT,
+    faciliteiten TEXT,
     is_active BOOLEAN DEFAULT TRUE
 );
 
 -- Lespakketten tabel
-CREATE TABLE IF NOT EXISTS lespakketten (
+DROP TABLE IF EXISTS lespakketten;
+CREATE TABLE lespakketten (
     id INT AUTO_INCREMENT PRIMARY KEY,
     naam VARCHAR(100) NOT NULL,
     beschrijving TEXT,
     aantal_lessen INT NOT NULL,
     totale_uren DECIMAL(3,1) NOT NULL,
     prijs_per_persoon DECIMAL(8,2) NOT NULL,
+    prijs DECIMAL(8,2) NOT NULL,
     max_personen INT NOT NULL,
     is_active BOOLEAN DEFAULT TRUE
 );
 
 -- Reserveringen tabel
-CREATE TABLE IF NOT EXISTS reserveringen (
+DROP TABLE IF EXISTS reserveringen;
+CREATE TABLE reserveringen (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    klant_id INT NOT NULL,
+    persoon_id INT NOT NULL,
     instructeur_id INT,
     lespakket_id INT NOT NULL,
     locatie_id INT NOT NULL,
-    status ENUM('voorlopig', 'definitief', 'geannuleerd') DEFAULT 'voorlopig',
-    betaling_status ENUM('open', 'betaald', 'gerefund') DEFAULT 'open',
-    totaal_prijs DECIMAL(8,2) NOT NULL,
-    duo_partner_naam VARCHAR(200),
-    duo_partner_email VARCHAR(191),
-    duo_partner_telefoon VARCHAR(20),
-    opmerkingen TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (klant_id) REFERENCES users(id),
-    FOREIGN KEY (instructeur_id) REFERENCES users(id),
+    gewenste_datum DATE NOT NULL,
+    bevestigde_datum DATE,
+    bevestigde_tijd TIME,
+    status ENUM('aangevraagd', 'bevestigd', 'geannuleerd', 'afgerond') DEFAULT 'aangevraagd',
+    betaal_status ENUM('wachtend', 'betaald', 'mislukt') DEFAULT 'wachtend',
+    duo_partner_id INT,
+    opmerking TEXT,
+    instructeur_opmerking TEXT,
+    evaluatie TEXT,
+    voortgang TEXT,
+    aanbevelingen TEXT,
+    annulering_reden TEXT,
+    betaal_opmerking TEXT,
+    aangemaakt_op TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    bijgewerkt_op TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (persoon_id) REFERENCES personen(id),
+    FOREIGN KEY (instructeur_id) REFERENCES personen(id),
     FOREIGN KEY (lespakket_id) REFERENCES lespakketten(id),
-    FOREIGN KEY (locatie_id) REFERENCES locaties(id)
+    FOREIGN KEY (locatie_id) REFERENCES locaties(id),
+    FOREIGN KEY (duo_partner_id) REFERENCES personen(id)
 );
 
 -- Les sessies tabel
-CREATE TABLE IF NOT EXISTS les_sessies (
+DROP TABLE IF EXISTS les_sessies;
+CREATE TABLE les_sessies (
     id INT AUTO_INCREMENT PRIMARY KEY,
     reservering_id INT NOT NULL,
     les_datum DATE NOT NULL,
@@ -91,7 +107,8 @@ CREATE TABLE IF NOT EXISTS les_sessies (
 );
 
 -- Login logs tabel
-CREATE TABLE IF NOT EXISTS login_logs (
+DROP TABLE IF EXISTS login_logs;
+CREATE TABLE login_logs (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT,
     email VARCHAR(191) NOT NULL,
@@ -103,7 +120,8 @@ CREATE TABLE IF NOT EXISTS login_logs (
 );
 
 -- Email logs tabel
-CREATE TABLE IF NOT EXISTS email_logs (
+DROP TABLE IF EXISTS email_logs;
+CREATE TABLE email_logs (
     id INT AUTO_INCREMENT PRIMARY KEY,
     naar_email VARCHAR(191) NOT NULL,
     onderwerp VARCHAR(255) NOT NULL,
@@ -113,26 +131,29 @@ CREATE TABLE IF NOT EXISTS email_logs (
     status ENUM('verzonden', 'gefaald') DEFAULT 'verzonden'
 );
 
--- Insert standaard data
--- Eigenaar account (al geregistreerd)
-INSERT INTO users (email, password_hash, role, is_active) VALUES 
-('terence@windkracht12.nl', '$2y$10$6F.Uf8.UjYH8FRgDXzN.aOQLxeRJ3S.m5t9P7LqvP2K8w3JnVQj1O', 'eigenaar', TRUE);
+-- Standaard data
+-- Eigenaar account (password = admin123)
+INSERT INTO users (id, email, password_hash, role, is_active) VALUES 
+(1, 'terence@windkracht12.nl', '$2y$10$LHFXivb9GYsmpSWtPFeAOeXP7k6rpIZDz42DDfXPcAEiBhO87T96e', 'eigenaar', TRUE)
+ON DUPLICATE KEY UPDATE email=email;
 
 INSERT INTO personen (user_id, voornaam, achternaam, telefoon) VALUES 
-(1, 'Terence', 'Olieslager', '06-12345678');
+(1, 'Terence', 'Olieslager', '06-12345678')
+ON DUPLICATE KEY UPDATE voornaam=voornaam;
 
 -- Locaties
-INSERT INTO locaties (naam, adres, beschrijving) VALUES 
-('Zandvoort', 'Boulevard Zandvoort, Zandvoort', 'Breed strand met goede wind condities'),
-('Muiderberg', 'Strand Muiderberg, Muiden', 'Rustige locatie ideaal voor beginners'),
-('Wijk aan Zee', 'Boulevard Wijk aan Zee', 'Populaire kitespot met veel ruimte'),
-('IJmuiden', 'Zuidpier IJmuiden', 'Goede wind en golven voor gevorderden'),
-('Scheveningen', 'Zuidstrand Scheveningen, Den Haag', 'Bekende kitespot met faciliteiten'),
-('Hoek van Holland', 'Strand Hoek van Holland', 'Wind uit verschillende richtingen');
+INSERT INTO locaties (naam, adres, beschrijving, faciliteiten) VALUES 
+('Zandvoort', 'Boulevard Zandvoort, Zandvoort', 'Breed strand met goede wind condities', 'Parkeerplaats, douches, toiletten'),
+('Muiderberg', 'Strand Muiderberg, Muiden', 'Rustige locatie ideaal voor beginners', 'Beperkte faciliteiten, rustige omgeving'),
+('Wijk aan Zee', 'Boulevard Wijk aan Zee', 'Populaire kitespot met veel ruimte', 'Strandpaviljoen, parkeren mogelijk'),
+('IJmuiden', 'Zuidpier IJmuiden', 'Goede wind en golven voor gevorderden', 'Haven nabij, ervaren kiters'),
+('Scheveningen', 'Zuidstrand Scheveningen, Den Haag', 'Bekende kitespot met faciliteiten', 'Veel faciliteiten, druk strand'),
+('Hoek van Holland', 'Strand Hoek van Holland', 'Wind uit verschillende richtingen', 'Natuurgebied, rustig strand');
 
 -- Lespakketten
-INSERT INTO lespakketten (naam, beschrijving, aantal_lessen, totale_uren, prijs_per_persoon, max_personen) VALUES 
-('Privéles', 'Persoonlijke kitesurfles met individuele aandacht', 1, 2.5, 175.00, 1),
-('Losse Duo Kiteles', 'Introductie kitesurfles voor 2 personen', 1, 3.5, 135.00, 2),
-('Kitesurf Duo lespakket 3 lessen', 'Complete basiscursus kitesurfen voor 2 personen', 3, 10.5, 375.00, 2),
-('Kitesurf Duo lespakket 5 lessen', 'Uitgebreide kitesurfcursus voor 2 personen', 5, 17.5, 675.00, 2);
+INSERT INTO lespakketten (naam, beschrijving, aantal_lessen, totale_uren, prijs_per_persoon, prijs, max_personen) VALUES 
+('Privéles', 'Persoonlijke kitesurfles met individuele aandacht', 1, 2.5, 175.00, 175.00, 1),
+('Losse Duo Kiteles', 'Introductie kitesurfles voor 2 personen', 1, 3.5, 135.00, 135.00, 2),
+('Kitesurf Duo lespakket 3 lessen', 'Complete basiscursus kitesurfen voor 2 personen', 3, 10.5, 375.00, 375.00, 2),
+('Kitesurf Duo lespakket 5 lessen', 'Uitgebreide kitesurfcursus voor 2 personen', 5, 17.5, 675.00, 675.00, 2)
+ON DUPLICATE KEY UPDATE naam=naam;

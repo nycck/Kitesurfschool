@@ -90,44 +90,44 @@ class User
     // Login gebruiker
     public function login($email, $password)
     {
-        $this->db->query("SELECT * FROM users WHERE email = :email AND is_active = 1");
+        $this->db->query("SELECT * FROM users WHERE email = :email");
         $this->db->bind(':email', $email);
         $user = $this->db->single();
 
         if ($user && password_verify($password, $user->password_hash)) {
-            // Log login
-            $this->logActivity($user->id, $email, 'login');
-            return $user;
+            if ($user->is_active) {
+                // Log the login
+                $this->logUserActivity($user->id, $email, 'login');
+                return $user;
+            }
         }
-        
         return false;
     }
 
     // Log logout
     public function logout($userId, $email)
     {
-        $this->logActivity($userId, $email, 'logout');
+        // Log the logout
+        $this->logUserActivity($userId, $email, 'logout');
     }
 
-    // Log login/logout activiteit
-    private function logActivity($userId, $email, $action)
+    private function logUserActivity($userId, $email, $action)
     {
-        $ipAddress = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
-        $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? 'unknown';
-        
-        $this->db->query("INSERT INTO login_logs (user_id, email, actie, ip_adres, user_agent) VALUES (:user_id, :email, :actie, :ip_adres, :user_agent)");
+        $this->db->query("INSERT INTO login_logs (user_id, email, actie, ip_adres, user_agent) 
+                          VALUES (:user_id, :email, :actie, :ip_adres, :user_agent)");
         $this->db->bind(':user_id', $userId);
         $this->db->bind(':email', $email);
         $this->db->bind(':actie', $action);
-        $this->db->bind(':ip_adres', $ipAddress);
-        $this->db->bind(':user_agent', $userAgent);
+        $this->db->bind(':ip_adres', $_SERVER['REMOTE_ADDR'] ?? 'unknown');
+        $this->db->bind(':user_agent', $_SERVER['HTTP_USER_AGENT'] ?? 'unknown');
         $this->db->execute();
     }
 
     // Haal gebruiker op bij ID
     public function getUserById($id)
     {
-        $this->db->query("SELECT u.*, p.voornaam, p.achternaam, p.adres, p.postcode, p.woonplaats, p.geboortedatum, p.telefoon, p.bsn 
+        $this->db->query("SELECT u.*, p.voornaam, p.achternaam, p.adres, p.postcode, p.woonplaats, p.geboortedatum, p.telefoon, p.bsn,
+                          (SELECT tijdstip FROM login_logs WHERE user_id = u.id AND actie = 'login' ORDER BY tijdstip DESC LIMIT 1) as last_login
                           FROM users u 
                           LEFT JOIN personen p ON u.id = p.user_id 
                           WHERE u.id = :id");
