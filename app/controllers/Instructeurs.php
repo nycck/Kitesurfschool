@@ -3,8 +3,6 @@
 class Instructeurs extends BaseController {
     
     public function __construct() {
-        parent::__construct();
-        
         // Check if user is logged in and is an instructor or owner
         if (!isset($_SESSION['user_id'])) {
             redirect('auth/login');

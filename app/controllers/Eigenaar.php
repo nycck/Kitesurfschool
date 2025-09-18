@@ -9,8 +9,6 @@ class Eigenaar extends BaseController {
     private $locatieModel;
     
     public function __construct() {
-        parent::__construct();
-        
         // Check if user is logged in and is owner
         if (!isset($_SESSION['user_id'])) {
             redirect('auth/login');
