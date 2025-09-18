@@ -22,13 +22,28 @@ class Reserveringen extends BaseController {
     }
 
     public function index() {
-        // Toon alle reserveringen van de ingelogde gebruiker
-        $data = [
-            'title' => 'Mijn Reserveringen',
-            'reserveringen' => $this->reserveringModel->getReserveringenByUserId($_SESSION['user_id'])
-        ];
+        try {
+            // Toon alle reserveringen van de ingelogde gebruiker
+            $reserveringen = $this->reserveringModel->getReserveringenByUserId($_SESSION['user_id']);
+            
+            $data = [
+                'title' => 'Mijn Reserveringen',
+                'reserveringen' => $reserveringen ?? []
+            ];
 
-        $this->view('reserveringen/index', $data);
+            $this->view('reserveringen/index', $data);
+        } catch (Exception $e) {
+            // Log de error en toon gebruiksvriendelijke foutmelding
+            error_log("Reserveringen index error: " . $e->getMessage());
+            
+            $data = [
+                'title' => 'Mijn Reserveringen',
+                'reserveringen' => []
+            ];
+            
+            flash('reservering_message', 'Er is een probleem opgetreden bij het laden van je reserveringen. Probeer het later opnieuw.', 'alert alert-danger');
+            $this->view('reserveringen/index', $data);
+        }
     }
 
     public function maken() {

@@ -58,8 +58,14 @@ class Database
      */
     public function resultSet()
     {
-        $this->statement->execute();
-        return $this->statement->fetchAll(PDO::FETCH_OBJ);
+        try {
+            $this->statement->execute();
+            return $this->statement->fetchAll(PDO::FETCH_OBJ);
+        } catch (PDOException $e) {
+            error_log("Database resultSet error: " . $e->getMessage());
+            error_log("Query: " . $this->statement->queryString);
+            throw $e; // Re-throw voor debugging
+        }
     }
 
     /**
@@ -90,15 +96,27 @@ class Database
      */
     public function execute()
     {
-        return $this->statement->execute();
+        try {
+            return $this->statement->execute();
+        } catch (PDOException $e) {
+            error_log("Database execute error: " . $e->getMessage());
+            error_log("Query: " . $this->statement->queryString);
+            throw $e; // Re-throw voor debugging
+        }
     }
 
     public function single()
     {
-        $this->statement->execute();
-        $result = $this->statement->fetch(PDO::FETCH_OBJ);
-        $this->statement->closecursor();
-        return $result;
+        try {
+            $this->statement->execute();
+            $result = $this->statement->fetch(PDO::FETCH_OBJ);
+            $this->statement->closecursor();
+            return $result;
+        } catch (PDOException $e) {
+            error_log("Database single error: " . $e->getMessage());
+            error_log("Query: " . $this->statement->queryString);
+            throw $e; // Re-throw voor debugging
+        }
     }
 
     public function lastInsertId()

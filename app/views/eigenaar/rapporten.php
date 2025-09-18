@@ -51,7 +51,16 @@
             <!-- Rapport Inhoud -->
             <div class="row">
                 <div class="col-md-12">
-                    <?php if($data['type'] == 'omzet'): ?>
+                    <?php if(isset($data['rapport_data']['error'])): ?>
+                        <div class="card border-0 shadow-lg card-dark">
+                            <div class="card-body">
+                                <div class="alert alert-danger">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    <?= htmlspecialchars($data['rapport_data']['error']) ?>
+                                </div>
+                            </div>
+                        </div>
+                    <?php elseif($data['type'] == 'omzet'): ?>
                         <!-- Omzet Rapport -->
                         <div class="card border-0 shadow-lg card-dark">
                             <div class="card-header bg-transparent border-0">

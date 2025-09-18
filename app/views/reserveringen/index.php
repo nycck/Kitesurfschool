@@ -23,8 +23,8 @@
                     <p class="text-muted mb-4">
                         Je hebt nog geen lessen gereserveerd. Boek nu je eerste kitesurfles!
                     </p>
-                    <a href="<?php echo URLROOT; ?>/reserveringen/maken" class="btn btn-primary btn-lg">
-                        <i class="fas fa-plus me-2"></i>Maak je eerste reservering
+                    <a href="<?php echo URLROOT; ?>/homepages/pakketten" class="btn btn-primary btn-lg">
+                        <i class="fas fa-plus me-2"></i>Bekijk Lespakketten
                     </a>
                 </div>
             <?php else: ?>
@@ -33,11 +33,12 @@
                         <div class="col-lg-6 col-xl-4 mb-4">
                             <div class="card h-100 shadow-sm">
                                 <div class="card-header d-flex justify-content-between align-items-center">
-                                    <h5 class="mb-0"><?php echo $reservering->lespakket_naam; ?></h5>
+                                    <h5 class="mb-0"><?php echo htmlspecialchars($reservering->lespakket_naam ?? 'Onbekend pakket'); ?></h5>
                                     <?php
                                     $statusClass = '';
                                     $statusIcon = '';
-                                    switch($reservering->status) {
+                                    $status = $reservering->status ?? 'onbekend';
+                                    switch($status) {
                                         case 'aangevraagd':
                                             $statusClass = 'bg-warning text-dark';
                                             $statusIcon = 'fas fa-clock';
@@ -61,24 +62,31 @@
                                     ?>
                                     <span class="badge <?php echo $statusClass; ?>">
                                         <i class="<?php echo $statusIcon; ?> me-1"></i>
-                                        <?php echo ucfirst($reservering->status); ?>
+                                        <?php echo ucfirst($status); ?>
                                     </span>
                                 </div>
                                 
                                 <div class="card-body">
                                     <div class="mb-3">
                                         <i class="fas fa-map-marker-alt text-primary me-2"></i>
-                                        <strong>Locatie:</strong> <?php echo $reservering->locatie_naam; ?>
+                                        <strong>Locatie:</strong> <?php echo htmlspecialchars($reservering->locatie_naam ?? 'Onbekend'); ?>
                                     </div>
                                     
                                     <div class="mb-3">
                                         <i class="fas fa-calendar text-primary me-2"></i>
-                                        <strong>Datum:</strong> <?php echo date('d-m-Y', strtotime($reservering->gewenste_datum)); ?>
+                                        <strong>Datum:</strong> 
+                                        <?php 
+                                        if (isset($reservering->gewenste_datum) && $reservering->gewenste_datum) {
+                                            echo date('d-m-Y', strtotime($reservering->gewenste_datum));
+                                        } else {
+                                            echo 'Nog niet vastgesteld';
+                                        }
+                                        ?>
                                     </div>
                                     
                                     <div class="mb-3">
                                         <i class="fas fa-euro-sign text-primary me-2"></i>
-                                        <strong>Prijs:</strong> €<?php echo number_format($reservering->lespakket_prijs, 2); ?>
+                                        <strong>Prijs:</strong> €<?php echo number_format($reservering->lespakket_prijs ?? 0, 2); ?>
                                     </div>
                                     
                                     <div class="mb-3">
@@ -86,7 +94,8 @@
                                         <strong>Betaling:</strong> 
                                         <?php
                                         $betalingClass = '';
-                                        switch($reservering->betaal_status) {
+                                        $betaalStatus = $reservering->betaal_status ?? 'onbekend';
+                                        switch($betaalStatus) {
                                             case 'betaald':
                                                 $betalingClass = 'text-success';
                                                 break;
@@ -101,14 +110,14 @@
                                         }
                                         ?>
                                         <span class="<?php echo $betalingClass; ?>">
-                                            <?php echo ucfirst($reservering->betaal_status); ?>
+                                            <?php echo ucfirst($betaalStatus); ?>
                                         </span>
                                     </div>
                                     
                                     <?php if (!empty($reservering->duo_partner_naam)): ?>
                                         <div class="mb-3">
                                             <i class="fas fa-user-friends text-primary me-2"></i>
-                                            <strong>Duo partner:</strong> <?php echo $reservering->duo_partner_naam; ?>
+                                            <strong>Duo partner:</strong> <?php echo htmlspecialchars($reservering->duo_partner_naam); ?>
                                         </div>
                                     <?php endif; ?>
                                     
@@ -123,7 +132,14 @@
                                     <div class="mb-3">
                                         <small class="text-muted">
                                             <i class="fas fa-clock me-1"></i>
-                                            Gereserveerd op: <?php echo date('d-m-Y H:i', strtotime($reservering->aangemaakt_op)); ?>
+                                            Gereserveerd op: 
+                                            <?php 
+                                            if (isset($reservering->aangemaakt_op) && $reservering->aangemaakt_op) {
+                                                echo date('d-m-Y H:i', strtotime($reservering->aangemaakt_op));
+                                            } else {
+                                                echo 'Datum onbekend';
+                                            }
+                                            ?>
                                         </small>
                                     </div>
                                 </div>
@@ -135,7 +151,7 @@
                                             <i class="fas fa-eye me-1"></i>Details
                                         </a>
                                         
-                                        <?php if ($reservering->status == 'aangevraagd' || $reservering->status == 'bevestigd'): ?>
+                                        <?php if (isset($reservering->status) && ($reservering->status == 'aangevraagd' || $reservering->status == 'bevestigd')): ?>
                                             <button type="button" class="btn btn-outline-danger btn-sm" 
                                                     data-bs-toggle="modal" data-bs-target="#cancelModal<?php echo $reservering->id; ?>">
                                                 <i class="fas fa-times me-1"></i>Annuleren
@@ -147,7 +163,7 @@
                         </div>
 
                         <!-- Cancel Modal -->
-                        <?php if ($reservering->status == 'aangevraagd' || $reservering->status == 'bevestigd'): ?>
+                        <?php if (isset($reservering->status) && ($reservering->status == 'aangevraagd' || $reservering->status == 'bevestigd')): ?>
                             <div class="modal fade" id="cancelModal<?php echo $reservering->id; ?>" tabindex="-1">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
@@ -158,8 +174,14 @@
                                         <form action="<?php echo URLROOT; ?>/reserveringen/annuleren/<?php echo $reservering->id; ?>" method="POST">
                                             <div class="modal-body">
                                                 <p>Weet je zeker dat je deze reservering wilt annuleren?</p>
-                                                <p><strong><?php echo $reservering->lespakket_naam; ?></strong><br>
-                                                <?php echo date('d-m-Y', strtotime($reservering->gewenste_datum)); ?> in <?php echo $reservering->locatie_naam; ?></p>
+                                                <p><strong><?php echo htmlspecialchars($reservering->lespakket_naam ?? 'Onbekend pakket'); ?></strong><br>
+                                                <?php 
+                                                if (isset($reservering->gewenste_datum) && $reservering->gewenste_datum) {
+                                                    echo date('d-m-Y', strtotime($reservering->gewenste_datum));
+                                                } else {
+                                                    echo 'Datum nog niet vastgesteld';
+                                                }
+                                                ?> in <?php echo htmlspecialchars($reservering->locatie_naam ?? 'Onbekende locatie'); ?></p>
                                                 
                                                 <div class="mb-3">
                                                     <label for="reden<?php echo $reservering->id; ?>" class="form-label">Reden voor annulering *</label>

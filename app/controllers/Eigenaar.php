@@ -234,6 +234,104 @@ class Eigenaar extends BaseController {
         $this->view('eigenaar/logs', $data);
     }
 
+    public function reserveringen() {
+        $status = isset($_GET['status']) ? $_GET['status'] : 'alle';
+        $periode = isset($_GET['periode']) ? $_GET['periode'] : 'alle';
+        
+        try {
+            // Haal alle reserveringen op
+            $alleReserveringen = $this->reserveringModel->getAllReserveringen($status === 'alle' ? null : $status);
+            
+            // Bereken statistieken uit de opgehaalde data
+            $totaal = count($alleReserveringen);
+            $bevestigd = count(array_filter($alleReserveringen, function($r) { return $r->status === 'bevestigd'; }));
+            $wachtend = count(array_filter($alleReserveringen, function($r) { return $r->status === 'aangevraagd'; }));
+            $geannuleerd = count(array_filter($alleReserveringen, function($r) { return $r->status === 'geannuleerd'; }));
+            
+            $data = [
+                'title' => 'Reserveringen Beheren',
+                'reserveringen' => $alleReserveringen,
+                'status' => $status,
+                'periode' => $periode,
+                'statistieken' => [
+                    'totaal' => $totaal,
+                    'bevestigd' => $bevestigd,
+                    'wachtend' => $wachtend,
+                    'geannuleerd' => $geannuleerd
+                ]
+            ];
+
+            $this->view('eigenaar/reserveringen', $data);
+        } catch (Exception $e) {
+            error_log("Eigenaar reserveringen error: " . $e->getMessage());
+            
+            $data = [
+                'title' => 'Reserveringen Beheren',
+                'reserveringen' => [],
+                'status' => $status,
+                'periode' => $periode,
+                'statistieken' => [
+                    'totaal' => 0,
+                    'bevestigd' => 0,
+                    'wachtend' => 0,
+                    'geannuleerd' => 0
+                ]
+            ];
+            
+            flash('error_message', 'Er is een probleem opgetreden bij het laden van de reserveringen.', 'alert alert-danger');
+            $this->view('eigenaar/reserveringen', $data);
+        }
+    }
+
+    public function reservering_details($id) {
+        $reservering = $this->reserveringModel->getReserveringById($id);
+        
+        if (!$reservering) {
+            flash('error_message', 'Reservering niet gevonden.', 'alert alert-danger');
+            redirect('eigenaar/reserveringen');
+        }
+
+        $data = [
+            'title' => 'Reservering Details',
+            'reservering' => $reservering
+        ];
+
+        $this->view('eigenaar/reservering_details', $data);
+    }
+
+    public function reservering_status($id) {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $nieuwe_status = trim($_POST['status']);
+            $opmerking = trim($_POST['opmerking']);
+            
+            if (!in_array($nieuwe_status, ['aangevraagd', 'bevestigd', 'geannuleerd', 'afgerond'])) {
+                flash('error_message', 'Ongeldige status.', 'alert alert-danger');
+                redirect('eigenaar/reserveringen');
+            }
+
+            $reservering = $this->reserveringModel->getReserveringById($id);
+            if (!$reservering) {
+                flash('error_message', 'Reservering niet gevonden.', 'alert alert-danger');
+                redirect('eigenaar/reserveringen');
+            }
+
+            if ($this->reserveringModel->updateReserveringStatus($id, $nieuwe_status, $opmerking)) {
+                flash('success_message', 'Reservering status succesvol bijgewerkt.', 'alert alert-success');
+                
+                // Send email notification to customer
+                $klant = $this->userModel->getUserById($reservering->user_id);
+                $this->sendStatusWijzigingEmail($klant, $reservering, $nieuwe_status);
+                
+                redirect('eigenaar/reserveringen');
+            } else {
+                flash('error_message', 'Er is iets misgegaan bij het bijwerken van de status.', 'alert alert-danger');
+                redirect('eigenaar/reserveringen');
+            }
+        } else {
+            redirect('eigenaar/reserveringen');
+        }
+    }
+
     private function getEigenaarStatistieken() {
         // Tijdelijke mock data totdat de models volledig geïmplementeerd zijn
         return [
@@ -294,17 +392,32 @@ class Eigenaar extends BaseController {
     }
 
     private function getRapportData($type, $periode, $datum) {
-        switch ($type) {
-            case 'omzet':
-                return $this->reserveringModel->getOmzetRapport($periode, $datum);
-            case 'gebruikers':
-                return $this->userModel->getGebruikersRapport($periode, $datum);
-            case 'lessen':
-                return $this->reserveringModel->getLessenRapport($periode, $datum);
-            case 'instructeurs':
-                return $this->getInstructeursRapport($periode, $datum);
-            default:
-                return [];
+        try {
+            switch ($type) {
+                case 'omzet':
+                    return $this->reserveringModel->getOmzetRapport($periode, $datum);
+                case 'gebruikers':
+                    return $this->userModel->getGebruikersRapport($periode, $datum);
+                case 'lessen':
+                    return $this->reserveringModel->getLessenRapport($periode, $datum);
+                case 'instructeurs':
+                    return $this->userModel->getInstructeursRapport($periode, $datum);
+                default:
+                    return [
+                        'error' => 'Onbekend rapport type'
+                    ];
+            }
+        } catch (Exception $e) {
+            // Log de error en return lege data
+            error_log("Rapport error: " . $e->getMessage());
+            return [
+                'error' => 'Er is een fout opgetreden bij het laden van de rapportgegevens.',
+                'totale_omzet' => 0,
+                'aantal_betalingen' => 0,
+                'gemiddelde_betaling' => 0,
+                'openstaand_bedrag' => 0,
+                'dagelijkse_omzet' => []
+            ];
         }
     }
 
@@ -369,6 +482,40 @@ class Eigenaar extends BaseController {
         <p>Je reservering is nu volledig bevestigd. Je instructeur neemt contact op voor de definitieve tijdindeling.</p>
         
         <p>Tot ziens bij het water!</p>
+        
+        <p>Met vriendelijke groet,<br>
+        Team Windkracht-12</p>
+        ";
+        
+        $emailService->sendEmail($klant->email, $subject, $body);
+    }
+
+    private function sendStatusWijzigingEmail($klant, $reservering, $nieuwe_status) {
+        $emailService = new EmailService();
+        
+        $status_beschrijving = [
+            'bevestigd' => 'Je reservering is bevestigd! We nemen binnenkort contact op voor de planning.',
+            'geannuleerd' => 'Je reservering is geannuleerd. Neem contact op voor meer informatie.',
+            'afgerond' => 'Je kitesurfles is afgerond. Bedankt voor je deelname!'
+        ];
+        
+        $subject = 'Status update voor je kitesurfles - Windkracht-12';
+        
+        $body = "
+        <h2>Beste {$klant->voornaam},</h2>
+        
+        <p>De status van je reservering is bijgewerkt.</p>
+        
+        <h3>Reservering Details:</h3>
+        <ul>
+            <li><strong>Reservering:</strong> #{$reservering->id}</li>
+            <li><strong>Nieuwe Status:</strong> " . ucfirst($nieuwe_status) . "</li>
+            <li><strong>Lespakket:</strong> {$reservering->lespakket_naam}</li>
+        </ul>
+        
+        <p>{$status_beschrijving[$nieuwe_status]}</p>
+        
+        <p>Heb je vragen? Neem contact op via info@kitesurfschool-windkracht12.nl</p>
         
         <p>Met vriendelijke groet,<br>
         Team Windkracht-12</p>

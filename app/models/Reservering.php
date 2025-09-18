@@ -218,12 +218,12 @@ class Reservering
                           FROM reserveringen r
                           LEFT JOIN lespakketten lp ON r.lespakket_id = lp.id
                           LEFT JOIN locaties l ON r.locatie_id = l.id
-                          LEFT JOIN users uk ON r.klant_id = uk.id
-                          LEFT JOIN personen pk ON uk.id = pk.user_id
-                          LEFT JOIN users ui ON r.instructeur_id = ui.id
-                          LEFT JOIN personen pi ON ui.id = pi.user_id
+                          LEFT JOIN personen pk ON r.persoon_id = pk.id
+                          LEFT JOIN users uk ON pk.user_id = uk.id
+                          LEFT JOIN personen pi ON r.instructeur_id = pi.id
+                          LEFT JOIN users ui ON pi.user_id = ui.id
                           {$whereClause}
-                          ORDER BY r.created_at DESC");
+                          ORDER BY r.aangemaakt_op DESC");
         
         foreach ($bindings as $param => $value) {
             $this->db->bind($param, $value);
@@ -242,10 +242,10 @@ class Reservering
                           FROM reserveringen r
                           LEFT JOIN lespakketten lp ON r.lespakket_id = lp.id
                           LEFT JOIN locaties l ON r.locatie_id = l.id
-                          LEFT JOIN users uk ON r.klant_id = uk.id
-                          LEFT JOIN personen pk ON uk.id = pk.user_id
-                          WHERE r.betaling_status = 'open' OR r.betaling_status = 'betaald'
-                          ORDER BY r.created_at DESC");
+                          LEFT JOIN personen pk ON r.persoon_id = pk.id
+                          LEFT JOIN users uk ON pk.user_id = uk.id
+                          WHERE r.betaal_status IN ('wachtend', 'mislukt')
+                          ORDER BY r.aangemaakt_op DESC");
         
         return $this->db->resultSet();
     }
@@ -257,27 +257,26 @@ class Reservering
         $bindings = [':instructeur_id' => $instructeurId];
         
         if ($startDate) {
-            $whereClause .= " AND ls.les_datum >= :start_date";
+            $whereClause .= " AND r.bevestigde_datum >= :start_date";
             $bindings[':start_date'] = $startDate;
         }
         
         if ($endDate) {
-            $whereClause .= " AND ls.les_datum <= :end_date";
+            $whereClause .= " AND r.bevestigde_datum <= :end_date";
             $bindings[':end_date'] = $endDate;
         }
         
-        $this->db->query("SELECT ls.*, r.id as reservering_id,
+        $this->db->query("SELECT r.*, r.id as reservering_id,
                           lp.naam as pakket_naam, l.naam as locatie_naam,
                           pk.voornaam as klant_voornaam, pk.achternaam as klant_achternaam,
                           uk.email as klant_email, uk.id as klant_id
-                          FROM les_sessies ls
-                          JOIN reserveringen r ON ls.reservering_id = r.id
+                          FROM reserveringen r
                           LEFT JOIN lespakketten lp ON r.lespakket_id = lp.id
                           LEFT JOIN locaties l ON r.locatie_id = l.id
-                          LEFT JOIN users uk ON r.klant_id = uk.id
-                          LEFT JOIN personen pk ON uk.id = pk.user_id
+                          LEFT JOIN personen pk ON r.persoon_id = pk.id
+                          LEFT JOIN users uk ON pk.user_id = uk.id
                           {$whereClause}
-                          ORDER BY ls.les_datum ASC, ls.start_tijd ASC");
+                          ORDER BY r.bevestigde_datum ASC, r.bevestigde_tijd ASC");
         
         foreach ($bindings as $param => $value) {
             $this->db->bind($param, $value);
@@ -312,13 +311,14 @@ class Reservering
         $this->db->query("SELECT r.*, 
                           lp.naam as lespakket_naam, lp.prijs_per_persoon as lespakket_prijs,
                           l.naam as locatie_naam,
-                          CONCAT(dp.voornaam, ' ', dp.achternaam) as duo_partner_naam
+                          CONCAT(dp.voornaam, ' ', dp.achternaam) as duo_partner_naam,
+                          p.voornaam, p.achternaam
                           FROM reserveringen r
                           LEFT JOIN lespakketten lp ON r.lespakket_id = lp.id
                           LEFT JOIN locaties l ON r.locatie_id = l.id
                           LEFT JOIN personen p ON r.persoon_id = p.id
                           LEFT JOIN personen dp ON r.duo_partner_id = dp.id
-                          WHERE p.user_id = :user_id OR dp.user_id = :user_id
+                          WHERE p.user_id = :user_id
                           ORDER BY r.aangemaakt_op DESC");
         
         $this->db->bind(':user_id', $userId);
@@ -747,7 +747,9 @@ class Reservering
     public function getOmzetRapport($periode, $datum)
     {
         // Voorbeeld implementatie voor omzet rapport
-        $this->db->query("SELECT DATE(r.aangemaakt_op) as datum, SUM(lp.prijs) as omzet
+        $this->db->query("SELECT DATE(r.aangemaakt_op) as datum, 
+                                 COUNT(*) as aantal_betalingen,
+                                 SUM(lp.prijs) as omzet
                           FROM reserveringen r
                           LEFT JOIN lespakketten lp ON r.lespakket_id = lp.id
                           WHERE r.betaal_status = 'betaald'
@@ -756,21 +758,71 @@ class Reservering
                           GROUP BY DATE(r.aangemaakt_op)
                           ORDER BY datum ASC");
         $this->db->bind(':datum', $datum);
-        return $this->db->resultSet();
+        
+        $dagelijkeOmzet = $this->db->resultSet();
+        
+        // Bereken totalen
+        $totaleOmzet = 0;
+        $aantalBetalingen = 0;
+        
+        foreach ($dagelijkeOmzet as $dag) {
+            $totaleOmzet += $dag->omzet ?? 0;
+            $aantalBetalingen += $dag->aantal_betalingen ?? 0;
+        }
+        
+        $gemiddeldeBetaling = $aantalBetalingen > 0 ? $totaleOmzet / $aantalBetalingen : 0;
+        
+        // Bereken openstaand bedrag
+        $this->db->query("SELECT SUM(lp.prijs) as openstaand
+                          FROM reserveringen r
+                          LEFT JOIN lespakketten lp ON r.lespakket_id = lp.id
+                          WHERE r.betaal_status = 'wachtend'");
+        $openstaandResult = $this->db->single();
+        $openstaandBedrag = $openstaandResult->openstaand ?? 0;
+        
+        return [
+            'totale_omzet' => $totaleOmzet,
+            'aantal_betalingen' => $aantalBetalingen,
+            'gemiddelde_betaling' => $gemiddeldeBetaling,
+            'openstaand_bedrag' => $openstaandBedrag,
+            'dagelijkse_omzet' => $dagelijkeOmzet
+        ];
     }
 
     public function getLessenRapport($periode, $datum)
     {
         // Voorbeeld implementatie voor lessen rapport
-        $this->db->query("SELECT DATE(r.bevestigde_datum) as datum, COUNT(*) as aantal_lessen
+        $this->db->query("SELECT COUNT(*) as totaal_lessen,
+                                 SUM(CASE WHEN r.status = 'afgerond' THEN 1 ELSE 0 END) as voltooide_lessen,
+                                 SUM(CASE WHEN r.status = 'geannuleerd' THEN 1 ELSE 0 END) as geannuleerde_lessen,
+                                 AVG(4.5) as gemiddelde_beoordeling
                           FROM reserveringen r
-                          WHERE r.status IN ('bevestigd', 'afgerond')
-                          AND MONTH(r.bevestigde_datum) = MONTH(:datum)
-                          AND YEAR(r.bevestigde_datum) = YEAR(:datum)
-                          GROUP BY DATE(r.bevestigde_datum)
-                          ORDER BY datum ASC");
+                          WHERE MONTH(r.aangemaakt_op) = MONTH(:datum)
+                          AND YEAR(r.aangemaakt_op) = YEAR(:datum)");
         $this->db->bind(':datum', $datum);
-        return $this->db->resultSet();
+        $totalen = $this->db->single();
+        
+        // Haal populaire pakketten op
+        $this->db->query("SELECT lp.naam, 
+                                 COUNT(r.id) as aantal_reserveringen,
+                                 SUM(lp.prijs) as omzet
+                          FROM reserveringen r
+                          LEFT JOIN lespakketten lp ON r.lespakket_id = lp.id
+                          WHERE MONTH(r.aangemaakt_op) = MONTH(:datum)
+                          AND YEAR(r.aangemaakt_op) = YEAR(:datum)
+                          GROUP BY lp.id, lp.naam
+                          ORDER BY aantal_reserveringen DESC
+                          LIMIT 5");
+        $this->db->bind(':datum', $datum);
+        $populairePakketten = $this->db->resultSet();
+        
+        return [
+            'totaal_lessen' => $totalen->totaal_lessen ?? 0,
+            'voltooide_lessen' => $totalen->voltooide_lessen ?? 0,
+            'geannuleerde_lessen' => $totalen->geannuleerde_lessen ?? 0,
+            'gemiddelde_beoordeling' => $totalen->gemiddelde_beoordeling ?? 0,
+            'populaire_pakketten' => $populairePakketten
+        ];
     }
 
     // Beschikbaarheid methoden

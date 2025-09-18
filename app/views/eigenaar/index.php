@@ -247,7 +247,7 @@
                                 </div>
                             <?php endif; ?>
                             <div class="mt-3 pt-3 border-top border-secondary">
-                                <a href="<?php echo URLROOT; ?>/reserveringen" class="btn btn-sm btn-outline-primary w-100 btn-dark-theme">
+                                <a href="<?php echo URLROOT; ?>/eigenaar/reserveringen" class="btn btn-sm btn-outline-primary w-100 btn-dark-theme">
                                     Alle reserveringen bekijken
                                 </a>
                             </div>
