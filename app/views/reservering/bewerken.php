@@ -42,7 +42,7 @@
                         </div>
                     <?php endif; ?>
                     
-                    <form method="POST" action="<?= URLROOT ?>/reservering/bewerken/<?= $data['reservering']->id ?>" id="bewerkForm">
+                    <form method="POST" action="<?= URLROOT ?>/reserveringen/bewerken/<?= $data['reservering']->id ?>" id="bewerkForm">
                         <input type="hidden" name="csrf_token" value="<?= generateCSRFToken() ?>">
                         
                         <div class="row">

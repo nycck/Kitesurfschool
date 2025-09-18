@@ -25,7 +25,7 @@ class Instructeurs extends BaseController {
 
     public function index() {
         // Dashboard voor instructeurs
-        $instructeurPersoon = $this->persoonModel->getPersonByUserId($_SESSION['user_id']);
+        $instructeurPersoon = $this->persoonModel->getPersoonByUserId($_SESSION['user_id']);
         
         $data = [
             'title' => 'Instructeur Dashboard',
@@ -39,7 +39,7 @@ class Instructeurs extends BaseController {
     }
 
     public function planning() {
-        $instructeurPersoon = $this->persoonModel->getPersonByUserId($_SESSION['user_id']);
+        $instructeurPersoon = $this->persoonModel->getPersoonByUserId($_SESSION['user_id']);
         $view = isset($_GET['view']) ? $_GET['view'] : 'week';
         $datum = isset($_GET['datum']) ? $_GET['datum'] : date('Y-m-d');
         
@@ -54,7 +54,7 @@ class Instructeurs extends BaseController {
     }
 
     public function klanten() {
-        $instructeurPersoon = $this->persoonModel->getPersonByUserId($_SESSION['user_id']);
+        $instructeurPersoon = $this->persoonModel->getPersoonByUserId($_SESSION['user_id']);
         
         $data = [
             'title' => 'Mijn Klanten',
@@ -73,7 +73,7 @@ class Instructeurs extends BaseController {
         }
 
         // Check if this instructor is assigned to this lesson
-        $instructeurPersoon = $this->persoonModel->getPersonByUserId($_SESSION['user_id']);
+        $instructeurPersoon = $this->persoonModel->getPersoonByUserId($_SESSION['user_id']);
         if ($reservering->instructeur_id != $instructeurPersoon->id) {
             flash('error_message', 'Je hebt geen toegang tot deze les.', 'alert alert-danger');
             redirect('instructeurs/planning');
@@ -101,7 +101,7 @@ class Instructeurs extends BaseController {
             }
 
             // Check if this instructor can confirm this lesson
-            $instructeurPersoon = $this->persoonModel->getPersonByUserId($_SESSION['user_id']);
+            $instructeurPersoon = $this->persoonModel->getPersoonByUserId($_SESSION['user_id']);
             
             $bevestigingData = [
                 'bevestigde_datum' => $bevestigde_datum,
@@ -145,7 +145,7 @@ class Instructeurs extends BaseController {
             }
 
             // Check if this instructor can cancel this lesson
-            $instructeurPersoon = $this->persoonModel->getPersonByUserId($_SESSION['user_id']);
+            $instructeurPersoon = $this->persoonModel->getPersoonByUserId($_SESSION['user_id']);
             if ($reservering->instructeur_id != $instructeurPersoon->id) {
                 flash('error_message', 'Je kunt alleen je eigen lessen annuleren.', 'alert alert-danger');
                 redirect('instructeurs/planning');
@@ -181,7 +181,7 @@ class Instructeurs extends BaseController {
             }
 
             // Check if this instructor can complete this lesson
-            $instructeurPersoon = $this->persoonModel->getPersonByUserId($_SESSION['user_id']);
+            $instructeurPersoon = $this->persoonModel->getPersoonByUserId($_SESSION['user_id']);
             if ($reservering->instructeur_id != $instructeurPersoon->id) {
                 flash('error_message', 'Je kunt alleen je eigen lessen afronden.', 'alert alert-danger');
                 redirect('instructeurs/planning');
@@ -212,7 +212,7 @@ class Instructeurs extends BaseController {
 
     public function beschikbaarheid() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $instructeurPersoon = $this->persoonModel->getPersonByUserId($_SESSION['user_id']);
+            $instructeurPersoon = $this->persoonModel->getPersoonByUserId($_SESSION['user_id']);
             
             $beschikbaarheidData = [
                 'instructeur_id' => $instructeurPersoon->id,
@@ -232,7 +232,7 @@ class Instructeurs extends BaseController {
             }
         }
 
-        $instructeurPersoon = $this->persoonModel->getPersonByUserId($_SESSION['user_id']);
+        $instructeurPersoon = $this->persoonModel->getPersoonByUserId($_SESSION['user_id']);
         
         $data = [
             'title' => 'Beschikbaarheid Beheren',

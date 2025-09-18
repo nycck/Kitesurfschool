@@ -66,7 +66,7 @@ class Eigenaar extends BaseController {
             redirect('eigenaar/gebruikers');
         }
 
-        $persoon = $this->persoonModel->getPersonByUserId($id);
+        $persoon = $this->persoonModel->getPersoonByUserId($id);
         $reserveringen = $this->reserveringModel->getReserveringenByUserId($id);
 
         $data = [
