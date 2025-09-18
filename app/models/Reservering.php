@@ -285,4 +285,304 @@ class Reservering
         
         return $this->db->resultSet();
     }
+
+    // NIEUWE METHODEN VOOR UITGEBREIDE FUNCTIONALITEIT
+
+    // Voeg nieuwe reservering toe (nieuwe versie voor uitgebreid systeem)
+    public function addReservering($data)
+    {
+        $this->db->query("INSERT INTO reserveringen (persoon_id, lespakket_id, locatie_id, gewenste_datum, opmerking, duo_partner_id, status, betaal_status) 
+                          VALUES (:persoon_id, :lespakket_id, :locatie_id, :gewenste_datum, :opmerking, :duo_partner_id, :status, :betaal_status)");
+        
+        $this->db->bind(':persoon_id', $data['persoon_id']);
+        $this->db->bind(':lespakket_id', $data['lespakket_id']);
+        $this->db->bind(':locatie_id', $data['locatie_id']);
+        $this->db->bind(':gewenste_datum', $data['gewenste_datum']);
+        $this->db->bind(':opmerking', $data['opmerking']);
+        $this->db->bind(':duo_partner_id', $data['duo_partner_id']);
+        $this->db->bind(':status', $data['status']);
+        $this->db->bind(':betaal_status', $data['betaal_status']);
+        
+        return $this->db->execute();
+    }
+
+    // Haal reserveringen op van gebruiker (nieuwe versie)
+    public function getReserveringenByUserId($userId)
+    {
+        $this->db->query("SELECT r.*, 
+                          lp.naam as lespakket_naam, lp.prijs as lespakket_prijs,
+                          l.naam as locatie_naam,
+                          CONCAT(dp.voornaam, ' ', dp.achternaam) as duo_partner_naam
+                          FROM reserveringen r
+                          LEFT JOIN lespakketten lp ON r.lespakket_id = lp.id
+                          LEFT JOIN locaties l ON r.locatie_id = l.id
+                          LEFT JOIN personen p ON r.persoon_id = p.id
+                          LEFT JOIN personen dp ON r.duo_partner_id = dp.id
+                          WHERE p.user_id = :user_id OR dp.user_id = :user_id
+                          ORDER BY r.aangemaakt_op DESC");
+        
+        $this->db->bind(':user_id', $userId);
+        return $this->db->resultSet();
+    }
+
+    // Haal reservering op met ID
+    public function getReserveringById($id)
+    {
+        $this->db->query("SELECT r.*, 
+                          lp.naam as lespakket_naam, lp.beschrijving as lespakket_beschrijving, 
+                          lp.prijs as lespakket_prijs, lp.duur as lespakket_duur,
+                          l.naam as locatie_naam, l.adres as locatie_adres, l.faciliteiten as locatie_faciliteiten,
+                          CONCAT(p.voornaam, ' ', p.achternaam) as persoon_naam,
+                          CONCAT(dp.voornaam, ' ', dp.achternaam) as duo_partner_naam,
+                          CONCAT(ip.voornaam, ' ', ip.achternaam) as instructeur_naam,
+                          u.id as user_id
+                          FROM reserveringen r
+                          LEFT JOIN lespakketten lp ON r.lespakket_id = lp.id
+                          LEFT JOIN locaties l ON r.locatie_id = l.id
+                          LEFT JOIN personen p ON r.persoon_id = p.id
+                          LEFT JOIN users u ON p.user_id = u.id
+                          LEFT JOIN personen dp ON r.duo_partner_id = dp.id
+                          LEFT JOIN personen ip ON r.instructeur_id = ip.id
+                          WHERE r.id = :id");
+        
+        $this->db->bind(':id', $id);
+        return $this->db->single();
+    }
+
+    // Update reservering status
+    public function updateReserveringStatus($id, $status, $reden = null)
+    {
+        $query = "UPDATE reserveringen SET status = :status, bijgewerkt_op = NOW()";
+        if ($reden) {
+            $query .= ", annulering_reden = :reden";
+        }
+        $query .= " WHERE id = :id";
+        
+        $this->db->query($query);
+        $this->db->bind(':id', $id);
+        $this->db->bind(':status', $status);
+        if ($reden) {
+            $this->db->bind(':reden', $reden);
+        }
+        
+        return $this->db->execute();
+    }
+
+    // Bevestig reservering
+    public function bevestigReservering($id, $data)
+    {
+        $this->db->query("UPDATE reserveringen SET 
+                          bevestigde_datum = :bevestigde_datum,
+                          bevestigde_tijd = :bevestigde_tijd,
+                          instructeur_id = :instructeur_id,
+                          status = :status,
+                          instructeur_opmerking = :instructeur_opmerking,
+                          bijgewerkt_op = NOW()
+                          WHERE id = :id");
+        
+        $this->db->bind(':id', $id);
+        $this->db->bind(':bevestigde_datum', $data['bevestigde_datum']);
+        $this->db->bind(':bevestigde_tijd', $data['bevestigde_tijd']);
+        $this->db->bind(':instructeur_id', $data['instructeur_id']);
+        $this->db->bind(':status', $data['status']);
+        $this->db->bind(':instructeur_opmerking', $data['instructeur_opmerking']);
+        
+        return $this->db->execute();
+    }
+
+    // Rond les af
+    public function rondLesAf($id, $data)
+    {
+        $this->db->query("UPDATE reserveringen SET 
+                          status = :status,
+                          evaluatie = :evaluatie,
+                          voortgang = :voortgang,
+                          aanbevelingen = :aanbevelingen,
+                          bijgewerkt_op = NOW()
+                          WHERE id = :id");
+        
+        $this->db->bind(':id', $id);
+        $this->db->bind(':status', $data['status']);
+        $this->db->bind(':evaluatie', $data['evaluatie']);
+        $this->db->bind(':voortgang', $data['voortgang']);
+        $this->db->bind(':aanbevelingen', $data['aanbevelingen']);
+        
+        return $this->db->execute();
+    }
+
+    // Haal beschikbaarheid op voor datum/locatie
+    public function getBeschikbaarheidByDate($locatie_id, $datum)
+    {
+        // Simuleer beschikbaarheid check
+        return [];
+    }
+
+    // Haal aankomende lessen op voor instructeur
+    public function getAankomendeLessenByInstructeur($instructeur_id)
+    {
+        $this->db->query("SELECT r.*, 
+                          lp.naam as lespakket_naam,
+                          l.naam as locatie_naam,
+                          CONCAT(p.voornaam, ' ', p.achternaam) as klant_naam
+                          FROM reserveringen r
+                          LEFT JOIN lespakketten lp ON r.lespakket_id = lp.id
+                          LEFT JOIN locaties l ON r.locatie_id = l.id
+                          LEFT JOIN personen p ON r.persoon_id = p.id
+                          WHERE r.instructeur_id = :instructeur_id 
+                          AND r.bevestigde_datum >= CURDATE()
+                          AND r.status IN ('bevestigd')
+                          ORDER BY r.bevestigde_datum ASC, r.bevestigde_tijd ASC
+                          LIMIT 5");
+        
+        $this->db->bind(':instructeur_id', $instructeur_id);
+        return $this->db->resultSet();
+    }
+
+    // Haal lessen vandaag op voor instructeur
+    public function getLessenVandaagByInstructeur($instructeur_id)
+    {
+        $this->db->query("SELECT r.*, 
+                          lp.naam as lespakket_naam,
+                          l.naam as locatie_naam,
+                          CONCAT(p.voornaam, ' ', p.achternaam) as klant_naam
+                          FROM reserveringen r
+                          LEFT JOIN lespakketten lp ON r.lespakket_id = lp.id
+                          LEFT JOIN locaties l ON r.locatie_id = l.id
+                          LEFT JOIN personen p ON r.persoon_id = p.id
+                          WHERE r.instructeur_id = :instructeur_id 
+                          AND DATE(r.bevestigde_datum) = CURDATE()
+                          AND r.status IN ('bevestigd')
+                          ORDER BY r.bevestigde_tijd ASC");
+        
+        $this->db->bind(':instructeur_id', $instructeur_id);
+        return $this->db->resultSet();
+    }
+
+    // Haal klanten op van instructeur
+    public function getKlantenByInstructeur($instructeur_id)
+    {
+        $this->db->query("SELECT DISTINCT p.*, u.email,
+                          COUNT(r.id) as totaal_lessen,
+                          MAX(r.bevestigde_datum) as laatste_les
+                          FROM reserveringen r
+                          LEFT JOIN personen p ON r.persoon_id = p.id
+                          LEFT JOIN users u ON p.user_id = u.id
+                          WHERE r.instructeur_id = :instructeur_id
+                          GROUP BY p.id, u.email
+                          ORDER BY p.achternaam ASC");
+        
+        $this->db->bind(':instructeur_id', $instructeur_id);
+        return $this->db->resultSet();
+    }
+
+    // Haal totaal klanten op van instructeur
+    public function getTotaalKlantenByInstructeur($instructeur_id)
+    {
+        $this->db->query("SELECT COUNT(DISTINCT r.persoon_id) as count
+                          FROM reserveringen r
+                          WHERE r.instructeur_id = :instructeur_id");
+        
+        $this->db->bind(':instructeur_id', $instructeur_id);
+        $result = $this->db->single();
+        return $result->count ?? 0;
+    }
+
+    // Update betalingsstatus
+    public function updateBetalingStatus($id, $status, $opmerking = null)
+    {
+        $query = "UPDATE reserveringen SET betaal_status = :status, bijgewerkt_op = NOW()";
+        if ($opmerking) {
+            $query .= ", betaal_opmerking = :opmerking";
+        }
+        $query .= " WHERE id = :id";
+        
+        $this->db->query($query);
+        $this->db->bind(':id', $id);
+        $this->db->bind(':status', $status);
+        if ($opmerking) {
+            $this->db->bind(':opmerking', $opmerking);
+        }
+        
+        return $this->db->execute();
+    }
+
+    // Statistieken methoden
+    public function getTotaalReserveringen()
+    {
+        $this->db->query("SELECT COUNT(*) as count FROM reserveringen");
+        $result = $this->db->single();
+        return $result->count ?? 0;
+    }
+
+    public function getOmzetDezeMaand()
+    {
+        $this->db->query("SELECT SUM(lp.prijs) as omzet
+                          FROM reserveringen r
+                          LEFT JOIN lespakketten lp ON r.lespakket_id = lp.id
+                          WHERE r.betaal_status = 'betaald'
+                          AND MONTH(r.aangemaakt_op) = MONTH(CURDATE())
+                          AND YEAR(r.aangemaakt_op) = YEAR(CURDATE())");
+        
+        $result = $this->db->single();
+        return $result->omzet ?? 0;
+    }
+
+    // Haal lessen op per view (dag/week/maand)
+    public function getLessenByDag($instructeur_id, $datum)
+    {
+        $this->db->query("SELECT r.*, 
+                          lp.naam as lespakket_naam,
+                          l.naam as locatie_naam,
+                          CONCAT(p.voornaam, ' ', p.achternaam) as klant_naam
+                          FROM reserveringen r
+                          LEFT JOIN lespakketten lp ON r.lespakket_id = lp.id
+                          LEFT JOIN locaties l ON r.locatie_id = l.id
+                          LEFT JOIN personen p ON r.persoon_id = p.id
+                          WHERE r.instructeur_id = :instructeur_id 
+                          AND DATE(r.bevestigde_datum) = :datum
+                          ORDER BY r.bevestigde_tijd ASC");
+        
+        $this->db->bind(':instructeur_id', $instructeur_id);
+        $this->db->bind(':datum', $datum);
+        return $this->db->resultSet();
+    }
+
+    public function getLessenByWeek($instructeur_id, $datum)
+    {
+        $this->db->query("SELECT r.*, 
+                          lp.naam as lespakket_naam,
+                          l.naam as locatie_naam,
+                          CONCAT(p.voornaam, ' ', p.achternaam) as klant_naam
+                          FROM reserveringen r
+                          LEFT JOIN lespakketten lp ON r.lespakket_id = lp.id
+                          LEFT JOIN locaties l ON r.locatie_id = l.id
+                          LEFT JOIN personen p ON r.persoon_id = p.id
+                          WHERE r.instructeur_id = :instructeur_id 
+                          AND YEARWEEK(r.bevestigde_datum) = YEARWEEK(:datum)
+                          ORDER BY r.bevestigde_datum ASC, r.bevestigde_tijd ASC");
+        
+        $this->db->bind(':instructeur_id', $instructeur_id);
+        $this->db->bind(':datum', $datum);
+        return $this->db->resultSet();
+    }
+
+    public function getLessenByMaand($instructeur_id, $datum)
+    {
+        $this->db->query("SELECT r.*, 
+                          lp.naam as lespakket_naam,
+                          l.naam as locatie_naam,
+                          CONCAT(p.voornaam, ' ', p.achternaam) as klant_naam
+                          FROM reserveringen r
+                          LEFT JOIN lespakketten lp ON r.lespakket_id = lp.id
+                          LEFT JOIN locaties l ON r.locatie_id = l.id
+                          LEFT JOIN personen p ON r.persoon_id = p.id
+                          WHERE r.instructeur_id = :instructeur_id 
+                          AND MONTH(r.bevestigde_datum) = MONTH(:datum)
+                          AND YEAR(r.bevestigde_datum) = YEAR(:datum)
+                          ORDER BY r.bevestigde_datum ASC, r.bevestigde_tijd ASC");
+        
+        $this->db->bind(':instructeur_id', $instructeur_id);
+        $this->db->bind(':datum', $datum);
+        return $this->db->resultSet();
+    }
 }
