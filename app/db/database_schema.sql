@@ -5,12 +5,12 @@ USE kitesurfschool_windkracht12;
 -- Gebruikers tabel
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    email VARCHAR(255) UNIQUE NOT NULL,
+    email VARCHAR(191) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
     role ENUM('klant', 'instructeur', 'eigenaar') DEFAULT 'klant',
     is_active BOOLEAN DEFAULT FALSE,
-    activation_token VARCHAR(255),
-    reset_token VARCHAR(255),
+    activation_token VARCHAR(191),
+    reset_token VARCHAR(191),
     reset_token_expires DATETIME,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS reserveringen (
     betaling_status ENUM('open', 'betaald', 'gerefund') DEFAULT 'open',
     totaal_prijs DECIMAL(8,2) NOT NULL,
     duo_partner_naam VARCHAR(200),
-    duo_partner_email VARCHAR(255),
+    duo_partner_email VARCHAR(191),
     duo_partner_telefoon VARCHAR(20),
     opmerkingen TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -94,7 +94,7 @@ CREATE TABLE IF NOT EXISTS les_sessies (
 CREATE TABLE IF NOT EXISTS login_logs (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT,
-    email VARCHAR(255) NOT NULL,
+    email VARCHAR(191) NOT NULL,
     actie ENUM('login', 'logout') NOT NULL,
     ip_adres VARCHAR(45),
     user_agent TEXT,
@@ -105,7 +105,7 @@ CREATE TABLE IF NOT EXISTS login_logs (
 -- Email logs tabel
 CREATE TABLE IF NOT EXISTS email_logs (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    naar_email VARCHAR(255) NOT NULL,
+    naar_email VARCHAR(191) NOT NULL,
     onderwerp VARCHAR(255) NOT NULL,
     bericht TEXT NOT NULL,
     type ENUM('activatie', 'bevestiging', 'annulering', 'betaling', 'overig') NOT NULL,

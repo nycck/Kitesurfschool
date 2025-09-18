@@ -11,7 +11,7 @@ define('DB_PASS', '');
 /**
  * De naam van de virtualhost
  */
-define('URLROOT', 'http://www.kitesurfschool-windkracht12.nl');
+define('URLROOT', 'http://vsherkansing/');
 
 /**
  * Het pad naar de folder app
