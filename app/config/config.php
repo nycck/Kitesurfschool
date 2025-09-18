@@ -1,0 +1,19 @@
+<?php
+/**
+ * De database verbindingsgegevens
+ */
+define('DB_HOST', 'localhost');
+define('DB_NAME', 'kitesurfschool_windkracht12');
+define('DB_USER', 'root');
+define('DB_PASS', '');
+
+
+/**
+ * De naam van de virtualhost
+ */
+define('URLROOT', 'http://www.kitesurfschool-windkracht12.nl');
+
+/**
+ * Het pad naar de folder app
+ */
+define('APPROOT', dirname(dirname(__FILE__)));
