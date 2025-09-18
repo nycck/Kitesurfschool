@@ -42,7 +42,7 @@
                         </div>
                     <?php endif; ?>
                     
-                    <form method="POST" action="<?= URLROOT ?>/reservering/nieuw/<?= $data['lespakket']->id ?>" id="reserveringForm">
+                    <form method="POST" action="<?= URLROOT ?>/reserveringen/maken" id="reserveringForm">
                         <input type="hidden" name="csrf_token" value="<?= generateCSRFToken() ?>">
                         
                         <!-- Persoonlijke Gegevens -->

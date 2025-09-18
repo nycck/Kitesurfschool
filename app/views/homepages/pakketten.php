@@ -72,11 +72,11 @@
 
                             <div class="text-center">
                                 <?php if (isLoggedIn()): ?>
-                                <a href="<?= URLROOT ?>reservering/nieuw/<?= $pakket->id ?>" class="btn btn-primary btn-lg w-100">
+                                <a href="<?= URLROOT ?>/reserveringen/maken" class="btn btn-primary btn-lg w-100">
                                     <i class="fas fa-calendar-plus me-2"></i>Reserveer Dit Pakket
                                 </a>
                                 <?php else: ?>
-                                <a href="<?= URLROOT ?>auth/register" class="btn btn-primary btn-lg w-100">
+                                <a href="<?= URLROOT ?>/auth/register" class="btn btn-primary btn-lg w-100">
                                     <i class="fas fa-user-plus me-2"></i>Registreer om te Reserveren
                                 </a>
                                 <?php endif; ?>

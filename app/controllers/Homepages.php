@@ -75,7 +75,18 @@ class Homepages extends BaseController
     }
 
     /**
-     * De optellen-method berekent de som van twee getallen
-     * We gebruiken deze method voor een unittest
+     * Handle 404 errors - page not found
      */
+    public function notFound()
+    {
+        // Set 404 header
+        http_response_code(404);
+        
+        $data = [
+            'title' => 'Pagina niet gevonden - Kitesurfschool Windkracht-12',
+            'description' => 'De pagina die je zoekt bestaat niet of is verplaatst.'
+        ];
+
+        $this->view('errors/404', $data);
+    }
 }

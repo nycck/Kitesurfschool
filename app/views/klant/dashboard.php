@@ -16,7 +16,7 @@
                         </p>
                     </div>
                     <div class="col-md-4 text-md-end">
-                        <a href="<?= URLROOT ?>/reservering/nieuw" class="btn btn-primary btn-lg">
+                        <a href="<?= URLROOT ?>/reserveringen/maken" class="btn btn-primary btn-lg">
                             <i class="fas fa-calendar-plus me-2"></i>Nieuwe Reservering
                         </a>
                     </div>
@@ -111,7 +111,7 @@
                             <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
                             <h5>Geen aankomende lessen</h5>
                             <p class="text-muted">Je hebt momenteel geen geplande kitesurflessen.</p>
-                            <a href="<?= URLROOT ?>/reservering/nieuw" class="btn btn-primary">
+                            <a href="<?= URLROOT ?>/reserveringen/maken" class="btn btn-primary">
                                 <i class="fas fa-calendar-plus me-1"></i>Reserveer je Eerste Les
                             </a>
                         </div>
@@ -130,10 +130,10 @@
                 </div>
                 <div class="card-body">
                     <div class="d-grid gap-2">
-                        <a href="<?= URLROOT ?>/reservering/nieuw" class="btn btn-primary">
+                        <a href="<?= URLROOT ?>/reserveringen/maken" class="btn btn-primary">
                             <i class="fas fa-calendar-plus me-2"></i>Nieuwe Reservering
                         </a>
-                        <a href="<?= URLROOT ?>/klant/reserveringen" class="btn btn-outline-primary">
+                        <a href="<?= URLROOT ?>/reserveringen" class="btn btn-outline-primary">
                             <i class="fas fa-list me-2"></i>Mijn Reserveringen
                         </a>
                         <a href="<?= URLROOT ?>/klant/profiel" class="btn btn-outline-secondary">

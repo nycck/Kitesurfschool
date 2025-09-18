@@ -29,17 +29,19 @@
                                 <select class="form-control <?php echo (!empty($data['lespakket_id_err'])) ? 'is-invalid' : ''; ?>" 
                                         id="lespakket_id" name="lespakket_id" required>
                                     <option value="">Kies een lespakket...</option>
-                                    <?php foreach ($data['lespakketten'] as $lespakket): ?>
-                                        <option value="<?php echo $lespakket->id; ?>" 
-                                                <?php echo ($data['lespakket_id'] == $lespakket->id) ? 'selected' : ''; ?>
-                                                data-prijs="<?php echo $lespakket->prijs; ?>"
-                                                data-beschrijving="<?php echo htmlspecialchars($lespakket->beschrijving); ?>">
-                                            <?php echo $lespakket->naam; ?> - €<?php echo number_format($lespakket->prijs, 2); ?>
-                                        </option>
-                                    <?php endforeach; ?>
+                                    <?php if (!empty($data['lespakketten'])): ?>
+                                        <?php foreach ($data['lespakketten'] as $lespakket): ?>
+                                            <option value="<?php echo $lespakket->id; ?>" 
+                                                    <?php echo (isset($data['lespakket_id']) && $data['lespakket_id'] == $lespakket->id) ? 'selected' : ''; ?>
+                                                    data-prijs="<?php echo $lespakket->prijs_per_persoon ?? $lespakket->prijs; ?>"
+                                                    data-beschrijving="<?php echo htmlspecialchars($lespakket->beschrijving); ?>">
+                                                <?php echo $lespakket->naam; ?> - €<?php echo number_format($lespakket->prijs_per_persoon ?? $lespakket->prijs, 2); ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
                                 </select>
                                 <div class="invalid-feedback">
-                                    <?php echo $data['lespakket_id_err']; ?>
+                                    <?php echo isset($data['lespakket_id_err']) ? $data['lespakket_id_err'] : ''; ?>
                                 </div>
                                 <div id="lespakketInfo" class="form-text"></div>
                             </div>
@@ -50,16 +52,18 @@
                                 <select class="form-control <?php echo (!empty($data['locatie_id_err'])) ? 'is-invalid' : ''; ?>" 
                                         id="locatie_id" name="locatie_id" required>
                                     <option value="">Kies een locatie...</option>
-                                    <?php foreach ($data['locaties'] as $locatie): ?>
-                                        <option value="<?php echo $locatie->id; ?>" 
-                                                <?php echo ($data['locatie_id'] == $locatie->id) ? 'selected' : ''; ?>
-                                                data-faciliteiten="<?php echo htmlspecialchars($locatie->faciliteiten); ?>">
-                                            <?php echo $locatie->naam; ?>
-                                        </option>
-                                    <?php endforeach; ?>
+                                    <?php if (!empty($data['locaties'])): ?>
+                                        <?php foreach ($data['locaties'] as $locatie): ?>
+                                            <option value="<?php echo $locatie->id; ?>" 
+                                                    <?php echo (isset($data['locatie_id']) && $data['locatie_id'] == $locatie->id) ? 'selected' : ''; ?>
+                                                    data-faciliteiten="<?php echo htmlspecialchars($locatie->faciliteiten ?? $locatie->beschrijving); ?>">
+                                                <?php echo $locatie->naam; ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
                                 </select>
                                 <div class="invalid-feedback">
-                                    <?php echo $data['locatie_id_err']; ?>
+                                    <?php echo isset($data['locatie_id_err']) ? $data['locatie_id_err'] : ''; ?>
                                 </div>
                                 <div id="locatieInfo" class="form-text"></div>
                             </div>

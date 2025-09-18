@@ -3,26 +3,23 @@
 class BaseController
 {
     /**
-     * Hier maken we een nieuw model object aan en geven deze 
-     * terug aan de controller
+     * Load model
      */
     public function model($model)
     {
-        require_once APPROOT . '/models/' . $model . '.php';
+        require_once '../app/models/' . $model . '.php';
         return new $model();
     }
 
     /**
-     * De view method laadt het view-bestand en geeft informatie
-     * mee aan de view met het $data-array
+     * Load view
      */
     public function view($view, $data = [])
     {
-        if (file_exists('../app/views/' . $view . '.php'))
-        {
-            require_once('../app/views/' . $view . '.php');
+        if (file_exists('../app/views/' . $view . '.php')) {
+            require_once '../app/views/' . $view . '.php';
         } else {
-            echo 'View bestaat niet';
+            die('View does not exist');
         }
     }
 }

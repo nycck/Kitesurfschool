@@ -2,8 +2,13 @@
 
 class Reserveringen extends BaseController {
     
+    private $lespakketModel;
+    private $locatieModel;
+    private $reserveringModel;
+    private $persoonModel;
+    private $userModel;
+    
     public function __construct() {
-        parent::__construct();
         // Check if user is logged in
         if (!isset($_SESSION['user_id'])) {
             redirect('auth/login');
@@ -84,7 +89,7 @@ class Reserveringen extends BaseController {
                 
                 // Get current user's person record
                 $currentUser = $this->userModel->getUserById($_SESSION['user_id']);
-                $persoon = $this->persoonModel->getPersonByUserId($_SESSION['user_id']);
+                $persoon = $this->persoonModel->getPersoonByUserId($_SESSION['user_id']);
                 
                 if (!$persoon) {
                     flash('reservering_message', 'Geen persoongegevens gevonden. Voltooi eerst je profiel.', 'alert alert-danger');
@@ -105,7 +110,7 @@ class Reserveringen extends BaseController {
                 // Add duo partner if provided
                 if (!empty($data['duo_partner_email'])) {
                     $duoPartner = $this->userModel->findUserByEmail($data['duo_partner_email']);
-                    $duoPartnerPersoon = $this->persoonModel->getPersonByUserId($duoPartner->id);
+                    $duoPartnerPersoon = $this->persoonModel->getPersoonByUserId($duoPartner->id);
                     if ($duoPartnerPersoon) {
                         $reserveringData['duo_partner_id'] = $duoPartnerPersoon->id;
                     }
@@ -162,7 +167,7 @@ class Reserveringen extends BaseController {
         }
 
         // Check if user owns this reservation
-        $persoon = $this->persoonModel->getPersonByUserId($_SESSION['user_id']);
+        $persoon = $this->persoonModel->getPersoonByUserId($_SESSION['user_id']);
         if ($reservering->persoon_id != $persoon->id && $reservering->duo_partner_id != $persoon->id) {
             flash('reservering_message', 'Je hebt geen toegang tot deze reservering.', 'alert alert-danger');
             redirect('reserveringen');
@@ -186,7 +191,7 @@ class Reserveringen extends BaseController {
             }
 
             // Check if user owns this reservation
-            $persoon = $this->persoonModel->getPersonByUserId($_SESSION['user_id']);
+            $persoon = $this->persoonModel->getPersoonByUserId($_SESSION['user_id']);
             if ($reservering->persoon_id != $persoon->id) {
                 flash('reservering_message', 'Je kunt alleen je eigen reserveringen annuleren.', 'alert alert-danger');
                 redirect('reserveringen');

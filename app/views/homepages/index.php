@@ -20,8 +20,8 @@
                         <i class="fas fa-list me-2"></i>Bekijk Lespakketten
                     </a>
                     <?php if (!isLoggedIn()): ?>
-                    <a href="<?= URLROOT ?>/auth/register" class="btn btn-outline-light btn-lg">
-                        <i class="fas fa-user-plus me-2"></i>Reserveer Nu
+                    <a href="<?= URLROOT ?>/auth/register" class="btn btn-light btn-lg">
+                        <i class="fas fa-user-plus me-2"></i>Registreer Nu
                     </a>
                     <?php endif; ?>
                 </div>
@@ -84,7 +84,7 @@
                                 </div>
                                 
                                 <?php if (isLoggedIn()): ?>
-                                <a href="<?= URLROOT ?>/reservering/nieuw/<?= $pakket->id ?>" class="btn btn-primary w-100">
+                                <a href="<?= URLROOT ?>/reserveringen/maken" class="btn btn-primary w-100">
                                     <i class="fas fa-calendar-plus me-1"></i>Reserveren
                                 </a>
                                 <?php else: ?>

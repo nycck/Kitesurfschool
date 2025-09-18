@@ -173,11 +173,11 @@
                 Sluit je aan bij honderden tevreden kitesurfers die bij ons hebben geleerd!
             </p>
             <?php if (isLoggedIn()): ?>
-            <a href="<?= URLROOT ?>reservering/nieuw" class="btn btn-light btn-lg">
+            <a href="<?= URLROOT ?>/reserveringen/maken" class="btn btn-light btn-lg">
                 <i class="fas fa-calendar-plus me-2"></i>Reserveer Nu
             </a>
             <?php else: ?>
-            <a href="<?= URLROOT ?>auth/register" class="btn btn-light btn-lg">
+            <a href="<?= URLROOT ?>/auth/register" class="btn btn-light btn-lg">
                 <i class="fas fa-user-plus me-2"></i>Registreer Nu
             </a>
             <?php endif; ?>

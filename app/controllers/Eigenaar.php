@@ -2,6 +2,12 @@
 
 class Eigenaar extends BaseController {
     
+    private $userModel;
+    private $persoonModel;
+    private $reserveringModel;
+    private $lespakketModel;
+    private $locatieModel;
+    
     public function __construct() {
         parent::__construct();
         

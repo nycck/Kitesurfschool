@@ -257,15 +257,15 @@
                 Elke locatie biedt unieke mogelijkheden. Laat je adviseren door onze ervaren instructeurs!
             </p>
             <div class="d-flex justify-content-center gap-3 flex-wrap">
-                <a href="<?= URLROOT ?>homepages/pakketten" class="btn btn-light btn-lg">
+                <a href="<?= URLROOT ?>/homepages/pakketten" class="btn btn-light btn-lg">
                     <i class="fas fa-list me-2"></i>Bekijk Lespakketten
                 </a>
                 <?php if (isLoggedIn()): ?>
-                <a href="<?= URLROOT ?>reservering/nieuw" class="btn btn-outline-light btn-lg">
+                <a href="<?= URLROOT ?>/reserveringen/maken" class="btn btn-outline-light btn-lg">
                     <i class="fas fa-calendar-plus me-2"></i>Reserveer Nu
                 </a>
                 <?php else: ?>
-                <a href="<?= URLROOT ?>auth/register" class="btn btn-outline-light btn-lg">
+                <a href="<?= URLROOT ?>/auth/register" class="btn btn-outline-light btn-lg">
                     <i class="fas fa-user-plus me-2"></i>Registreer Nu
                 </a>
                 <?php endif; ?>

@@ -24,7 +24,7 @@ class Core
         /**
          * Check of de controllerclass bestaat
          */
-        if (file_exists('../app/controllers/' . ucwords($url[0]) . '.php')) {
+        if (isset($url[0]) && file_exists('../app/controllers/' . ucwords($url[0]) . '.php')) {
 
             /**
              * Stop de naam van de controller in $this->currentController
@@ -43,14 +43,24 @@ class Core
         require_once '../app/controllers/' . $this->currentController . '.php';
 
         /**
-         * Maak een nieuw object van de controllerclass
+         * Check if the controller class exists before instantiating
          */
-        $this->currentController = new $this->currentController();
+        if (class_exists($this->currentController)) {
+            /**
+             * Maak een nieuw object van de controllerclass
+             */
+            $this->currentController = new $this->currentController();
+        } else {
+            // Fallback to default controller if class doesn't exist
+            require_once '../app/controllers/Homepages.php';
+            $this->currentController = new Homepages();
+            $this->currentMethod = 'notFound';
+        }
 
         /**
          * Check of de method (tweede woord in de URL) bestaat in de controllerclass
          */
-        if (method_exists($this->currentController, $url[1])) {
+        if (isset($url[1]) && method_exists($this->currentController, $url[1])) {
 
             /**
              * Bewaar de naam van de method in $this->currentMethod
@@ -61,6 +71,9 @@ class Core
              * Verwijder de naam van de method uit het array $url
              */
             unset($url[1]);
+        } else if (isset($url[1])) {
+            // Method doesn't exist, show 404
+            $this->currentMethod = 'notFound';
         }
 
         /**
@@ -71,9 +84,22 @@ class Core
         $this->params = $url ? array_values($url): [];
 
         /**
-         * Roep de method met alle parameters aan van de class 
+         * Ensure the method exists before calling it
          */
-        call_user_func_array([$this->currentController, $this->currentMethod], $this->params);
+        if (method_exists($this->currentController, $this->currentMethod)) {
+            /**
+             * Roep de method met alle parameters aan van de class 
+             */
+            call_user_func_array([$this->currentController, $this->currentMethod], $this->params);
+        } else {
+            // Method doesn't exist, call index method as fallback
+            if (method_exists($this->currentController, 'index')) {
+                call_user_func_array([$this->currentController, 'index'], []);
+            } else {
+                // Last resort - show basic error
+                echo '<h1>Error 404</h1><p>Pagina niet gevonden.</p>';
+            }
+        }
     }
 
 
