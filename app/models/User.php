@@ -22,6 +22,26 @@ class User
         return false;
     }
 
+    // Registreer en activeer gebruiker direct (zonder activatielink)
+    public function registerAndActivate($email, $password)
+    {
+        // Valideer wachtwoord sterkte
+        if (!$this->validatePassword($password)) {
+            return false;
+        }
+
+        $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+        
+        $this->db->query("INSERT INTO users (email, password_hash, is_active, role) VALUES (:email, :password_hash, 1, 'klant')");
+        $this->db->bind(':email', $email);
+        $this->db->bind(':password_hash', $passwordHash);
+        
+        if ($this->db->execute()) {
+            return $this->db->lastInsertId();
+        }
+        return false;
+    }
+
     // Activeer gebruiker account
     public function activateUser($token, $password)
     {

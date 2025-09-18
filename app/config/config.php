@@ -7,6 +7,10 @@ define('DB_NAME', 'kitesurfschool_windkracht12');
 define('DB_USER', 'root');
 define('DB_PASS', '');
 
+/**
+ * Omgeving instellingen
+ */
+define('ENVIRONMENT', 'development'); // 'development' of 'production'
 
 /**
  * De naam van de virtualhost

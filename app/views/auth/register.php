@@ -41,9 +41,36 @@
                             </div>
                         </div>
                         
+                        <div class="mb-4">
+                            <label for="password" class="form-label">
+                                <i class="fas fa-lock me-1"></i>Wachtwoord *
+                            </label>
+                            <input type="password" 
+                                   class="form-control form-control-lg" 
+                                   id="password" 
+                                   name="password" 
+                                   placeholder="Kies een sterk wachtwoord"
+                                   required>
+                            <div class="form-text">
+                                Minimaal 12 tekens, met hoofdletter, cijfer en speciaal teken (@, #, etc.)
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="confirm_password" class="form-label">
+                                <i class="fas fa-lock me-1"></i>Bevestig wachtwoord *
+                            </label>
+                            <input type="password" 
+                                   class="form-control form-control-lg" 
+                                   id="confirm_password" 
+                                   name="confirm_password" 
+                                   placeholder="Herhaal je wachtwoord"
+                                   required>
+                        </div>
+                        
                         <div class="d-grid">
                             <button type="submit" class="btn btn-primary btn-lg">
-                                <i class="fas fa-user-plus me-2"></i>Registreren
+                                <i class="fas fa-user-plus me-2"></i>Account aanmaken
                             </button>
                         </div>
                     </form>
@@ -62,7 +89,7 @@
             <div class="mt-4 text-center text-muted">
                 <small>
                     <i class="fas fa-shield-alt me-1"></i>
-                    Je gegevens worden veilig opgeslagen en nooit gedeeld met derden
+                    Je account wordt direct geactiveerd - geen activatielink nodig!
                 </small>
             </div>
         </div>
@@ -72,8 +99,20 @@
 <script>
 document.getElementById('registerForm').addEventListener('submit', function() {
     var submitBtn = this.querySelector('button[type="submit"]');
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Bezig met registreren...';
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Account aanmaken...';
     submitBtn.disabled = true;
+});
+
+// Wachtwoord bevestiging validatie
+document.getElementById('confirm_password').addEventListener('input', function() {
+    var password = document.getElementById('password').value;
+    var confirmPassword = this.value;
+    
+    if (confirmPassword && password !== confirmPassword) {
+        this.setCustomValidity('Wachtwoorden komen niet overeen');
+    } else {
+        this.setCustomValidity('');
+    }
 });
 </script>
 

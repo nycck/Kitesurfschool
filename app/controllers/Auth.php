@@ -19,6 +19,8 @@ class Auth extends BaseController
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             // Sanitize inputs
             $email = filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL);
+            $password = trim($_POST['password']);
+            $confirmPassword = trim($_POST['confirm_password']);
             
             // Validatie
             $errors = [];
@@ -31,20 +33,32 @@ class Auth extends BaseController
                 $errors[] = 'Email is al geregistreerd';
             }
             
+            if (empty($password)) {
+                $errors[] = 'Wachtwoord is verplicht';
+            } elseif (strlen($password) < 12) {
+                $errors[] = 'Wachtwoord moet minimaal 12 tekens zijn';
+            } elseif (!preg_match('/[A-Z]/', $password)) {
+                $errors[] = 'Wachtwoord moet een hoofdletter bevatten';
+            } elseif (!preg_match('/[0-9]/', $password)) {
+                $errors[] = 'Wachtwoord moet een cijfer bevatten';
+            } elseif (!preg_match('/[@#$%^&*()_+\-=\[\]{};\':"\\|,.<>\/?]/', $password)) {
+                $errors[] = 'Wachtwoord moet een speciaal teken bevatten (@, #, $, etc.)';
+            }
+            
+            if (empty($confirmPassword)) {
+                $errors[] = 'Bevestig wachtwoord is verplicht';
+            } elseif ($password !== $confirmPassword) {
+                $errors[] = 'Wachtwoorden komen niet overeen';
+            }
+            
             if (empty($errors)) {
-                // Genereer activatie token
-                $activationToken = bin2hex(random_bytes(32));
-                
-                // Registreer gebruiker
-                $userId = $this->userModel->register($email, $activationToken);
+                // Registreer en activeer gebruiker direct
+                $userId = $this->userModel->registerAndActivate($email, $password);
                 
                 if ($userId) {
-                    // Verstuur activatie email
-                    $this->emailService->sendActivationEmail($email, $activationToken);
-                    
                     $data = [
                         'title' => 'Registratie succesvol',
-                        'message' => 'Check je email voor de activatielink'
+                        'message' => 'Je account is aangemaakt! Je kunt nu inloggen.'
                     ];
                     $this->view('auth/success', $data);
                 } else {
@@ -56,12 +70,19 @@ class Auth extends BaseController
                 $data = [
                     'title' => 'Registratie',
                     'errors' => $errors,
-                    'email' => $email
+                    'email' => $email,
+                    'password' => '',
+                    'confirm_password' => ''
                 ];
                 $this->view('auth/register', $data);
             }
         } else {
-            $data = ['title' => 'Registratie'];
+            $data = [
+                'title' => 'Registratie',
+                'email' => '',
+                'password' => '',
+                'confirm_password' => ''
+            ];
             $this->view('auth/register', $data);
         }
     }
