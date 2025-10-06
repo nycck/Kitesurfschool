@@ -151,6 +151,13 @@
                                             <i class="fas fa-eye me-1"></i>Details
                                         </a>
                                         
+                                        <?php if (isset($reservering->betaal_status) && $reservering->betaal_status != 'betaald'): ?>
+                                            <a href="<?php echo URLROOT; ?>/klant/betaling/<?php echo $reservering->id; ?>" 
+                                               class="btn btn-outline-success btn-sm flex-fill">
+                                                <i class="fas fa-euro-sign me-1"></i>Betalen
+                                            </a>
+                                        <?php endif; ?>
+                                        
                                         <?php if (isset($reservering->status) && ($reservering->status == 'aangevraagd' || $reservering->status == 'bevestigd')): ?>
                                             <button type="button" class="btn btn-outline-danger btn-sm" 
                                                     data-bs-toggle="modal" data-bs-target="#cancelModal<?php echo $reservering->id; ?>">
