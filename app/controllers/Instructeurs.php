@@ -2,6 +2,12 @@
 
 class Instructeurs extends BaseController {
     
+    private $userModel;
+    private $persoonModel;
+    private $reserveringModel;
+    private $lespakketModel;
+    private $locatieModel;
+    
     public function __construct() {
         // Check if user is logged in and is an instructor or owner
         if (!isset($_SESSION['user_id'])) {
@@ -51,6 +57,77 @@ class Instructeurs extends BaseController {
         $this->view('instructeurs/planning', $data);
     }
 
+    public function profiel() {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            // Process form submission
+            $data = [
+                'user_id' => $_SESSION['user_id'],
+                'voornaam' => trim($_POST['voornaam']),
+                'achternaam' => trim($_POST['achternaam']),
+                'adres' => trim($_POST['adres']),
+                'postcode' => trim($_POST['postcode']),
+                'woonplaats' => trim($_POST['woonplaats']),
+                'geboortedatum' => trim($_POST['geboortedatum']),
+                'telefoon' => trim($_POST['telefoon']),
+                'bsn' => trim($_POST['bsn'])
+            ];
+            
+            $errors = [];
+            
+            // Validatie
+            if (empty($data['voornaam'])) {
+                $errors[] = 'Voornaam is verplicht';
+            }
+            if (empty($data['achternaam'])) {
+                $errors[] = 'Achternaam is verplicht';
+            }
+            if (empty($data['telefoon'])) {
+                $errors[] = 'Telefoon is verplicht';
+            }
+            if (!empty($data['bsn']) && strlen($data['bsn']) !== 9) {
+                $errors[] = 'BSN moet 9 cijfers zijn';
+            }
+            if (!empty($data['geboortedatum']) && !strtotime($data['geboortedatum'])) {
+                $errors[] = 'Ongeldige geboortedatum';
+            }
+            
+            if (empty($errors)) {
+                if ($this->persoonModel->savePersoon($data)) {
+                    flash('success_message', 'Profiel succesvol bijgewerkt!', 'alert alert-success');
+                    redirect('instructeurs/profiel');
+                } else {
+                    $errors[] = 'Er is een fout opgetreden bij het opslaan';
+                }
+            }
+            
+            if (!empty($errors)) {
+                $user = $this->userModel->getUserById($_SESSION['user_id']);
+                $persoon = $this->persoonModel->getPersoonByUserId($_SESSION['user_id']);
+                
+                $viewData = [
+                    'title' => 'Mijn Profiel',
+                    'user' => $user,
+                    'persoon' => $persoon,
+                    'errors' => $errors
+                ];
+                
+                $this->view('instructeurs/profiel', $viewData);
+            }
+        } else {
+            // Display form
+            $user = $this->userModel->getUserById($_SESSION['user_id']);
+            $persoon = $this->persoonModel->getPersoonByUserId($_SESSION['user_id']);
+            
+            $data = [
+                'title' => 'Mijn Profiel',
+                'user' => $user,
+                'persoon' => $persoon
+            ];
+            
+            $this->view('instructeurs/profiel', $data);
+        }
+    }
+
     public function klanten() {
         $instructeurPersoon = $this->persoonModel->getPersoonByUserId($_SESSION['user_id']);
         
@@ -60,6 +137,297 @@ class Instructeurs extends BaseController {
         ];
 
         $this->view('instructeurs/klanten', $data);
+    }
+
+    public function nieuwe_klant() {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $email = trim($_POST['email']);
+            $wachtwoord = trim($_POST['wachtwoord']);
+            $voornaam = trim($_POST['voornaam']);
+            $achternaam = trim($_POST['achternaam']);
+            $telefoon = trim($_POST['telefoon']);
+            $geboortedatum = trim($_POST['geboortedatum']);
+            $adres = trim($_POST['adres']);
+            $postcode = trim($_POST['postcode']);
+            $woonplaats = trim($_POST['woonplaats']);
+            
+            $errors = [];
+            
+            // Validatie
+            if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $errors[] = 'Geldig email adres is verplicht';
+            } elseif ($this->userModel->emailExists($email)) {
+                $errors[] = 'Email adres is al geregistreerd';
+            }
+            
+            if (empty($wachtwoord)) {
+                $errors[] = 'Wachtwoord is verplicht';
+            }
+            
+            if (empty($voornaam) || empty($achternaam)) {
+                $errors[] = 'Voor- en achternaam zijn verplicht';
+            }
+            
+            if (empty($telefoon)) {
+                $errors[] = 'Telefoon is verplicht';
+            }
+            
+            if (empty($errors)) {
+                // Maak gebruiker aan
+                $userId = $this->userModel->registerAndActivate($email, $wachtwoord);
+                
+                if ($userId) {
+                    // Voeg persoonsgegevens toe
+                    $persoonData = [
+                        'user_id' => $userId,
+                        'voornaam' => $voornaam,
+                        'achternaam' => $achternaam,
+                        'telefoon' => $telefoon,
+                        'geboortedatum' => !empty($geboortedatum) ? $geboortedatum : null,
+                        'adres' => !empty($adres) ? $adres : null,
+                        'postcode' => !empty($postcode) ? $postcode : null,
+                        'woonplaats' => !empty($woonplaats) ? $woonplaats : null
+                    ];
+                    
+                    if ($this->persoonModel->savePersoon($persoonData)) {
+                        // Stuur welkomst email
+                        $this->sendWelkomstEmail($email, $voornaam, $wachtwoord);
+                        
+                        flash('success_message', "Klant {$voornaam} {$achternaam} is succesvol toegevoegd!", 'alert alert-success');
+                    } else {
+                        flash('error_message', 'Fout bij het opslaan van persoonsgegevens.', 'alert alert-danger');
+                    }
+                } else {
+                    flash('error_message', 'Fout bij het aanmaken van gebruikersaccount.', 'alert alert-danger');
+                }
+            } else {
+                flash('error_message', implode('<br>', $errors), 'alert alert-danger');
+            }
+        }
+        
+        redirect('instructeurs/klanten');
+    }
+
+    public function klant_details($userId) {
+        $klant = $this->userModel->getUserById($userId);
+        $persoon = $this->persoonModel->getPersoonByUserId($userId);
+        $reserveringen = $this->reserveringModel->getReserveringenByUserId($userId);
+        
+        if (!$klant) {
+            echo '<div class="alert alert-danger">Klant niet gevonden.</div>';
+            return;
+        }
+        
+        // Render details template
+        $html = "
+        <div class='row'>
+            <div class='col-md-6'>
+                <h6><i class='fas fa-user me-2'></i>Persoonlijke Gegevens</h6>
+                <table class='table table-sm'>
+                    <tr><td><strong>Naam:</strong></td><td>" . htmlspecialchars($persoon->voornaam . ' ' . $persoon->achternaam) . "</td></tr>
+                    <tr><td><strong>Email:</strong></td><td>" . htmlspecialchars($klant->email) . "</td></tr>
+                    <tr><td><strong>Telefoon:</strong></td><td>" . htmlspecialchars($persoon->telefoon ?? 'Niet opgegeven') . "</td></tr>
+                    <tr><td><strong>Adres:</strong></td><td>" . htmlspecialchars($persoon->adres ?? 'Niet opgegeven') . "</td></tr>
+                    <tr><td><strong>Woonplaats:</strong></td><td>" . htmlspecialchars($persoon->woonplaats ?? 'Niet opgegeven') . "</td></tr>
+                    <tr><td><strong>Geboortedatum:</strong></td><td>" . ($persoon->geboortedatum ? date('d-m-Y', strtotime($persoon->geboortedatum)) : 'Niet opgegeven') . "</td></tr>
+                </table>
+            </div>
+            <div class='col-md-6'>
+                <h6><i class='fas fa-calendar me-2'></i>Reservering Geschiedenis</h6>";
+        
+        if (empty($reserveringen)) {
+            $html .= "<p class='text-muted'>Nog geen reserveringen.</p>";
+        } else {
+            $html .= "<div class='list-group list-group-flush'>";
+            foreach (array_slice($reserveringen, 0, 5) as $reservering) {
+                $statusClass = $reservering->status == 'bevestigd' ? 'success' : 
+                              ($reservering->status == 'geannuleerd' ? 'danger' : 'warning');
+                $html .= "
+                <div class='list-group-item'>
+                    <div class='d-flex justify-content-between'>
+                        <strong>" . date('d-m-Y', strtotime($reservering->gewenste_datum)) . "</strong>
+                        <span class='badge bg-{$statusClass}'>" . ucfirst($reservering->status) . "</span>
+                    </div>
+                    <small class='text-muted'>" . htmlspecialchars($reservering->lespakket_naam) . " - " . htmlspecialchars($reservering->locatie_naam) . "</small>
+                </div>";
+            }
+            $html .= "</div>";
+        }
+        
+        $html .= "
+            </div>
+        </div>";
+        
+        echo $html;
+    }
+
+    public function bewerk_klant($userId) {
+        $klant = $this->userModel->getUserById($userId);
+        $persoon = $this->persoonModel->getPersoonByUserId($userId);
+        
+        if (!$klant) {
+            echo '<div class="alert alert-danger">Klant niet gevonden.</div>';
+            return;
+        }
+        
+        // Render edit form
+        echo "
+        <form method='POST' action='" . URLROOT . "/instructeurs/update_klant/{$userId}'>
+            <div class='row'>
+                <div class='col-md-6 mb-3'>
+                    <label for='edit_voornaam' class='form-label'>Voornaam *</label>
+                    <input type='text' class='form-control' id='edit_voornaam' name='voornaam' value='" . htmlspecialchars($persoon->voornaam) . "' required>
+                </div>
+                <div class='col-md-6 mb-3'>
+                    <label for='edit_achternaam' class='form-label'>Achternaam *</label>
+                    <input type='text' class='form-control' id='edit_achternaam' name='achternaam' value='" . htmlspecialchars($persoon->achternaam) . "' required>
+                </div>
+            </div>
+            <div class='row'>
+                <div class='col-md-6 mb-3'>
+                    <label for='edit_telefoon' class='form-label'>Telefoon *</label>
+                    <input type='tel' class='form-control' id='edit_telefoon' name='telefoon' value='" . htmlspecialchars($persoon->telefoon ?? '') . "' required>
+                </div>
+                <div class='col-md-6 mb-3'>
+                    <label for='edit_geboortedatum' class='form-label'>Geboortedatum</label>
+                    <input type='date' class='form-control' id='edit_geboortedatum' name='geboortedatum' value='" . htmlspecialchars($persoon->geboortedatum ?? '') . "'>
+                </div>
+            </div>
+            <div class='mb-3'>
+                <label for='edit_adres' class='form-label'>Adres</label>
+                <input type='text' class='form-control' id='edit_adres' name='adres' value='" . htmlspecialchars($persoon->adres ?? '') . "'>
+            </div>
+            <div class='row'>
+                <div class='col-md-4 mb-3'>
+                    <label for='edit_postcode' class='form-label'>Postcode</label>
+                    <input type='text' class='form-control' id='edit_postcode' name='postcode' value='" . htmlspecialchars($persoon->postcode ?? '') . "'>
+                </div>
+                <div class='col-md-8 mb-3'>
+                    <label for='edit_woonplaats' class='form-label'>Woonplaats</label>
+                    <input type='text' class='form-control' id='edit_woonplaats' name='woonplaats' value='" . htmlspecialchars($persoon->woonplaats ?? '') . "'>
+                </div>
+            </div>
+            <div class='modal-footer'>
+                <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>Annuleren</button>
+                <button type='submit' class='btn btn-warning'>
+                    <i class='fas fa-save me-1'></i>Wijzigingen Opslaan
+                </button>
+            </div>
+        </form>";
+    }
+
+    public function update_klant($userId) {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $persoonData = [
+                'user_id' => $userId,
+                'voornaam' => trim($_POST['voornaam']),
+                'achternaam' => trim($_POST['achternaam']),
+                'telefoon' => trim($_POST['telefoon']),
+                'geboortedatum' => !empty($_POST['geboortedatum']) ? $_POST['geboortedatum'] : null,
+                'adres' => !empty($_POST['adres']) ? $_POST['adres'] : null,
+                'postcode' => !empty($_POST['postcode']) ? $_POST['postcode'] : null,
+                'woonplaats' => !empty($_POST['woonplaats']) ? $_POST['woonplaats'] : null
+            ];
+            
+            if ($this->persoonModel->savePersoon($persoonData)) {
+                flash('success_message', 'Klantgegevens succesvol bijgewerkt!', 'alert alert-success');
+            } else {
+                flash('error_message', 'Fout bij het bijwerken van klantgegevens.', 'alert alert-danger');
+            }
+        }
+        
+        redirect('instructeurs/klanten');
+    }
+
+    public function verwijder_klant($userId) {
+        $klant = $this->userModel->getUserById($userId);
+        
+        if ($klant) {
+            $naam = $this->persoonModel->getPersoonByUserId($userId);
+            $volledigeNaam = $naam ? $naam->voornaam . ' ' . $naam->achternaam : $klant->email;
+            
+            // Verwijder persoon en gebruiker (CASCADE zorgt voor reserveringen)
+            if ($this->persoonModel->deletePersoon($userId) && $this->userModel->deleteUser($userId)) {
+                flash('success_message', "Klant {$volledigeNaam} is succesvol verwijderd.", 'alert alert-success');
+            } else {
+                flash('error_message', 'Fout bij het verwijderen van de klant.', 'alert alert-danger');
+            }
+        } else {
+            flash('error_message', 'Klant niet gevonden.', 'alert alert-danger');
+        }
+        
+        redirect('instructeurs/klanten');
+    }
+
+    public function snelle_annulering($reservering_id, $template) {
+        $reservering = $this->reserveringModel->getReserveringById($reservering_id);
+        
+        if (!$reservering) {
+            flash('error_message', 'Reservering niet gevonden.', 'alert alert-danger');
+            redirect('instructeurs/planning');
+        }
+
+        // Check if this instructor can cancel this lesson
+        $instructeurPersoon = $this->persoonModel->getPersoonByUserId($_SESSION['user_id']);
+        if ($reservering->instructeur_id != $instructeurPersoon->id) {
+            flash('error_message', 'Je kunt alleen je eigen lessen annuleren.', 'alert alert-danger');
+            redirect('instructeurs/planning');
+        }
+
+        $redenen = [
+            'ziekte' => 'Les geannuleerd vanwege ziekte van de instructeur',
+            'weer' => 'Les geannuleerd vanwege gevaarlijke weersomstandigheden (windkracht > 10)'
+        ];
+        
+        $reden = $redenen[$template] ?? 'Les geannuleerd';
+
+        if ($this->reserveringModel->updateReserveringStatus($reservering_id, 'geannuleerd', $reden)) {
+            // Send cancellation email with preset template
+            $klant = $this->userModel->getUserById($reservering->user_id);
+            $this->sendLesAnnuleringEmail($klant, $reservering, $reden, $template);
+            
+            $template_name = $template == 'ziekte' ? 'ziekte van instructeur' : 'slechte weersomstandigheden';
+            flash('success_message', "Les succesvol geannuleerd ({$template_name}). De klant is per email geïnformeerd.", 'alert alert-success');
+        } else {
+            flash('error_message', 'Er is iets misgegaan bij het annuleren van de les.', 'alert alert-danger');
+        }
+        
+        redirect('instructeurs/planning');
+    }
+
+    private function sendWelkomstEmail($email, $naam, $wachtwoord) {
+        $emailService = new EmailService();
+        
+        $subject = 'Welkom bij Windkracht-12 - Je account is aangemaakt';
+        
+        $body = "
+        <h2>Welkom bij Windkracht-12, {$naam}!</h2>
+        
+        <p>Je account is aangemaakt door één van onze instructeurs. Je kunt nu inloggen met de volgende gegevens:</p>
+        
+        <div style='background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;'>
+            <p><strong>Email:</strong> {$email}</p>
+            <p><strong>Wachtwoord:</strong> {$wachtwoord}</p>
+        </div>
+        
+        <p><strong>Belangrijk:</strong> We raden je aan om je wachtwoord te wijzigen na je eerste inlog.</p>
+        
+        <p>Je kunt inloggen op: <a href='" . URLROOT . "/auth/login'>" . URLROOT . "/auth/login</a></p>
+        
+        <p>Na het inloggen kun je:</p>
+        <ul>
+            <li>Je profiel aanvullen</li>
+            <li>Lessen reserveren</li>
+            <li>Je reserveringen beheren</li>
+        </ul>
+        
+        <p>Welkom bij de Windkracht-12 familie en tot ziens op het water!</p>
+        
+        <p>Met vriendelijke groet,<br>
+        Team Windkracht-12</p>
+        ";
+        
+        $emailService->sendEmail($email, $subject, $body);
     }
 
     public function les_details($reservering_id) {
@@ -311,9 +679,10 @@ class Instructeurs extends BaseController {
                 <p>We bieden onze excuses aan voor het ongemak en zorgen ervoor dat je zo snel mogelijk een nieuwe datum krijgt aangeboden.</p>
             ",
             'weer' => "
-                <p>Je kitesurfles moet helaas worden geannuleerd vanwege ongunstige weersomstandigheden.</p>
-                <p>Veiligheid staat bij ons voorop, daarom geven we alleen les bij geschikte wind- en weercondities.</p>
-                <p>We nemen contact met je op om een nieuwe datum in te plannen.</p>
+                <p>Je kitesurfles moet helaas worden geannuleerd vanwege gevaarlijke weersomstandigheden.</p>
+                <p><strong>Windkracht te hoog (> 10 Beaufort)</strong> - Veiligheid staat bij ons voorop!</p>
+                <p>Bij dergelijke windsterkte is kitesurfen te gevaarlijk. We geven alleen les bij veilige wind- en weercondities.</p>
+                <p>We nemen zo snel mogelijk contact met je op om een nieuwe datum in te plannen wanneer de weersomstandigheden gunstiger zijn.</p>
             ",
             'anders' => "
                 <p>Je kitesurfles moet helaas worden geannuleerd.</p>

@@ -323,4 +323,12 @@ class User
             'instructeur_stats' => $this->db->resultSet()
         ];
     }
+
+    // Verwijder gebruiker
+    public function deleteUser($userId)
+    {
+        $this->db->query("DELETE FROM users WHERE id = :user_id");
+        $this->db->bind(':user_id', $userId);
+        return $this->db->execute();
+    }
 }
