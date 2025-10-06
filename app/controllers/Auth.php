@@ -166,7 +166,7 @@ class Auth extends BaseController
                             redirect('eigenaar/dashboard');
                             break;
                         case 'instructeur':
-                            redirect('instructeur/dashboard');
+                            redirect('instructeurs/dashboard');
                             break;
                         default:
                             redirect('klant/dashboard');
