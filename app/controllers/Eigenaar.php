@@ -599,7 +599,7 @@ class Eigenaar extends BaseController {
                 flash('success_message', "Gebruiker succesvol {$status_text}.", 'alert alert-success');
                 
                 // Send email notification
-                $this->sendStatusWijzigingEmail($gebruiker, $nieuwe_status);
+                $this->sendGebruikerStatusEmail($gebruiker, $nieuwe_status);
                 
                 redirect('eigenaar/gebruiker_details/' . $id);
             } else {
@@ -611,7 +611,7 @@ class Eigenaar extends BaseController {
         }
     }
     
-    private function sendStatusWijzigingEmail($gebruiker, $nieuwe_status) {
+    private function sendGebruikerStatusEmail($gebruiker, $nieuwe_status) {
         $emailService = new EmailService();
         
         $subject = $nieuwe_status ? 'Je account is geactiveerd - Windkracht-12' : 'Je account is gedeactiveerd - Windkracht-12';
@@ -644,8 +644,6 @@ class Eigenaar extends BaseController {
         
         $emailService->sendEmail($gebruiker->email, $subject, $body);
     }
-}
-    
 
     private function sendBetalingBevestigingEmail($klant, $reservering) {
         $emailService = new EmailService();
@@ -676,39 +674,7 @@ class Eigenaar extends BaseController {
         $emailService->sendEmail($klant->email, $subject, $body);
     }
 
-    private function sendStatusWijzigingEmail($klant, $reservering, $nieuwe_status) {
-        $emailService = new EmailService();
-        
-        $status_beschrijving = [
-            'bevestigd' => 'Je reservering is bevestigd! We nemen binnenkort contact op voor de planning.',
-            'geannuleerd' => 'Je reservering is geannuleerd. Neem contact op voor meer informatie.',
-            'afgerond' => 'Je kitesurfles is afgerond. Bedankt voor je deelname!'
-        ];
-        
-        $subject = 'Status update voor je kitesurfles - Windkracht-12';
-        
-        $body = "
-        <h2>Beste {$klant->voornaam},</h2>
-        
-        <p>De status van je reservering is bijgewerkt.</p>
-        
-        <h3>Reservering Details:</h3>
-        <ul>
-            <li><strong>Reservering:</strong> #{$reservering->id}</li>
-            <li><strong>Nieuwe Status:</strong> " . ucfirst($nieuwe_status) . "</li>
-            <li><strong>Lespakket:</strong> {$reservering->lespakket_naam}</li>
-        </ul>
-        
-        <p>{$status_beschrijving[$nieuwe_status]}</p>
-        
-        <p>Heb je vragen? Neem contact op via info@kitesurfschool-windkracht12.nl</p>
-        
-        <p>Met vriendelijke groet,<br>
-        Team Windkracht-12</p>
-        ";
-        
-        $emailService->sendEmail($klant->email, $subject, $body);
-    }
+
 
     private function getSysteemInstellingen() {
         // In practice, these would come from a database table
