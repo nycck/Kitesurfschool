@@ -188,6 +188,22 @@
                                     </div>
                                 </a>
                                 
+                                <a href="<?php echo URLROOT; ?>/eigenaar/profiel" class="btn btn-outline-warning btn-lg d-flex align-items-center btn-dark-theme">
+                                    <i class="fas fa-user-cog me-3"></i>
+                                    <div class="text-start">
+                                        <div class="fw-semibold">Mijn Profiel</div>
+                                        <small class="text-light-emphasis">Beheer persoonlijke gegevens</small>
+                                    </div>
+                                </a>
+                                
+                                <a href="<?php echo URLROOT; ?>/eigenaar/instructeur_planning" class="btn btn-outline-info btn-lg d-flex align-items-center btn-dark-theme">
+                                    <i class="fas fa-calendar-alt me-3"></i>
+                                    <div class="text-start">
+                                        <div class="fw-semibold">Instructeur Planning</div>
+                                        <small class="text-light-emphasis">Bekijk planning van instructeurs</small>
+                                    </div>
+                                </a>
+                                
                                 <a href="<?php echo URLROOT; ?>/eigenaar/instellingen" class="btn btn-outline-secondary btn-lg d-flex align-items-center btn-dark-theme">
                                     <i class="fas fa-cogs me-3"></i>
                                     <div class="text-start">

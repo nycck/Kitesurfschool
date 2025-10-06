@@ -100,6 +100,14 @@
                                         data-bs-toggle="modal" data-bs-target="#emailModal">
                                     <i class="fas fa-envelope"></i> Stuur Email
                                 </button>
+                                
+                                <form method="POST" action="<?php echo URLROOT; ?>/eigenaar/toggle_user_status/<?php echo $data['gebruiker']->id; ?>" 
+                                      style="display: inline;" onsubmit="return confirm('Weet je zeker dat je de status wilt wijzigen?')">
+                                    <button type="submit" class="btn btn-outline-<?php echo $data['gebruiker']->is_active ? 'danger' : 'success'; ?>">
+                                        <i class="fas fa-<?php echo $data['gebruiker']->is_active ? 'user-slash' : 'user-check'; ?>"></i>
+                                        <?php echo $data['gebruiker']->is_active ? 'Deactiveren' : 'Activeren'; ?>
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     </div>

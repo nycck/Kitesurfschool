@@ -234,6 +234,122 @@ class Eigenaar extends BaseController {
         $this->view('eigenaar/logs', $data);
     }
 
+    public function profiel() {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            // Validate and process form data
+            $data = [
+                'user_id' => $_SESSION['user_id'],
+                'voornaam' => trim($_POST['voornaam']),
+                'achternaam' => trim($_POST['achternaam']),
+                'telefoon' => trim($_POST['telefoon']),
+                'adres' => trim($_POST['adres']),
+                'postcode' => trim($_POST['postcode']),
+                'woonplaats' => trim($_POST['woonplaats']),
+                'geboortedatum' => !empty($_POST['geboortedatum']) ? $_POST['geboortedatum'] : null,
+                'bsn' => !empty($_POST['bsn']) ? trim($_POST['bsn']) : null
+            ];
+
+            $errors = [];
+            
+            // Validation
+            if (empty($data['voornaam'])) {
+                $errors[] = 'Voornaam is verplicht';
+            }
+            if (empty($data['achternaam'])) {
+                $errors[] = 'Achternaam is verplicht';
+            }
+            if (!empty($data['geboortedatum']) && !strtotime($data['geboortedatum'])) {
+                $errors[] = 'Ongeldige geboortedatum';
+            }
+            if (!empty($data['bsn']) && !preg_match('/^[0-9]{9}$/', $data['bsn'])) {
+                $errors[] = 'BSN moet uit 9 cijfers bestaan';
+            }
+            
+            if (empty($errors)) {
+                if ($this->persoonModel->savePersoon($data)) {
+                    flash('success_message', 'Profiel succesvol bijgewerkt!', 'alert alert-success');
+                    redirect('eigenaar/profiel');
+                } else {
+                    $errors[] = 'Er is een fout opgetreden bij het opslaan';
+                }
+            }
+            
+            if (!empty($errors)) {
+                $user = $this->userModel->getUserById($_SESSION['user_id']);
+                $persoon = $this->persoonModel->getPersoonByUserId($_SESSION['user_id']);
+                
+                $viewData = [
+                    'title' => 'Mijn Profiel',
+                    'user' => $user,
+                    'persoon' => $persoon,
+                    'errors' => $errors
+                ];
+                $this->view('eigenaar/profiel', $viewData);
+            }
+        } else {
+            // Display form
+            $user = $this->userModel->getUserById($_SESSION['user_id']);
+            $persoon = $this->persoonModel->getPersoonByUserId($_SESSION['user_id']);
+            
+            $data = [
+                'title' => 'Mijn Profiel',
+                'user' => $user,
+                'persoon' => $persoon
+            ];
+            
+            $this->view('eigenaar/profiel', $data);
+        }
+    }
+
+    public function instructeur_planning($instructeur_id = null) {
+        // Get all instructors for dropdown
+        $instructeurs = $this->userModel->getAlleGebruikers('instructeur');
+        
+        $data = [
+            'title' => 'Instructeur Planning Overzicht',
+            'instructeurs' => $instructeurs
+        ];
+        
+        if ($instructeur_id) {
+            // Get selected instructor's planning
+            $instructeur = $this->userModel->getUserById($instructeur_id);
+            $persoon = $this->persoonModel->getPersoonByUserId($instructeur_id);
+            
+            if (!$instructeur || $instructeur->role !== 'instructeur') {
+                flash('error_message', 'Instructeur niet gevonden.', 'alert alert-danger');
+                redirect('eigenaar/instructeur_planning');
+            }
+            
+            $view = isset($_GET['view']) ? $_GET['view'] : 'week';
+            $datum = isset($_GET['datum']) ? $_GET['datum'] : date('Y-m-d');
+            
+            $data['geselecteerde_instructeur'] = $instructeur;
+            $data['instructeur_persoon'] = $persoon;
+            $data['view'] = $view;
+            $data['datum'] = $datum;
+            $data['planning'] = $this->getPlanningData($instructeur_id, $view, $datum);
+        }
+        
+        $this->view('eigenaar/instructeur_planning', $data);
+    }
+    
+    private function getPlanningData($instructeur_id, $view, $datum) {
+        $persoon = $this->persoonModel->getPersoonByUserId($instructeur_id);
+        
+        switch ($view) {
+            case 'dag':
+                return $this->reserveringModel->getLessenByDatum($persoon->id, $datum);
+            case 'week':
+                $startWeek = date('Y-m-d', strtotime('monday this week', strtotime($datum)));
+                return $this->reserveringModel->getLessenByWeek($persoon->id, $startWeek);
+            case 'maand':
+                $startMaand = date('Y-m-01', strtotime($datum));
+                return $this->reserveringModel->getLessenByMaand($persoon->id, $startMaand);
+            default:
+                return [];
+        }
+    }
+
     public function reserveringen() {
         $status = isset($_GET['status']) ? $_GET['status'] : 'alle';
         $periode = isset($_GET['periode']) ? $_GET['periode'] : 'alle';
@@ -458,8 +574,78 @@ class Eigenaar extends BaseController {
         Team Windkracht-12</p>
         ";
         
+                $emailService->sendEmail($gebruiker->email, $subject, $body);
+    }
+
+    public function toggle_user_status($id) {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $gebruiker = $this->userModel->getUserById($id);
+            
+            if (!$gebruiker) {
+                flash('error_message', 'Gebruiker niet gevonden.', 'alert alert-danger');
+                redirect('eigenaar/gebruikers');
+            }
+            
+            // Prevent deactivating the current user (eigenaar)
+            if ($id == $_SESSION['user_id']) {
+                flash('error_message', 'Je kunt je eigen account niet deactiveren.', 'alert alert-danger');
+                redirect('eigenaar/gebruiker_details/' . $id);
+            }
+            
+            $nieuwe_status = $gebruiker->is_active ? 0 : 1;
+            
+            if ($this->userModel->toggleUserStatus($id, $nieuwe_status)) {
+                $status_text = $nieuwe_status ? 'geactiveerd' : 'gedeactiveerd';
+                flash('success_message', "Gebruiker succesvol {$status_text}.", 'alert alert-success');
+                
+                // Send email notification
+                $this->sendStatusWijzigingEmail($gebruiker, $nieuwe_status);
+                
+                redirect('eigenaar/gebruiker_details/' . $id);
+            } else {
+                flash('error_message', 'Er is iets misgegaan bij het wijzigen van de gebruikersstatus.', 'alert alert-danger');
+                redirect('eigenaar/gebruiker_details/' . $id);
+            }
+        } else {
+            redirect('eigenaar/gebruikers');
+        }
+    }
+    
+    private function sendStatusWijzigingEmail($gebruiker, $nieuwe_status) {
+        $emailService = new EmailService();
+        
+        $subject = $nieuwe_status ? 'Je account is geactiveerd - Windkracht-12' : 'Je account is gedeactiveerd - Windkracht-12';
+        
+        if ($nieuwe_status) {
+            $body = "
+            <h2>Beste {$gebruiker->voornaam},</h2>
+            
+            <p>Je account is geactiveerd! Je kunt weer inloggen en gebruik maken van onze diensten.</p>
+            
+            <p>Log in op: <a href='" . URLROOT . "/auth/login'>" . URLROOT . "/auth/login</a></p>
+            
+            <p>Heb je vragen? Neem contact op via info@kitesurfschool-windkracht12.nl</p>
+            
+            <p>Met vriendelijke groet,<br>
+            Team Windkracht-12</p>
+            ";
+        } else {
+            $body = "
+            <h2>Beste {$gebruiker->voornaam},</h2>
+            
+            <p>Je account is tijdelijk gedeactiveerd. Je kunt momenteel niet inloggen.</p>
+            
+            <p>Voor meer informatie over deze beslissing, neem contact op via info@kitesurfschool-windkracht12.nl</p>
+            
+            <p>Met vriendelijke groet,<br>
+            Team Windkracht-12</p>
+            ";
+        }
+        
         $emailService->sendEmail($gebruiker->email, $subject, $body);
     }
+}
+    
 
     private function sendBetalingBevestigingEmail($klant, $reservering) {
         $emailService = new EmailService();

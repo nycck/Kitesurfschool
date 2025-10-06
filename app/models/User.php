@@ -331,4 +331,14 @@ class User
         $this->db->bind(':user_id', $userId);
         return $this->db->execute();
     }
+    
+    // Toggle user active status (for blocking/unblocking)
+    public function toggleUserStatus($user_id, $is_active) 
+    {
+        $this->db->query("UPDATE users SET is_active = :is_active WHERE id = :user_id");
+        $this->db->bind(':is_active', $is_active);
+        $this->db->bind(':user_id', $user_id);
+        
+        return $this->db->execute();
+    }
 }
