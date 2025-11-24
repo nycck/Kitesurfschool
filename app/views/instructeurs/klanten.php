@@ -55,6 +55,11 @@
                                         <tr>
                                             <td>
                                                 <strong><?php echo htmlspecialchars($klant->voornaam . ' ' . $klant->achternaam); ?></strong>
+                                                <?php if ($klant->is_active == 0): ?>
+                                                    <br><span class="badge bg-warning text-dark">
+                                                        <i class="fas fa-clock"></i> Wacht op activatie
+                                                    </span>
+                                                <?php endif; ?>
                                             </td>
                                             <td><?php echo htmlspecialchars($klant->email); ?></td>
                                             <td><?php echo htmlspecialchars($klant->telefoon ?? 'Niet opgegeven'); ?></td>

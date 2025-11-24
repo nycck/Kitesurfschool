@@ -308,6 +308,38 @@ class EmailService
         }
     }
 
+    // Verstuur generieke email
+    public function sendEmail($email, $subject, $body, $type = 'overig')
+    {
+        if (ENVIRONMENT === 'development') {
+            error_log("DEV MODE: Email would be sent to {$email} with subject: {$subject}");
+            return true;
+        }
+
+        try {
+            $this->mail->clearAddresses();
+            $this->mail->addAddress($email);
+            $this->mail->Subject = $subject;
+            
+            $message = "
+            <html>
+            <body>
+                {$body}
+            </body>
+            </html>";
+            
+            $this->mail->Body = $message;
+            
+            $result = $this->mail->send();
+            $this->logEmail($email, $subject, $message, $type);
+            
+            return $result;
+        } catch (\PHPMailer\PHPMailer\Exception $e) {
+            error_log("Email send error: {$this->mail->ErrorInfo}");
+            return false;
+        }
+    }
+
     // Log email voor tracking
     private function logEmail($to, $subject, $message, $type)
     {

@@ -44,14 +44,14 @@ class Instructeurs extends BaseController {
 
     public function planning() {
         $instructeurPersoon = $this->persoonModel->getPersoonByUserId($_SESSION['user_id']);
-        $view = isset($_GET['view']) ? $_GET['view'] : 'week';
+        $viewType = isset($_GET['view']) ? $_GET['view'] : 'week';
         $datum = isset($_GET['datum']) ? $_GET['datum'] : date('Y-m-d');
         
         $data = [
             'title' => 'Lessenplanning',
-            'view' => $view,
+            'viewType' => $viewType,
             'datum' => $datum,
-            'lessen' => $this->getLessenForView($instructeurPersoon->id, $view, $datum)
+            'lessen' => $this->getLessenForView($instructeurPersoon->id, $viewType, $datum)
         ];
 
         $this->view('instructeurs/planning', $data);
@@ -133,7 +133,7 @@ class Instructeurs extends BaseController {
         
         $data = [
             'title' => 'Mijn Klanten',
-            'klanten' => $this->reserveringModel->getKlantenByInstructeur($instructeurPersoon->id)
+            'klanten' => $this->persoonModel->getKlantenMetStatistieken()
         ];
 
         $this->view('instructeurs/klanten', $data);
@@ -584,6 +584,52 @@ class Instructeurs extends BaseController {
         ];
     }
 
+    public function nieuwe_les() {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $instructeurPersoon = $this->persoonModel->getPersoonByUserId($_SESSION['user_id']);
+            
+            $data = [
+                'persoon_id' => trim($_POST['klant_id']),
+                'instructeur_id' => $instructeurPersoon->id,
+                'lespakket_id' => trim($_POST['lespakket_id']),
+                'locatie_id' => trim($_POST['locatie_id']),
+                'bevestigde_datum' => trim($_POST['bevestigde_datum']),
+                'bevestigde_tijd' => trim($_POST['bevestigde_tijd']),
+                'opmerkingen' => trim($_POST['opmerkingen']),
+                'status' => 'bevestigd'
+            ];
+            
+            // Validatie
+            $errors = [];
+            if (empty($data['persoon_id']) || empty($data['lespakket_id']) || empty($data['locatie_id'])) {
+                $errors[] = 'Alle verplichte velden moeten ingevuld zijn';
+            }
+            
+            if (empty($data['bevestigde_datum']) || empty($data['bevestigde_tijd'])) {
+                $errors[] = 'Datum en tijd zijn verplicht';
+            }
+            
+            if (empty($errors)) {
+                // Maak reservering aan
+                if ($this->reserveringModel->createReserveringByInstructeur($data)) {
+                    // Stuur bevestigingsmail naar klant
+                    $this->sendNieuweLesEmail($data);
+                    
+                    flash('success_message', 'Les succesvol toegevoegd!', 'alert alert-success');
+                    redirect('instructeurs/planning');
+                } else {
+                    flash('error_message', 'Er is iets misgegaan bij het toevoegen van de les.', 'alert alert-danger');
+                    redirect('instructeurs/planning');
+                }
+            } else {
+                flash('error_message', implode('<br>', $errors), 'alert alert-danger');
+                redirect('instructeurs/planning');
+            }
+        } else {
+            redirect('instructeurs/planning');
+        }
+    }
+
     private function getLessenForView($instructeur_id, $view, $datum) {
         switch ($view) {
             case 'dag':
@@ -595,6 +641,48 @@ class Instructeurs extends BaseController {
             default:
                 return $this->reserveringModel->getLessenByWeek($instructeur_id, $datum);
         }
+    }
+
+    private function sendNieuweLesEmail($data) {
+        $emailService = new EmailService();
+        
+        // Haal klant gegevens op
+        $persoon = $this->persoonModel->getPersoonById($data['persoon_id']);
+        $user = $this->userModel->getUserById($persoon->user_id);
+        
+        // Haal les details op
+        $lespakket = $this->lespakketModel->getLespakketById($data['lespakket_id']);
+        $locatie = $this->locatieModel->getLocatieById($data['locatie_id']);
+        $instructeurPersoon = $this->persoonModel->getPersoonByUserId($_SESSION['user_id']);
+        
+        $subject = 'Nieuwe Kitesurfles Ingepland - Windkracht-12';
+        
+        $datumFormatted = date('l d F Y', strtotime($data['bevestigde_datum']));
+        
+        $body = "
+        <h2>Beste {$persoon->voornaam},</h2>
+        
+        <p>Er is een nieuwe kitesurfles voor je ingepland!</p>
+        
+        <h3>Les Details:</h3>
+        <ul>
+            <li><strong>Datum:</strong> {$datumFormatted}</li>
+            <li><strong>Tijd:</strong> {$data['bevestigde_tijd']}</li>
+            <li><strong>Lespakket:</strong> {$lespakket->naam}</li>
+            <li><strong>Locatie:</strong> {$locatie->naam}</li>
+            <li><strong>Adres:</strong> {$locatie->adres}</li>
+            <li><strong>Instructeur:</strong> {$instructeurPersoon->voornaam} {$instructeurPersoon->achternaam}</li>
+        </ul>
+        " . (!empty($data['opmerkingen']) ? "<p><strong>Opmerkingen:</strong><br>{$data['opmerkingen']}</p>" : "") . "
+        
+        <p>We kijken ernaar uit je te zien op het water!</p>
+        
+        <p>Met vriendelijke groet,<br>
+        Team Windkracht-12</p>
+        ";
+        
+        // Gebruik de juiste EmailService methode
+        $emailService->sendEmail($user->email, $subject, $body);
     }
 
     private function sendLesBevestigingEmail($klant, $reservering, $bevestiging) {

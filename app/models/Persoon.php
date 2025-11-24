@@ -56,6 +56,14 @@ class Persoon
         return $this->db->single();
     }
 
+    // Haal persoon op by persoon ID
+    public function getPersoonById($persoonId)
+    {
+        $this->db->query("SELECT * FROM personen WHERE id = :id");
+        $this->db->bind(':id', $persoonId);
+        return $this->db->single();
+    }
+
     // Haal alle klanten op
     public function getKlanten()
     {
@@ -64,6 +72,22 @@ class Persoon
                           LEFT JOIN personen p ON u.id = p.user_id 
                           WHERE u.role = 'klant' AND u.is_active = 1
                           ORDER BY p.voornaam, p.achternaam");
+        return $this->db->resultSet();
+    }
+
+    // Haal alle klanten op met lessenstatistieken
+    public function getKlantenMetStatistieken()
+    {
+        $this->db->query("SELECT u.id as user_id, u.email, u.role, u.is_active, 
+                          p.id as persoon_id, p.voornaam, p.achternaam, p.telefoon, p.woonplaats,
+                          COUNT(r.id) as aantal_lessen,
+                          MAX(r.bevestigde_datum) as laatste_les
+                          FROM users u 
+                          LEFT JOIN personen p ON u.id = p.user_id 
+                          LEFT JOIN reserveringen r ON p.id = r.persoon_id
+                          WHERE u.role = 'klant'
+                          GROUP BY u.id, u.email, u.role, u.is_active, p.id, p.voornaam, p.achternaam, p.telefoon, p.woonplaats
+                          ORDER BY p.achternaam, p.voornaam");
         return $this->db->resultSet();
     }
 

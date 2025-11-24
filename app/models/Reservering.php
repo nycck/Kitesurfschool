@@ -31,6 +31,27 @@ class Reservering
         return false;
     }
 
+    // Maak nieuwe reservering door instructeur (direct bevestigd)
+    public function createReserveringByInstructeur($data)
+    {
+        $this->db->query("INSERT INTO reserveringen (persoon_id, instructeur_id, lespakket_id, locatie_id, bevestigde_datum, bevestigde_tijd, status) 
+                          VALUES (:persoon_id, :instructeur_id, :lespakket_id, :locatie_id, :bevestigde_datum, :bevestigde_tijd, :status)");
+        
+        $this->db->bind(':persoon_id', $data['persoon_id']);
+        $this->db->bind(':instructeur_id', $data['instructeur_id']);
+        $this->db->bind(':lespakket_id', $data['lespakket_id']);
+        $this->db->bind(':locatie_id', $data['locatie_id']);
+        $this->db->bind(':bevestigde_datum', $data['bevestigde_datum']);
+        $this->db->bind(':bevestigde_tijd', $data['bevestigde_tijd']);
+        $this->db->bind(':status', $data['status']);
+        
+        if ($this->db->execute()) {
+            return $this->db->lastInsertId();
+        }
+        
+        return false;
+    }
+
     // Voeg les sessie toe aan reservering
     public function addLesSessie($reserveringId, $lesDatum, $startTijd, $eindTijd)
     {
@@ -331,7 +352,8 @@ class Reservering
     {
         $this->db->query("SELECT r.*, 
                           lp.naam as lespakket_naam, lp.beschrijving as lespakket_beschrijving, 
-                          lp.prijs as lespakket_prijs, lp.duur as lespakket_duur,
+                          lp.prijs as lespakket_prijs, lp.totale_uren as lespakket_duur,
+                          lp.aantal_lessen as lespakket_aantal_lessen, lp.max_personen as lespakket_max_personen,
                           l.naam as locatie_naam, l.adres as locatie_adres, l.faciliteiten as locatie_faciliteiten,
                           CONCAT(p.voornaam, ' ', p.achternaam) as persoon_naam,
                           CONCAT(dp.voornaam, ' ', dp.achternaam) as duo_partner_naam,
@@ -532,7 +554,9 @@ class Reservering
     public function getLessenByDag($instructeur_id, $datum)
     {
         $this->db->query("SELECT r.*, 
-                          lp.naam as lespakket_naam,
+                          r.bevestigde_datum as datum,
+                          r.bevestigde_tijd as tijd,
+                          lp.naam as pakket_naam,
                           l.naam as locatie_naam,
                           CONCAT(p.voornaam, ' ', p.achternaam) as klant_naam
                           FROM reserveringen r
@@ -540,7 +564,9 @@ class Reservering
                           LEFT JOIN locaties l ON r.locatie_id = l.id
                           LEFT JOIN personen p ON r.persoon_id = p.id
                           WHERE r.instructeur_id = :instructeur_id 
+                          AND r.bevestigde_datum IS NOT NULL
                           AND DATE(r.bevestigde_datum) = :datum
+                          AND r.status != 'geannuleerd'
                           ORDER BY r.bevestigde_tijd ASC");
         
         $this->db->bind(':instructeur_id', $instructeur_id);
@@ -550,8 +576,11 @@ class Reservering
 
     public function getLessenByWeek($instructeur_id, $datum)
     {
+        // Bereken maandag en zondag van de week
         $this->db->query("SELECT r.*, 
-                          lp.naam as lespakket_naam,
+                          r.bevestigde_datum as datum,
+                          r.bevestigde_tijd as tijd,
+                          lp.naam as pakket_naam,
                           l.naam as locatie_naam,
                           CONCAT(p.voornaam, ' ', p.achternaam) as klant_naam
                           FROM reserveringen r
@@ -559,18 +588,26 @@ class Reservering
                           LEFT JOIN locaties l ON r.locatie_id = l.id
                           LEFT JOIN personen p ON r.persoon_id = p.id
                           WHERE r.instructeur_id = :instructeur_id 
-                          AND YEARWEEK(r.bevestigde_datum) = YEARWEEK(:datum)
+                          AND r.bevestigde_datum IS NOT NULL
+                          AND r.bevestigde_datum >= DATE_SUB(:datum1, INTERVAL WEEKDAY(:datum2) DAY)
+                          AND r.bevestigde_datum <= DATE_ADD(DATE_SUB(:datum3, INTERVAL WEEKDAY(:datum4) DAY), INTERVAL 6 DAY)
+                          AND r.status != 'geannuleerd'
                           ORDER BY r.bevestigde_datum ASC, r.bevestigde_tijd ASC");
         
         $this->db->bind(':instructeur_id', $instructeur_id);
-        $this->db->bind(':datum', $datum);
+        $this->db->bind(':datum1', $datum);
+        $this->db->bind(':datum2', $datum);
+        $this->db->bind(':datum3', $datum);
+        $this->db->bind(':datum4', $datum);
         return $this->db->resultSet();
     }
 
     public function getLessenByMaand($instructeur_id, $datum)
     {
         $this->db->query("SELECT r.*, 
-                          lp.naam as lespakket_naam,
+                          r.bevestigde_datum as datum,
+                          r.bevestigde_tijd as tijd,
+                          lp.naam as pakket_naam,
                           l.naam as locatie_naam,
                           CONCAT(p.voornaam, ' ', p.achternaam) as klant_naam
                           FROM reserveringen r
@@ -578,12 +615,15 @@ class Reservering
                           LEFT JOIN locaties l ON r.locatie_id = l.id
                           LEFT JOIN personen p ON r.persoon_id = p.id
                           WHERE r.instructeur_id = :instructeur_id 
-                          AND MONTH(r.bevestigde_datum) = MONTH(:datum)
-                          AND YEAR(r.bevestigde_datum) = YEAR(:datum)
+                          AND r.bevestigde_datum IS NOT NULL
+                          AND MONTH(r.bevestigde_datum) = MONTH(:datum1)
+                          AND YEAR(r.bevestigde_datum) = YEAR(:datum2)
+                          AND r.status != 'geannuleerd'
                           ORDER BY r.bevestigde_datum ASC, r.bevestigde_tijd ASC");
         
         $this->db->bind(':instructeur_id', $instructeur_id);
-        $this->db->bind(':datum', $datum);
+        $this->db->bind(':datum1', $datum);
+        $this->db->bind(':datum2', $datum);
         return $this->db->resultSet();
     }
 

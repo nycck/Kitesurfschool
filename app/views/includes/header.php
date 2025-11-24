@@ -8,7 +8,7 @@
     <meta name="keywords" content="<?= $data['keywords'] ?? 'kitesurfen, kitesurfles, windkracht-12, kitesurf school, nederlandse kust, watersport' ?>">
     
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom CSS -->
@@ -116,9 +116,9 @@
                             </a>
                             <ul class="dropdown-menu">
                                 <?php if (hasRole('eigenaar')): ?>
-                                    <li><a class="dropdown-item" href="<?= URLROOT ?>/eigenaar/dashboard"><i class="fas fa-tachometer-alt me-1"></i>Dashboard</a></li>
+                                    <li><a class="dropdown-item" href="<?= URLROOT ?>/eigenaar"><i class="fas fa-tachometer-alt me-1"></i>Dashboard</a></li>
                                 <?php elseif (hasRole('instructeur')): ?>
-                                    <li><a class="dropdown-item" href="<?= URLROOT ?>/instructeur/dashboard"><i class="fas fa-tachometer-alt me-1"></i>Dashboard</a></li>
+                                    <li><a class="dropdown-item" href="<?= URLROOT ?>/instructeurs"><i class="fas fa-tachometer-alt me-1"></i>Dashboard</a></li>
                                 <?php else: ?>
                                     <li><a class="dropdown-item" href="<?= URLROOT ?>/klant/dashboard"><i class="fas fa-tachometer-alt me-1"></i>Dashboard</a></li>
                                 <?php endif; ?>
