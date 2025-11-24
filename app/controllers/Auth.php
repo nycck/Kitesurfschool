@@ -19,8 +19,6 @@ class Auth extends BaseController
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             // Sanitize inputs
             $email = filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL);
-            $password = trim($_POST['password']);
-            $confirmPassword = trim($_POST['confirm_password']);
             
             // Validatie
             $errors = [];
@@ -31,24 +29,6 @@ class Auth extends BaseController
                 $errors[] = 'Ongeldige email';
             } elseif ($this->userModel->emailExists($email)) {
                 $errors[] = 'Email is al geregistreerd';
-            }
-            
-            if (empty($password)) {
-                $errors[] = 'Wachtwoord is verplicht';
-            } elseif (strlen($password) < 12) {
-                $errors[] = 'Wachtwoord moet minimaal 12 tekens zijn';
-            } elseif (!preg_match('/[A-Z]/', $password)) {
-                $errors[] = 'Wachtwoord moet een hoofdletter bevatten';
-            } elseif (!preg_match('/[0-9]/', $password)) {
-                $errors[] = 'Wachtwoord moet een cijfer bevatten';
-            } elseif (!preg_match('/[@#$%^&*()_+\-=\[\]{};\':"\\|,.<>\/?]/', $password)) {
-                $errors[] = 'Wachtwoord moet een speciaal teken bevatten (@, #, $, etc.)';
-            }
-            
-            if (empty($confirmPassword)) {
-                $errors[] = 'Bevestig wachtwoord is verplicht';
-            } elseif ($password !== $confirmPassword) {
-                $errors[] = 'Wachtwoorden komen niet overeen';
             }
             
             if (empty($errors)) {
@@ -76,18 +56,14 @@ class Auth extends BaseController
                 $data = [
                     'title' => 'Registratie',
                     'errors' => $errors,
-                    'email' => $email,
-                    'password' => '',
-                    'confirm_password' => ''
+                    'email' => $email
                 ];
                 $this->view('auth/register', $data);
             }
         } else {
             $data = [
                 'title' => 'Registratie',
-                'email' => '',
-                'password' => '',
-                'confirm_password' => ''
+                'email' => ''
             ];
             $this->view('auth/register', $data);
         }
@@ -324,6 +300,6 @@ class Auth extends BaseController
         </p>
         ";
         
-        $emailService->sendEmail($email, $subject, $body);
+        $emailService->sendActivationEmail($email, $activationToken);
     }
 }
