@@ -209,7 +209,7 @@ class Klant extends BaseController
                     'klant_id' => $userId
                 ];
                 
-                if ($this->reserveringModel->markAsPaid($betalingData)) {
+                if ($this->reserveringModel->markAsPaid($reserveringId)) {
                     // Verstuur bevestiging emails
                     $this->sendBetalingBevestigingEmails($reservering, $betalingData);
                     
@@ -409,8 +409,8 @@ class Klant extends BaseController
         
         <h3>Betalingsgegevens:</h3>
         <ul>
-            <li><strong>Reservering:</strong> #{$reservering->id} - {$reservering->lespakket_naam}</li>
-            <li><strong>Bedrag:</strong> €" . number_format($reservering->totale_prijs, 2, ',', '.') . "</li>
+            <li><strong>Reservering:</strong> #{$reservering->id} - {$reservering->pakket_naam}</li>
+            <li><strong>Bedrag:</strong> €" . number_format($reservering->prijs_per_persoon ?? 0, 2, ',', '.') . "</li>
             <li><strong>Betaaldatum:</strong> " . date('d-m-Y', strtotime($betalingData['betaaldatum'])) . "</li>
             <li><strong>Methode:</strong> " . ucfirst($betalingData['betaal_methode']) . "</li>
             " . (!empty($betalingData['referentie']) ? "<li><strong>Referentie:</strong> {$betalingData['referentie']}</li>" : "") . "
@@ -460,7 +460,7 @@ class Klant extends BaseController
         <h3>Reservering Details:</h3>
         <ul>
             <li><strong>Reservering ID:</strong> #{$reservering->id}</li>
-            <li><strong>Lespakket:</strong> {$reservering->lespakket_naam}</li>
+            <li><strong>Lespakket:</strong> {$reservering->pakket_naam}</li>
             <li><strong>Locatie:</strong> {$reservering->locatie_naam}</li>
             <li><strong>Gewenste datum:</strong> " . date('d-m-Y', strtotime($reservering->gewenste_datum)) . "</li>
             <li><strong>Status:</strong> " . ucfirst($reservering->status) . "</li>
@@ -468,7 +468,7 @@ class Klant extends BaseController
         
         <h3>Betalingsgegevens:</h3>
         <ul>
-            <li><strong>Bedrag:</strong> €" . number_format($reservering->totale_prijs, 2, ',', '.') . "</li>
+            <li><strong>Bedrag:</strong> €" . number_format($reservering->prijs_per_persoon ?? 0, 2, ',', '.') . "</li>
             <li><strong>Betaaldatum:</strong> " . date('d-m-Y', strtotime($betalingData['betaaldatum'])) . "</li>
             <li><strong>Methode:</strong> " . ucfirst($betalingData['betaal_methode']) . "</li>
             " . (!empty($betalingData['referentie']) ? "<li><strong>Referentie:</strong> {$betalingData['referentie']}</li>" : "") . "

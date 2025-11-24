@@ -99,7 +99,7 @@ class Reservering
     // Haal reservering op met ID en klant verificatie (user_id)
     public function getReserveringByIdAndKlant($id, $klantId)
     {
-        $this->db->query("SELECT r.*, lp.naam as pakket_naam, lp.beschrijving as pakket_beschrijving,
+        $this->db->query("SELECT r.*, lp.naam as pakket_naam, lp.beschrijving as pakket_beschrijving, lp.prijs_per_persoon,
                           l.naam as locatie_naam, l.adres as locatie_adres,
                           p.voornaam, p.achternaam
                           FROM reserveringen r
@@ -169,7 +169,7 @@ class Reservering
     // Markeer als betaald
     public function markAsPaid($reserveringId)
     {
-        $this->db->query("UPDATE reserveringen SET betaling_status = 'betaald' WHERE id = :id");
+        $this->db->query("UPDATE reserveringen SET betaal_status = 'betaald' WHERE id = :id");
         $this->db->bind(':id', $reserveringId);
         return $this->db->execute();
     }

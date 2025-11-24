@@ -19,7 +19,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <p class="mb-1"><strong>Lespakket:</strong></p>
-                                <p class="mb-2"><?= htmlspecialchars($data['reservering']->lespakket_naam ?? 'Onbekend') ?></p>
+                                <p class="mb-2"><?= htmlspecialchars($data['reservering']->pakket_naam ?? 'Onbekend') ?></p>
                                 
                                 <p class="mb-1"><strong>Locatie:</strong></p>
                                 <p class="mb-2"><?= htmlspecialchars($data['reservering']->locatie_naam ?? 'Onbekend') ?></p>
@@ -74,7 +74,7 @@
                                         €<?= number_format($data['reservering']->totale_prijs ?? 0, 2, ',', '.') ?></p>
                                         
                                         <p><strong>Omschrijving:</strong><br>
-                                        Reservering #<?= $data['reservering']->id ?> - <?= htmlspecialchars($data['reservering']->lespakket_naam) ?></p>
+                                        Reservering #<?= $data['reservering']->id ?> - <?= htmlspecialchars($data['reservering']->pakket_naam ?? 'Onbekend') ?></p>
                                     </div>
                                 </div>
                             </div>

@@ -36,6 +36,7 @@
                                             <option value="<?php echo $lespakket->id; ?>" 
                                                     <?php echo (isset($data['lespakket_id']) && $data['lespakket_id'] == $lespakket->id) ? 'selected' : ''; ?>
                                                     data-prijs="<?php echo $lespakket->prijs_per_persoon ?? $lespakket->prijs; ?>"
+                                                    data-max-personen="<?php echo $lespakket->max_personen; ?>"
                                                     data-beschrijving="<?php echo htmlspecialchars($lespakket->beschrijving); ?>">
                                                 <?php echo $lespakket->naam; ?> - €<?php echo number_format($lespakket->prijs_per_persoon ?? $lespakket->prijs, 2); ?>
                                             </option>
@@ -90,8 +91,8 @@
                             </div>
 
                             <!-- Duo Partner -->
-                            <div class="col-md-6 mb-4">
-                                <label for="duo_partner_email" class="form-label">Duo Partner Email (optioneel)</label>
+                            <div class="col-md-6 mb-4" id="duoPartnerDiv">
+                                <label for="duo_partner_email" class="form-label" id="duoPartnerLabel">Duo Partner Email</label>
                                 <input type="email" 
                                        class="form-control <?php echo (!empty($data['duo_partner_email_err'])) ? 'is-invalid' : ''; ?>" 
                                        id="duo_partner_email" name="duo_partner_email" 
@@ -100,7 +101,7 @@
                                 <div class="invalid-feedback">
                                     <?php echo $data['duo_partner_email_err']; ?>
                                 </div>
-                                <div class="form-text">
+                                <div class="form-text" id="duoPartnerHelp">
                                     <i class="fas fa-user-friends me-1"></i>
                                     Email van je duo partner (moet geregistreerd zijn)
                                 </div>
@@ -203,10 +204,36 @@ document.getElementById('lespakket_id').addEventListener('change', function() {
     const selected = this.options[this.selectedIndex];
     const infoDiv = document.getElementById('lespakketInfo');
     const prijsDiv = document.getElementById('prijsOverzicht');
+    const duoPartnerDiv = document.getElementById('duoPartnerDiv');
+    const duoPartnerInput = document.getElementById('duo_partner_email');
+    const duoPartnerLabel = document.getElementById('duoPartnerLabel');
+    const duoPartnerHelp = document.getElementById('duoPartnerHelp');
     
     if (selected.value) {
         const beschrijving = selected.getAttribute('data-beschrijving');
         const prijs = selected.getAttribute('data-prijs');
+        const maxPersonen = parseInt(selected.getAttribute('data-max-personen'));
+        
+        // Verberg duo partner veld als max_personen = 1 (privéles)
+        if (maxPersonen === 1) {
+            duoPartnerDiv.style.display = 'none';
+            duoPartnerInput.value = '';
+            duoPartnerInput.removeAttribute('required');
+        } else {
+            duoPartnerDiv.style.display = 'block';
+            
+            // Voor duo pakketten (max_personen = 2): verplicht
+            if (maxPersonen === 2) {
+                duoPartnerLabel.innerHTML = 'Duo Partner Email *';
+                duoPartnerInput.setAttribute('required', 'required');
+                duoPartnerHelp.innerHTML = '<i class="fas fa-user-friends me-1"></i>Email van je duo partner is verplicht (moet geregistreerd zijn)';
+            } else {
+                // Voor groepslessen: optioneel
+                duoPartnerLabel.innerHTML = 'Duo Partner Email (optioneel)';
+                duoPartnerInput.removeAttribute('required');
+                duoPartnerHelp.innerHTML = '<i class="fas fa-user-friends me-1"></i>Email van je duo partner (moet geregistreerd zijn)';
+            }
+        }
         
         infoDiv.innerHTML = `<i class="fas fa-info-circle me-1"></i>${beschrijving}`;
         prijsDiv.innerHTML = `
@@ -223,6 +250,9 @@ document.getElementById('lespakket_id').addEventListener('change', function() {
     } else {
         infoDiv.innerHTML = '';
         prijsDiv.innerHTML = '<p class="text-muted">Selecteer een lespakket om de prijs te zien</p>';
+        duoPartnerDiv.style.display = 'block';
+        duoPartnerLabel.innerHTML = 'Duo Partner Email';
+        duoPartnerInput.removeAttribute('required');
     }
 });
 
