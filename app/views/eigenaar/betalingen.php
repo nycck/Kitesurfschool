@@ -78,12 +78,12 @@
             </div>
 
             <!-- Filter Sectie -->
-            <div class="card mb-4 border-0 shadow-lg card-dark">
+            <div class="card mb-4 border-0 shadow-lg" style="background-color: #2d3748;">
                 <div class="card-body">
                     <form method="GET" action="<?php echo URLROOT; ?>/eigenaar/betalingen" class="row g-3">
                         <div class="col-md-3">
                             <label for="filter" class="form-label text-light">Filter op Status</label>
-                            <select name="filter" id="filter" class="form-select">
+                            <select name="filter" id="filter" class="form-select bg-dark text-light" style="border-color: #4a5568;">
                                 <option value="alle" <?php echo ($data['filter'] == 'alle') ? 'selected' : ''; ?>>Alle Betalingen</option>
                                 <option value="betaald" <?php echo ($data['filter'] == 'betaald') ? 'selected' : ''; ?>>Betaald</option>
                                 <option value="wachtend" <?php echo ($data['filter'] == 'wachtend') ? 'selected' : ''; ?>>Wachtend</option>
@@ -92,7 +92,8 @@
                         </div>
                         <div class="col-md-3">
                             <label for="maand" class="form-label text-light">Maand</label>
-                            <input type="month" name="maand" id="maand" class="form-control" 
+                            <input type="month" name="maand" id="maand" class="form-control bg-dark text-light" 
+                                   style="border-color: #4a5568;"
                                    value="<?php echo $data['maand']; ?>">
                         </div>
                         <div class="col-md-3">
@@ -117,12 +118,12 @@
             </div>
 
             <!-- Betalingen Tabel -->
-            <div class="card border-0 shadow-lg card-dark">
+            <div class="card border-0 shadow-lg" style="background-color: #2d3748;">
                 <div class="card-body">
                     <?php if(!empty($data['betalingen'])): ?>
                         <div class="table-responsive">
-                            <table class="table table-striped table-hover">
-                                <thead class="table-dark">
+                            <table class="table table-dark table-hover">
+                                <thead style="background-color: #1a202c;">
                                     <tr>
                                         <th>Reservering ID</th>
                                         <th>Klant</th>
@@ -143,12 +144,12 @@
                                             <td>
                                                 <?php echo htmlspecialchars($betaling->klant_voornaam . ' ' . $betaling->klant_achternaam); ?>
                                                 <br>
-                                                <small class="text-muted"><?php echo htmlspecialchars($betaling->klant_email); ?></small>
+                                                <small class="text-light-emphasis"><?php echo htmlspecialchars($betaling->klant_email); ?></small>
                                             </td>
                                             <td>
                                                 <?php echo htmlspecialchars($betaling->lespakket_naam); ?>
                                                 <br>
-                                                <small class="text-muted">
+                                                <small class="text-light-emphasis">
                                                     <?php 
                                                     if(isset($betaling->gewenste_datum) && $betaling->gewenste_datum) {
                                                         echo date('d-m-Y', strtotime($betaling->gewenste_datum));
@@ -183,13 +184,13 @@
                                                 if(isset($betaling->betaald_op) && $betaling->betaald_op) {
                                                     echo date('d-m-Y H:i', strtotime($betaling->betaald_op));
                                                 } else {
-                                                    echo '<span class="text-muted">Nog niet betaald</span>';
+                                                    echo '<span class="text-light-emphasis">Nog niet betaald</span>';
                                                 }
                                                 ?>
                                             </td>
                                             <td>
                                                 <div class="btn-group" role="group">
-                                                    <a href="<?php echo URLROOT; ?>/reserveringen/details/<?php echo $betaling->reservering_id; ?>" 
+                                                    <a href="<?php echo URLROOT; ?>/eigenaar/reservering_details/<?php echo $betaling->reservering_id; ?>" 
                                                        class="btn btn-sm btn-outline-primary" title="Details bekijken">
                                                         <i class="fas fa-eye"></i>
                                                     </a>
@@ -219,9 +220,9 @@
                         </div>
                     <?php else: ?>
                         <div class="text-center py-5">
-                            <i class="fas fa-credit-card fa-3x text-muted mb-3"></i>
-                            <h5 class="text-muted">Geen betalingen gevonden</h5>
-                            <p class="text-muted">Probeer andere filterinstellingen of selecteer een andere maand.</p>
+                            <i class="fas fa-credit-card fa-3x text-light-emphasis mb-3"></i>
+                            <h5 class="text-light">Geen betalingen gevonden</h5>
+                            <p class="text-light-emphasis">Probeer andere filterinstellingen of selecteer een andere maand.</p>
                         </div>
                     <?php endif; ?>
                 </div>
@@ -233,13 +234,13 @@
 <!-- Wijzig Status Modal -->
 <div class="modal fade" id="wijzigStatusModal" tabindex="-1" aria-labelledby="wijzigStatusModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="wijzigStatusModalLabel">Betalingsstatus Wijzigen</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-content bg-dark text-light">
+            <div class="modal-header" style="background-color: #1a202c; border-bottom: 1px solid #4a5568;">
+                <h5 class="modal-title text-light" id="wijzigStatusModalLabel">Betalingsstatus Wijzigen</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form id="wijzigStatusForm" method="POST">
-                <div class="modal-body">
+                <div class="modal-body" style="background-color: #2d3748;">
                     <div class="mb-3">
                         <h6>Reservering Details:</h6>
                         <p><strong>Klant:</strong> <span id="modalKlantNaam"></span></p>
@@ -247,8 +248,8 @@
                     </div>
                     
                     <div class="mb-3">
-                        <label for="betaal_status" class="form-label">Nieuwe Status</label>
-                        <select name="betaal_status" id="betaal_status" class="form-select" required>
+                        <label for="betaal_status" class="form-label text-light">Nieuwe Status</label>
+                        <select name="betaal_status" id="betaal_status" class="form-select bg-secondary text-light" style="border-color: #4a5568;" required>
                             <option value="">Selecteer een status...</option>
                             <option value="wachtend">Wachtend</option>
                             <option value="betaald">Betaald</option>
@@ -257,8 +258,9 @@
                     </div>
                     
                     <div class="mb-3">
-                        <label for="opmerking" class="form-label">Opmerking (optioneel)</label>
-                        <textarea name="opmerking" id="opmerking" rows="3" class="form-control" 
+                        <label for="opmerking" class="form-label text-light">Opmerking (optioneel)</label>
+                        <textarea name="opmerking" id="opmerking" rows="3" class="form-control bg-secondary text-light" 
+                                  style="border-color: #4a5568;"
                                   placeholder="Voeg een opmerking toe..."></textarea>
                     </div>
                     
@@ -267,7 +269,7 @@
                         <strong>Let op:</strong> Als je de status wijzigt naar 'Betaald', ontvangt de klant een bevestigingsmail.
                     </div>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer" style="background-color: #2d3748; border-top: 1px solid #4a5568;">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuleren</button>
                     <button type="submit" class="btn btn-success">Status Wijzigen</button>
                 </div>
@@ -279,19 +281,19 @@
 <!-- Factuur Modal -->
 <div class="modal fade" id="factuurModal" tabindex="-1" aria-labelledby="factuurModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="factuurModalLabel">Factuur Genereren</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-content bg-dark text-light">
+            <div class="modal-header" style="background-color: #1a202c; border-bottom: 1px solid #4a5568;">
+                <h5 class="modal-title text-light" id="factuurModalLabel">Factuur Genereren</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body" style="background-color: #2d3748;">
                 <p>Wil je een factuur genereren voor deze reservering?</p>
                 <div class="alert alert-warning">
                     <i class="fas fa-exclamation-triangle"></i>
                     <strong>Let op:</strong> De factuur wordt automatisch naar de klant gemaild.
                 </div>
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer" style="background-color: #2d3748; border-top: 1px solid #4a5568;">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuleren</button>
                 <button type="button" class="btn btn-primary" id="genererenFactuurBtn">
                     <i class="fas fa-file-invoice"></i> Genereren en Versturen

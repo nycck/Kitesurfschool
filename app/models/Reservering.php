@@ -722,10 +722,10 @@ class Reservering
             $whereClause .= " AND DATE_FORMAT(r.aangemaakt_op, '%Y-%m') = :maand";
         }
         
-        $this->db->query("SELECT r.*, 
-                          lp.naam as lespakket_naam, lp.prijs,
+        $this->db->query("SELECT r.*, r.id as reservering_id,
+                          lp.naam as lespakket_naam, lp.prijs_per_persoon as bedrag,
                           l.naam as locatie_naam,
-                          CONCAT(p.voornaam, ' ', p.achternaam) as klant_naam,
+                          p.voornaam as klant_voornaam, p.achternaam as klant_achternaam,
                           u.email as klant_email
                           FROM reserveringen r
                           LEFT JOIN lespakketten lp ON r.lespakket_id = lp.id
