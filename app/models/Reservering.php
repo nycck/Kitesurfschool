@@ -351,14 +351,15 @@ class Reservering
     public function getReserveringById($id)
     {
         $this->db->query("SELECT r.*, 
-                          lp.naam as lespakket_naam, lp.beschrijving as lespakket_beschrijving, 
-                          lp.prijs as lespakket_prijs, lp.totale_uren as lespakket_duur,
+                          lp.naam as pakket_naam, lp.naam as lespakket_naam, lp.beschrijving as lespakket_beschrijving, 
+                          lp.prijs_per_persoon, lp.prijs as lespakket_prijs, lp.totale_uren as lespakket_duur,
                           lp.aantal_lessen as lespakket_aantal_lessen, lp.max_personen as lespakket_max_personen,
                           l.naam as locatie_naam, l.adres as locatie_adres, l.faciliteiten as locatie_faciliteiten,
+                          p.voornaam, p.achternaam, p.telefoon,
                           CONCAT(p.voornaam, ' ', p.achternaam) as persoon_naam,
                           CONCAT(dp.voornaam, ' ', dp.achternaam) as duo_partner_naam,
                           CONCAT(ip.voornaam, ' ', ip.achternaam) as instructeur_naam,
-                          u.id as user_id
+                          u.id as user_id, u.email as klant_email
                           FROM reserveringen r
                           LEFT JOIN lespakketten lp ON r.lespakket_id = lp.id
                           LEFT JOIN locaties l ON r.locatie_id = l.id

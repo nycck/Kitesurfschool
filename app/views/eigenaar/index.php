@@ -3,6 +3,10 @@
 <div class="container-fluid py-4 dashboard-dark">
     <div class="row">
         <div class="col-md-12">
+            <!-- Flash Messages -->
+            <?php flash('success_message'); ?>
+            <?php flash('error_message'); ?>
+            
             <!-- Header Section -->
             <div class="d-flex justify-content-between align-items-center mb-5">
                 <div>
@@ -164,6 +168,22 @@
                         </div>
                         <div class="card-body pt-3">
                             <div class="d-grid gap-3">
+                                <button type="button" class="btn btn-primary btn-lg d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#toevoegKlantModal">
+                                    <i class="fas fa-user-plus me-3"></i>
+                                    <div class="text-start">
+                                        <div class="fw-semibold">Klant Toevoegen</div>
+                                        <small style="opacity: 0.8;">Nieuwe klant aanmaken met activatiemail</small>
+                                    </div>
+                                </button>
+
+                                <button type="button" class="btn btn-success btn-lg d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#toevoegInstructeurModal">
+                                    <i class="fas fa-chalkboard-teacher me-3"></i>
+                                    <div class="text-start">
+                                        <div class="fw-semibold">Instructeur Toevoegen</div>
+                                        <small style="opacity: 0.8;">Nieuwe instructeur aanmaken met activatiemail</small>
+                                    </div>
+                                </button>
+                                
                                 <a href="<?php echo URLROOT; ?>/eigenaar/gebruikers" class="btn btn-outline-primary btn-lg d-flex align-items-center btn-dark-theme">
                                     <i class="fas fa-users me-3"></i>
                                     <div class="text-start">
@@ -210,157 +230,6 @@
                                         <div class="fw-semibold">Systeem Instellingen</div>
                                         <small class="text-light-emphasis">Configureer de applicatie</small>
                                     </div>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Recente Activiteit -->
-            <div class="mb-4">
-                <h3 class="fw-semibold mb-4 text-light">
-                    <i class="fas fa-clock text-primary me-2"></i>Recente Activiteit
-                </h3>
-            </div>
-            
-            <div class="row g-4">
-                <div class="col-lg-4">
-                    <div class="card border-0 shadow-lg h-100 card-dark">
-                        <div class="card-header bg-transparent border-0 pb-0">
-                            <h6 class="card-title fw-semibold mb-0 text-primary">
-                                <i class="fas fa-plus-circle me-2"></i>Nieuwe Reserveringen
-                            </h6>
-                        </div>
-                        <div class="card-body pt-3">
-                            <?php if(!empty($data['recente_activiteit']['nieuwe_reserveringen'])): ?>
-                                <div class="space-y-3">
-                                    <?php foreach($data['recente_activiteit']['nieuwe_reserveringen'] as $reservering): ?>
-                                        <div class="d-flex align-items-start p-3 bg-dark-subtle rounded-3">
-                                            <div class="bg-primary rounded-circle p-2 me-3">
-                                                <i class="fas fa-calendar text-white"></i>
-                                            </div>
-                                            <div class="flex-grow-1">
-                                                <h6 class="mb-1 fw-semibold text-light"><?php echo $reservering->klant_naam ?? 'Onbekende klant'; ?></h6>
-                                                <p class="text-light-emphasis mb-1 small"><?php echo $reservering->lespakket_naam ?? 'Onbekend pakket'; ?></p>
-                                                <small class="text-light-emphasis">
-                                                    <?php 
-                                                    if(isset($reservering->aangemaakt_op) && $reservering->aangemaakt_op) {
-                                                        echo date('d-m H:i', strtotime($reservering->aangemaakt_op));
-                                                    } else {
-                                                        echo 'Datum onbekend';
-                                                    }
-                                                    ?>
-                                                </small>
-                                            </div>
-                                        </div>
-                                    <?php endforeach; ?>
-                                </div>
-                            <?php else: ?>
-                                <div class="text-center py-4">
-                                    <i class="fas fa-calendar-times text-muted fa-2x mb-2"></i>
-                                    <p class="text-light-emphasis mb-0">Geen recente reserveringen</p>
-                                </div>
-                            <?php endif; ?>
-                            <div class="mt-3 pt-3 border-top border-secondary">
-                                <a href="<?php echo URLROOT; ?>/eigenaar/reserveringen" class="btn btn-sm btn-outline-primary w-100 btn-dark-theme">
-                                    Alle reserveringen bekijken
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-lg-4">
-                    <div class="card border-0 shadow-lg h-100 card-dark">
-                        <div class="card-header bg-transparent border-0 pb-0">
-                            <h6 class="card-title fw-semibold mb-0 text-success">
-                                <i class="fas fa-euro-sign me-2"></i>Recente Betalingen
-                            </h6>
-                        </div>
-                        <div class="card-body pt-3">
-                            <?php if(!empty($data['recente_activiteit']['recente_betalingen'])): ?>
-                                <div class="space-y-3">
-                                    <?php foreach($data['recente_activiteit']['recente_betalingen'] as $betaling): ?>
-                                        <div class="d-flex align-items-start p-3 bg-dark-subtle rounded-3">
-                                            <div class="bg-success rounded-circle p-2 me-3">
-                                                <i class="fas fa-check text-white"></i>
-                                            </div>
-                                            <div class="flex-grow-1">
-                                                <h6 class="mb-1 fw-semibold text-light">€<?php echo number_format($betaling->bedrag ?? 0, 2); ?></h6>
-                                                <p class="text-light-emphasis mb-1 small"><?php echo $betaling->klant_naam ?? 'Onbekende klant'; ?></p>
-                                                <small class="text-light-emphasis">
-                                                    <?php 
-                                                    if(isset($betaling->betaald_op) && $betaling->betaald_op) {
-                                                        echo date('d-m H:i', strtotime($betaling->betaald_op));
-                                                    } else {
-                                                        echo 'Nog niet betaald';
-                                                    }
-                                                    ?>
-                                                </small>
-                                            </div>
-                                        </div>
-                                    <?php endforeach; ?>
-                                </div>
-                            <?php else: ?>
-                                <div class="text-center py-4">
-                                    <i class="fas fa-credit-card text-muted fa-2x mb-2"></i>
-                                    <p class="text-light-emphasis mb-0">Geen recente betalingen</p>
-                                </div>
-                            <?php endif; ?>
-                            <div class="mt-3 pt-3 border-top border-secondary">
-                                <a href="<?php echo URLROOT; ?>/eigenaar/betalingen" class="btn btn-sm btn-outline-success w-100 btn-dark-theme">
-                                    Alle betalingen bekijken
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-lg-4">
-                    <div class="card border-0 shadow-lg h-100 card-dark">
-                        <div class="card-header bg-transparent border-0 pb-0">
-                            <h6 class="card-title fw-semibold mb-0 text-info">
-                                <i class="fas fa-user-plus me-2"></i>Nieuwe Gebruikers
-                            </h6>
-                        </div>
-                        <div class="card-body pt-3">
-                            <?php if(!empty($data['recente_activiteit']['nieuwe_gebruikers'])): ?>
-                                <div class="space-y-3">
-                                    <?php foreach($data['recente_activiteit']['nieuwe_gebruikers'] as $gebruiker): ?>
-                                        <div class="d-flex align-items-start p-3 bg-dark-subtle rounded-3">
-                                            <div class="bg-info rounded-circle p-2 me-3">
-                                                <i class="fas fa-user text-white"></i>
-                                            </div>
-                                            <div class="flex-grow-1">
-                                                <h6 class="mb-1 fw-semibold text-light"><?php echo ($gebruiker->voornaam ?? '') . ' ' . ($gebruiker->achternaam ?? ''); ?></h6>
-                                                <p class="mb-1">
-                                                    <span class="badge bg-<?php echo ($gebruiker->role ?? 'klant') == 'instructeur' ? 'warning' : 'primary'; ?> bg-opacity-25">
-                                                        <?php echo ucfirst($gebruiker->role ?? 'klant'); ?>
-                                                    </span>
-                                                </p>
-                                                <small class="text-light-emphasis">
-                                                    <?php 
-                                                    if(isset($gebruiker->aangemaakt_op) && $gebruiker->aangemaakt_op) {
-                                                        echo date('d-m H:i', strtotime($gebruiker->aangemaakt_op));
-                                                    } else {
-                                                        echo 'Datum onbekend';
-                                                    }
-                                                    ?>
-                                                </small>
-                                            </div>
-                                        </div>
-                                    <?php endforeach; ?>
-                                </div>
-                            <?php else: ?>
-                                <div class="text-center py-4">
-                                    <i class="fas fa-users text-muted fa-2x mb-2"></i>
-                                    <p class="text-light-emphasis mb-0">Geen nieuwe gebruikers</p>
-                                </div>
-                            <?php endif; ?>
-                            <div class="mt-3 pt-3 border-top border-secondary">
-                                <a href="<?php echo URLROOT; ?>/eigenaar/gebruikers" class="btn btn-sm btn-outline-info w-100 btn-dark-theme">
-                                    Alle gebruikers bekijken
                                 </a>
                             </div>
                         </div>
@@ -466,5 +335,177 @@
     color: #fff !important;
 }
 </style>
+
+<!-- Klant Toevoegen Modal -->
+<div class="modal fade" id="toevoegKlantModal" tabindex="-1" aria-labelledby="toevoegKlantModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content bg-dark text-light">
+            <div class="modal-header" style="background: #1a202c; border-bottom: 1px solid #4a5568;">
+                <h5 class="modal-title" id="toevoegKlantModalLabel">
+                    <i class="fas fa-user-plus me-2"></i>Nieuwe Klant Toevoegen
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="<?php echo URLROOT; ?>/eigenaar/nieuwe_klant">
+                <div class="modal-body" style="background: #2d3748;">
+                    <div class="alert alert-info" style="background: rgba(59, 130, 246, 0.1); border-color: rgba(59, 130, 246, 0.3); color: #93c5fd;">
+                        <i class="fas fa-info-circle me-2"></i>
+                        De klant ontvangt een activatielink via email om hun wachtwoord in te stellen.
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="klant_email" class="form-label" style="color: #f7fafc;">Email <span class="text-danger">*</span></label>
+                            <input type="email" class="form-control bg-dark text-light" id="klant_email" name="email" required
+                                   style="border-color: #4a5568;">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="klant_telefoon" class="form-label" style="color: #f7fafc;">Telefoon <span class="text-danger">*</span></label>
+                            <input type="tel" class="form-control bg-dark text-light" id="klant_telefoon" name="telefoon" required
+                                   style="border-color: #4a5568;">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="klant_voornaam" class="form-label" style="color: #f7fafc;">Voornaam <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control bg-dark text-light" id="klant_voornaam" name="voornaam" required
+                                   style="border-color: #4a5568;">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="klant_achternaam" class="form-label" style="color: #f7fafc;">Achternaam <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control bg-dark text-light" id="klant_achternaam" name="achternaam" required
+                                   style="border-color: #4a5568;">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="klant_geboortedatum" class="form-label" style="color: #f7fafc;">Geboortedatum <span class="text-danger">*</span></label>
+                        <input type="date" class="form-control bg-dark text-light" id="klant_geboortedatum" name="geboortedatum" required
+                               style="border-color: #4a5568;">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="klant_adres" class="form-label" style="color: #f7fafc;">Adres <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control bg-dark text-light" id="klant_adres" name="adres" required
+                               style="border-color: #4a5568;">
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="klant_postcode" class="form-label" style="color: #f7fafc;">Postcode <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control bg-dark text-light" id="klant_postcode" name="postcode" required
+                                   style="border-color: #4a5568;">
+                        </div>
+                        <div class="col-md-8 mb-3">
+                            <label for="klant_woonplaats" class="form-label" style="color: #f7fafc;">Woonplaats <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control bg-dark text-light" id="klant_woonplaats" name="woonplaats" required
+                                   style="border-color: #4a5568;">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="background: #1a202c; border-top: 1px solid #4a5568;">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Annuleren
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-user-plus me-2"></i>Klant Toevoegen
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Instructeur Toevoegen Modal -->
+<div class="modal fade" id="toevoegInstructeurModal" tabindex="-1" aria-labelledby="toevoegInstructeurModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content bg-dark text-light">
+            <div class="modal-header" style="background: #1a202c; border-bottom: 1px solid #4a5568;">
+                <h5 class="modal-title" id="toevoegInstructeurModalLabel">
+                    <i class="fas fa-chalkboard-teacher me-2"></i>Nieuwe Instructeur Toevoegen
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="<?php echo URLROOT; ?>/eigenaar/nieuwe_instructeur">
+                <div class="modal-body" style="background: #2d3748;">
+                    <div class="alert alert-info" style="background: rgba(59, 130, 246, 0.1); border-color: rgba(59, 130, 246, 0.3); color: #93c5fd;">
+                        <i class="fas fa-info-circle me-2"></i>
+                        De instructeur ontvangt een activatielink via email om hun wachtwoord in te stellen.
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="instructeur_email" class="form-label" style="color: #f7fafc;">Email <span class="text-danger">*</span></label>
+                            <input type="email" class="form-control bg-dark text-light" id="instructeur_email" name="email" required
+                                   style="border-color: #4a5568;">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="instructeur_telefoon" class="form-label" style="color: #f7fafc;">Telefoon <span class="text-danger">*</span></label>
+                            <input type="tel" class="form-control bg-dark text-light" id="instructeur_telefoon" name="telefoon" required
+                                   style="border-color: #4a5568;">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="instructeur_voornaam" class="form-label" style="color: #f7fafc;">Voornaam <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control bg-dark text-light" id="instructeur_voornaam" name="voornaam" required
+                                   style="border-color: #4a5568;">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="instructeur_achternaam" class="form-label" style="color: #f7fafc;">Achternaam <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control bg-dark text-light" id="instructeur_achternaam" name="achternaam" required
+                                   style="border-color: #4a5568;">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="instructeur_geboortedatum" class="form-label" style="color: #f7fafc;">Geboortedatum <span class="text-danger">*</span></label>
+                        <input type="date" class="form-control bg-dark text-light" id="instructeur_geboortedatum" name="geboortedatum" required
+                               style="border-color: #4a5568;">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="instructeur_adres" class="form-label" style="color: #f7fafc;">Adres <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control bg-dark text-light" id="instructeur_adres" name="adres" required
+                               style="border-color: #4a5568;">
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="instructeur_postcode" class="form-label" style="color: #f7fafc;">Postcode <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control bg-dark text-light" id="instructeur_postcode" name="postcode" required
+                                   style="border-color: #4a5568;">
+                        </div>
+                        <div class="col-md-8 mb-3">
+                            <label for="instructeur_woonplaats" class="form-label" style="color: #f7fafc;">Woonplaats <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control bg-dark text-light" id="instructeur_woonplaats" name="woonplaats" required
+                                   style="border-color: #4a5568;">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="background: #1a202c; border-top: 1px solid #4a5568;">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Annuleren
+                    </button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-chalkboard-teacher me-2"></i>Instructeur Toevoegen
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// Scroll to top if flash message exists
+document.addEventListener('DOMContentLoaded', function() {
+    const alerts = document.querySelectorAll('.alert');
+    if (alerts.length > 0) {
+        window.scrollTo({top: 0, behavior: 'smooth'});
+    }
+});
+</script>
 
 <?php require_once APPROOT . '/views/includes/footer.php'; ?>

@@ -25,7 +25,7 @@
                         <div class="card-body">
                             <div class="row mb-3">
                                 <div class="col-sm-4">
-                                    <strong class="text-light">Status:</strong>
+                                    <strong style="color: #f7fafc;">Status:</strong>
                                 </div>
                                 <div class="col-sm-8">
                                     <span class="badge bg-<?php 
@@ -40,28 +40,28 @@
 
                             <div class="row mb-3">
                                 <div class="col-sm-4">
-                                    <strong class="text-light">Lespakket:</strong>
+                                    <strong style="color: #f7fafc;">Lespakket:</strong>
                                 </div>
                                 <div class="col-sm-8">
-                                    <span class="text-light"><?php echo htmlspecialchars($data['reservering']->pakket_naam ?? 'Onbekend'); ?></span>
+                                    <span style="color: #e2e8f0;"><?php echo htmlspecialchars($data['reservering']->pakket_naam ?? 'Onbekend'); ?></span>
                                 </div>
                             </div>
 
                             <div class="row mb-3">
                                 <div class="col-sm-4">
-                                    <strong class="text-light">Locatie:</strong>
+                                    <strong style="color: #f7fafc;">Locatie:</strong>
                                 </div>
                                 <div class="col-sm-8">
-                                    <span class="text-light"><?php echo htmlspecialchars($data['reservering']->locatie_naam ?? 'Onbekend'); ?></span>
+                                    <span style="color: #e2e8f0;"><?php echo htmlspecialchars($data['reservering']->locatie_naam ?? 'Onbekend'); ?></span>
                                 </div>
                             </div>
 
                             <div class="row mb-3">
                                 <div class="col-sm-4">
-                                    <strong class="text-light">Gewenste datum:</strong>
+                                    <strong style="color: #f7fafc;">Gewenste datum:</strong>
                                 </div>
                                 <div class="col-sm-8">
-                                    <span class="text-light">
+                                    <span style="color: #e2e8f0;">
                                         <?php 
                                         if(isset($data['reservering']->gewenste_datum) && $data['reservering']->gewenste_datum) {
                                             echo date('d-m-Y', strtotime($data['reservering']->gewenste_datum));
@@ -76,10 +76,10 @@
                             <?php if(isset($data['reservering']->bevestigde_datum) && $data['reservering']->bevestigde_datum): ?>
                             <div class="row mb-3">
                                 <div class="col-sm-4">
-                                    <strong class="text-light">Bevestigde datum:</strong>
+                                    <strong style="color: #f7fafc;">Bevestigde datum:</strong>
                                 </div>
                                 <div class="col-sm-8">
-                                    <span class="text-light"><?php echo date('d-m-Y', strtotime($data['reservering']->bevestigde_datum)); ?></span>
+                                    <span style="color: #e2e8f0;"><?php echo date('d-m-Y', strtotime($data['reservering']->bevestigde_datum)); ?></span>
                                 </div>
                             </div>
                             <?php endif; ?>
@@ -87,10 +87,10 @@
                             <?php if(isset($data['reservering']->bevestigde_tijd) && $data['reservering']->bevestigde_tijd): ?>
                             <div class="row mb-3">
                                 <div class="col-sm-4">
-                                    <strong class="text-light">Bevestigde tijd:</strong>
+                                    <strong style="color: #f7fafc;">Bevestigde tijd:</strong>
                                 </div>
                                 <div class="col-sm-8">
-                                    <span class="text-light"><?php echo date('H:i', strtotime($data['reservering']->bevestigde_tijd)); ?></span>
+                                    <span style="color: #e2e8f0;"><?php echo date('H:i', strtotime($data['reservering']->bevestigde_tijd)); ?></span>
                                 </div>
                             </div>
                             <?php endif; ?>
@@ -98,20 +98,20 @@
                             <?php if(isset($data['reservering']->opmerking) && $data['reservering']->opmerking): ?>
                             <div class="row mb-3">
                                 <div class="col-sm-4">
-                                    <strong class="text-light">Opmerking:</strong>
+                                    <strong style="color: #f7fafc;">Opmerking:</strong>
                                 </div>
                                 <div class="col-sm-8">
-                                    <span class="text-light-emphasis"><?php echo nl2br(htmlspecialchars($data['reservering']->opmerking)); ?></span>
+                                    <span style="color: #cbd5e0;"><?php echo nl2br(htmlspecialchars($data['reservering']->opmerking)); ?></span>
                                 </div>
                             </div>
                             <?php endif; ?>
 
                             <div class="row mb-0">
                                 <div class="col-sm-4">
-                                    <strong class="text-light">Aangemaakt op:</strong>
+                                    <strong style="color: #f7fafc;">Aangemaakt op:</strong>
                                 </div>
                                 <div class="col-sm-8">
-                                    <span class="text-light-emphasis"><?php echo date('d-m-Y H:i', strtotime($data['reservering']->aangemaakt_op)); ?></span>
+                                    <span style="color: #cbd5e0;"><?php echo date('d-m-Y H:i', strtotime($data['reservering']->aangemaakt_op)); ?></span>
                                 </div>
                             </div>
                         </div>
@@ -129,10 +129,10 @@
                         <div class="card-body">
                             <div class="row mb-3">
                                 <div class="col-sm-4">
-                                    <strong class="text-light">Naam:</strong>
+                                    <strong style="color: #f7fafc;">Naam:</strong>
                                 </div>
                                 <div class="col-sm-8">
-                                    <span class="text-light">
+                                    <span style="color: #e2e8f0;">
                                         <?php echo htmlspecialchars(($data['reservering']->voornaam ?? '') . ' ' . ($data['reservering']->achternaam ?? '')); ?>
                                     </span>
                                 </div>
@@ -140,20 +140,20 @@
 
                             <div class="row mb-3">
                                 <div class="col-sm-4">
-                                    <strong class="text-light">Email:</strong>
+                                    <strong style="color: #f7fafc;">Email:</strong>
                                 </div>
                                 <div class="col-sm-8">
-                                    <span class="text-light"><?php echo htmlspecialchars($data['reservering']->klant_email ?? 'Onbekend'); ?></span>
+                                    <span style="color: #e2e8f0;"><?php echo htmlspecialchars($data['reservering']->klant_email ?? 'Onbekend'); ?></span>
                                 </div>
                             </div>
 
                             <?php if(isset($data['reservering']->telefoon) && $data['reservering']->telefoon): ?>
                             <div class="row mb-0">
                                 <div class="col-sm-4">
-                                    <strong class="text-light">Telefoon:</strong>
+                                    <strong style="color: #f7fafc;">Telefoon:</strong>
                                 </div>
                                 <div class="col-sm-8">
-                                    <span class="text-light"><?php echo htmlspecialchars($data['reservering']->telefoon); ?></span>
+                                    <span style="color: #e2e8f0;"><?php echo htmlspecialchars($data['reservering']->telefoon); ?></span>
                                 </div>
                             </div>
                             <?php endif; ?>
@@ -170,16 +170,16 @@
                         <div class="card-body">
                             <div class="row mb-3">
                                 <div class="col-sm-4">
-                                    <strong class="text-light">Bedrag:</strong>
+                                    <strong style="color: #f7fafc;">Bedrag:</strong>
                                 </div>
                                 <div class="col-sm-8">
-                                    <strong class="text-light">€<?php echo number_format($data['reservering']->prijs_per_persoon ?? 0, 2, ',', '.'); ?></strong>
+                                    <strong style="color: #e2e8f0;">€<?php echo number_format($data['reservering']->prijs_per_persoon ?? 0, 2, ',', '.'); ?></strong>
                                 </div>
                             </div>
 
                             <div class="row mb-3">
                                 <div class="col-sm-4">
-                                    <strong class="text-light">Betaalstatus:</strong>
+                                    <strong style="color: #f7fafc;">Betaalstatus:</strong>
                                 </div>
                                 <div class="col-sm-8">
                                     <span class="badge bg-<?php 
@@ -194,10 +194,10 @@
                             <?php if(isset($data['reservering']->betaal_opmerking) && $data['reservering']->betaal_opmerking): ?>
                             <div class="row mb-0">
                                 <div class="col-sm-4">
-                                    <strong class="text-light">Opmerking:</strong>
+                                    <strong style="color: #f7fafc;">Opmerking:</strong>
                                 </div>
                                 <div class="col-sm-8">
-                                    <span class="text-light-emphasis"><?php echo nl2br(htmlspecialchars($data['reservering']->betaal_opmerking)); ?></span>
+                                    <span style="color: #cbd5e0;"><?php echo nl2br(htmlspecialchars($data['reservering']->betaal_opmerking)); ?></span>
                                 </div>
                             </div>
                             <?php endif; ?>

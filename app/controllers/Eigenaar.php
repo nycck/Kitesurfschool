@@ -698,4 +698,176 @@ class Eigenaar extends BaseController {
     private function getInstructeursRapport($periode, $datum) {
         return $this->userModel->getInstructeursRapport($periode, $datum);
     }
+
+    public function nieuwe_klant() {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $email = trim($_POST['email']);
+            $voornaam = trim($_POST['voornaam']);
+            $achternaam = trim($_POST['achternaam']);
+            $telefoon = trim($_POST['telefoon']);
+            $geboortedatum = trim($_POST['geboortedatum']);
+            $adres = trim($_POST['adres']);
+            $postcode = trim($_POST['postcode']);
+            $woonplaats = trim($_POST['woonplaats']);
+            
+            $errors = [];
+            
+            // Validatie
+            if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $errors[] = 'Geldig email adres is verplicht';
+            } elseif ($this->userModel->emailExists($email)) {
+                $errors[] = 'Email adres is al geregistreerd';
+            }
+            
+            if (empty($voornaam) || empty($achternaam)) {
+                $errors[] = 'Voor- en achternaam zijn verplicht';
+            }
+            
+            if (empty($telefoon)) {
+                $errors[] = 'Telefoon is verplicht';
+            }
+            
+            if (empty($geboortedatum)) {
+                $errors[] = 'Geboortedatum is verplicht';
+            }
+            
+            if (empty($adres)) {
+                $errors[] = 'Adres is verplicht';
+            }
+            
+            if (empty($postcode)) {
+                $errors[] = 'Postcode is verplicht';
+            }
+            
+            if (empty($woonplaats)) {
+                $errors[] = 'Woonplaats is verplicht';
+            }
+            
+            if (empty($errors)) {
+                // Generate activation token
+                $activationToken = bin2hex(random_bytes(32));
+                
+                // Maak gebruiker aan met activation token (niet direct actief)
+                $userId = $this->userModel->register($email, $activationToken);
+                
+                if ($userId) {
+                    // Voeg persoonsgegevens toe
+                    $persoonData = [
+                        'user_id' => $userId,
+                        'voornaam' => $voornaam,
+                        'achternaam' => $achternaam,
+                        'telefoon' => $telefoon,
+                        'geboortedatum' => $geboortedatum,
+                        'adres' => $adres,
+                        'postcode' => $postcode,
+                        'woonplaats' => $woonplaats
+                    ];
+                    
+                    if ($this->persoonModel->savePersoon($persoonData)) {
+                        // Stuur activatie email
+                        $emailService = new EmailService();
+                        $emailService->sendActivationEmail($email, $activationToken);
+                        
+                        flash('success_message', "Klant {$voornaam} {$achternaam} is succesvol toegevoegd! Een activatielink is naar {$email} verstuurd.", 'alert alert-success');
+                    } else {
+                        flash('error_message', 'Fout bij het opslaan van persoonsgegevens.', 'alert alert-danger');
+                    }
+                } else {
+                    flash('error_message', 'Fout bij het aanmaken van gebruikersaccount.', 'alert alert-danger');
+                }
+            } else {
+                flash('error_message', implode('<br>', $errors), 'alert alert-danger');
+            }
+        }
+        
+        redirect('eigenaar/index');
+    }
+
+    public function nieuwe_instructeur() {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $email = trim($_POST['email']);
+            $voornaam = trim($_POST['voornaam']);
+            $achternaam = trim($_POST['achternaam']);
+            $telefoon = trim($_POST['telefoon']);
+            $geboortedatum = trim($_POST['geboortedatum']);
+            $adres = trim($_POST['adres']);
+            $postcode = trim($_POST['postcode']);
+            $woonplaats = trim($_POST['woonplaats']);
+            
+            $errors = [];
+            
+            // Validatie
+            if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $errors[] = 'Geldig email adres is verplicht';
+            } elseif ($this->userModel->emailExists($email)) {
+                $errors[] = 'Email adres is al geregistreerd';
+            }
+            
+            if (empty($voornaam) || empty($achternaam)) {
+                $errors[] = 'Voor- en achternaam zijn verplicht';
+            }
+            
+            if (empty($telefoon)) {
+                $errors[] = 'Telefoon is verplicht';
+            }
+            
+            if (empty($geboortedatum)) {
+                $errors[] = 'Geboortedatum is verplicht';
+            }
+            
+            if (empty($adres)) {
+                $errors[] = 'Adres is verplicht';
+            }
+            
+            if (empty($postcode)) {
+                $errors[] = 'Postcode is verplicht';
+            }
+            
+            if (empty($woonplaats)) {
+                $errors[] = 'Woonplaats is verplicht';
+            }
+            
+            if (empty($errors)) {
+                // Generate activation token
+                $activationToken = bin2hex(random_bytes(32));
+                
+                // Maak instructeur aan met activation token (niet direct actief)
+                // De role wordt standaard 'klant', we moeten deze later aanpassen
+                $userId = $this->userModel->register($email, $activationToken);
+                
+                if ($userId) {
+                    // Update de role naar 'instructeur'
+                    $this->userModel->updateUserRole($userId, 'instructeur');
+                    
+                    // Voeg persoonsgegevens toe
+                    $persoonData = [
+                        'user_id' => $userId,
+                        'voornaam' => $voornaam,
+                        'achternaam' => $achternaam,
+                        'telefoon' => $telefoon,
+                        'geboortedatum' => $geboortedatum,
+                        'adres' => $adres,
+                        'postcode' => $postcode,
+                        'woonplaats' => $woonplaats
+                    ];
+                    
+                    if ($this->persoonModel->savePersoon($persoonData)) {
+                        // Stuur activatie email
+                        $emailService = new EmailService();
+                        $emailService->sendActivationEmail($email, $activationToken);
+                        
+                        flash('success_message', "Instructeur {$voornaam} {$achternaam} is succesvol toegevoegd! Een activatielink is naar {$email} verstuurd.", 'alert alert-success');
+                    } else {
+                        flash('error_message', 'Fout bij het opslaan van persoonsgegevens.', 'alert alert-danger');
+                    }
+                } else {
+                    flash('error_message', 'Fout bij het aanmaken van gebruikersaccount.', 'alert alert-danger');
+                }
+            } else {
+                flash('error_message', implode('<br>', $errors), 'alert alert-danger');
+            }
+        }
+        
+        redirect('eigenaar/index');
+    }
 }

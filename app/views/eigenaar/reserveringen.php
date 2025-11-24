@@ -13,46 +13,46 @@
             <!-- Statistieken Cards -->
             <div class="row mb-4">
                 <div class="col-md-3">
-                    <div class="card border-0 shadow-lg card-dark">
+                    <div class="card border-0 shadow-lg" style="background-color: #2d3748;">
                         <div class="card-body text-center">
                             <h3 class="text-light"><?php echo $data['statistieken']['totaal']; ?></h3>
-                            <p class="mb-0 text-light-emphasis">Totaal Reserveringen</p>
+                            <p class="mb-0" style="color: #cbd5e0;">Totaal Reserveringen</p>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-3">
-                    <div class="card border-0 shadow-lg card-dark">
+                    <div class="card border-0 shadow-lg" style="background-color: #2d3748;">
                         <div class="card-body text-center">
                             <h3 class="text-success"><?php echo $data['statistieken']['bevestigd']; ?></h3>
-                            <p class="mb-0 text-light-emphasis">Bevestigd</p>
+                            <p class="mb-0" style="color: #cbd5e0;">Bevestigd</p>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-3">
-                    <div class="card border-0 shadow-lg card-dark">
+                    <div class="card border-0 shadow-lg" style="background-color: #2d3748;">
                         <div class="card-body text-center">
                             <h3 class="text-warning"><?php echo $data['statistieken']['wachtend']; ?></h3>
-                            <p class="mb-0 text-light-emphasis">Wachtend</p>
+                            <p class="mb-0" style="color: #cbd5e0;">Wachtend</p>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-3">
-                    <div class="card border-0 shadow-lg card-dark">
+                    <div class="card border-0 shadow-lg" style="background-color: #2d3748;">
                         <div class="card-body text-center">
                             <h3 class="text-danger"><?php echo $data['statistieken']['geannuleerd']; ?></h3>
-                            <p class="mb-0 text-light-emphasis">Geannuleerd</p>
+                            <p class="mb-0" style="color: #cbd5e0;">Geannuleerd</p>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Filter Sectie -->
-            <div class="card mb-4 border-0 shadow-lg card-dark">
+            <div class="card mb-4 border-0 shadow-lg" style="background-color: #2d3748;">
                 <div class="card-body">
                     <form method="GET" action="<?php echo URLROOT; ?>/eigenaar/reserveringen" class="row g-3">
                         <div class="col-md-4">
-                            <label for="status" class="form-label text-light-emphasis">Status Filter</label>
-                            <select name="status" id="status" class="form-select">
+                            <label for="status" class="form-label text-light">Status Filter</label>
+                            <select name="status" id="status" class="form-select bg-dark text-light" style="border-color: #4a5568;">
                                 <option value="alle" <?php echo ($data['status'] == 'alle') ? 'selected' : ''; ?>>Alle Statussen</option>
                                 <option value="aangevraagd" <?php echo ($data['status'] == 'aangevraagd') ? 'selected' : ''; ?>>Aangevraagd</option>
                                 <option value="bevestigd" <?php echo ($data['status'] == 'bevestigd') ? 'selected' : ''; ?>>Bevestigd</option>
@@ -61,8 +61,8 @@
                             </select>
                         </div>
                         <div class="col-md-4">
-                            <label for="periode" class="form-label text-light-emphasis">Periode</label>
-                            <select name="periode" id="periode" class="form-select">
+                            <label for="periode" class="form-label text-light">Periode</label>
+                            <select name="periode" id="periode" class="form-select bg-dark text-light" style="border-color: #4a5568;">
                                 <option value="alle" <?php echo ($data['periode'] == 'alle') ? 'selected' : ''; ?>>Alle Periodes</option>
                                 <option value="vandaag" <?php echo ($data['periode'] == 'vandaag') ? 'selected' : ''; ?>>Vandaag</option>
                                 <option value="week" <?php echo ($data['periode'] == 'week') ? 'selected' : ''; ?>>Deze Week</option>
@@ -82,38 +82,38 @@
             </div>
 
             <!-- Reserveringen Tabel -->
-            <div class="card border-0 shadow-lg card-dark">
+            <div class="card border-0 shadow-lg" style="background-color: #2d3748;">
                 <div class="card-body">
                     <?php if(!empty($data['reserveringen'])): ?>
                         <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead class="border-bottom border-secondary">
+                            <table class="table table-dark table-hover">
+                                <thead style="background-color: #1a202c;">
                                     <tr>
-                                        <th class="text-light">ID</th>
-                                        <th class="text-light">Klant</th>
-                                        <th class="text-light">Lespakket</th>
-                                        <th class="text-light">Locatie</th>
-                                        <th class="text-light">Datum</th>
-                                        <th class="text-light">Status</th>
-                                        <th class="text-light">Betaling</th>
-                                        <th class="text-light">Acties</th>
+                                        <th>ID</th>
+                                        <th>Klant</th>
+                                        <th>Lespakket</th>
+                                        <th>Locatie</th>
+                                        <th>Datum</th>
+                                        <th>Status</th>
+                                        <th>Betaling</th>
+                                        <th>Acties</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <?php foreach($data['reserveringen'] as $reservering): ?>
                                         <tr>
-                                            <td class="text-light">#<?php echo $reservering->id; ?></td>
-                                            <td class="text-light">
+                                            <td>#<?php echo $reservering->id; ?></td>
+                                            <td>
                                                 <?php 
                                                 $voornaam = $reservering->klant_voornaam ?? 'Onbekend';
                                                 $achternaam = $reservering->klant_achternaam ?? '';
                                                 echo htmlspecialchars($voornaam . ' ' . $achternaam); 
                                                 ?><br>
-                                                <small class="text-light-emphasis"><?php echo htmlspecialchars($reservering->klant_email ?? 'Geen email'); ?></small>
+                                                <small style="color: #cbd5e0;"><?php echo htmlspecialchars($reservering->klant_email ?? 'Geen email'); ?></small>
                                             </td>
-                                            <td class="text-light"><?php echo htmlspecialchars($reservering->pakket_naam ?? 'Onbekend pakket'); ?></td>
-                                            <td class="text-light"><?php echo htmlspecialchars($reservering->locatie_naam ?? 'Onbekende locatie'); ?></td>
-                                            <td class="text-light">
+                                            <td><?php echo htmlspecialchars($reservering->pakket_naam ?? 'Onbekend pakket'); ?></td>
+                                            <td><?php echo htmlspecialchars($reservering->locatie_naam ?? 'Onbekende locatie'); ?></td>
+                                            <td>
                                                 <?php 
                                                 if(isset($reservering->gewenste_datum) && $reservering->gewenste_datum) {
                                                     echo date('d-m-Y', strtotime($reservering->gewenste_datum));
