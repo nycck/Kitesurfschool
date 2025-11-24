@@ -142,7 +142,6 @@ class Instructeurs extends BaseController {
     public function nieuwe_klant() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $email = trim($_POST['email']);
-            $wachtwoord = trim($_POST['wachtwoord']);
             $voornaam = trim($_POST['voornaam']);
             $achternaam = trim($_POST['achternaam']);
             $telefoon = trim($_POST['telefoon']);
@@ -160,10 +159,6 @@ class Instructeurs extends BaseController {
                 $errors[] = 'Email adres is al geregistreerd';
             }
             
-            if (empty($wachtwoord)) {
-                $errors[] = 'Wachtwoord is verplicht';
-            }
-            
             if (empty($voornaam) || empty($achternaam)) {
                 $errors[] = 'Voor- en achternaam zijn verplicht';
             }
@@ -173,8 +168,11 @@ class Instructeurs extends BaseController {
             }
             
             if (empty($errors)) {
-                // Maak gebruiker aan
-                $userId = $this->userModel->registerAndActivate($email, $wachtwoord);
+                // Generate activation token
+                $activationToken = bin2hex(random_bytes(32));
+                
+                // Maak gebruiker aan met activation token (niet direct actief)
+                $userId = $this->userModel->register($email, $activationToken);
                 
                 if ($userId) {
                     // Voeg persoonsgegevens toe
@@ -190,10 +188,11 @@ class Instructeurs extends BaseController {
                     ];
                     
                     if ($this->persoonModel->savePersoon($persoonData)) {
-                        // Stuur welkomst email
-                        $this->sendWelkomstEmail($email, $voornaam, $wachtwoord);
+                        // Stuur activatie email
+                        $emailService = new EmailService();
+                        $emailService->sendActivationEmail($email, $activationToken);
                         
-                        flash('success_message', "Klant {$voornaam} {$achternaam} is succesvol toegevoegd!", 'alert alert-success');
+                        flash('success_message', "Klant {$voornaam} {$achternaam} is succesvol toegevoegd! Een activatielink is naar {$email} verstuurd.", 'alert alert-success');
                     } else {
                         flash('error_message', 'Fout bij het opslaan van persoonsgegevens.', 'alert alert-danger');
                     }
@@ -395,40 +394,7 @@ class Instructeurs extends BaseController {
         redirect('instructeurs/planning');
     }
 
-    private function sendWelkomstEmail($email, $naam, $wachtwoord) {
-        $emailService = new EmailService();
-        
-        $subject = 'Welkom bij Windkracht-12 - Je account is aangemaakt';
-        
-        $body = "
-        <h2>Welkom bij Windkracht-12, {$naam}!</h2>
-        
-        <p>Je account is aangemaakt door één van onze instructeurs. Je kunt nu inloggen met de volgende gegevens:</p>
-        
-        <div style='background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;'>
-            <p><strong>Email:</strong> {$email}</p>
-            <p><strong>Wachtwoord:</strong> {$wachtwoord}</p>
-        </div>
-        
-        <p><strong>Belangrijk:</strong> We raden je aan om je wachtwoord te wijzigen na je eerste inlog.</p>
-        
-        <p>Je kunt inloggen op: <a href='" . URLROOT . "/auth/login'>" . URLROOT . "/auth/login</a></p>
-        
-        <p>Na het inloggen kun je:</p>
-        <ul>
-            <li>Je profiel aanvullen</li>
-            <li>Lessen reserveren</li>
-            <li>Je reserveringen beheren</li>
-        </ul>
-        
-        <p>Welkom bij de Windkracht-12 familie en tot ziens op het water!</p>
-        
-        <p>Met vriendelijke groet,<br>
-        Team Windkracht-12</p>
-        ";
-        
-        $emailService->sendEmail($email, $subject, $body);
-    }
+
 
     public function les_details($reservering_id) {
         $reservering = $this->reserveringModel->getReserveringById($reservering_id);

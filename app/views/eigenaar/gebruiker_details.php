@@ -29,18 +29,18 @@
                                 </div>
                             </div>
                             
-                            <table class="table table-borderless">
+                            <table class="table table-borderless table-dark">
                                 <tr>
-                                    <td><strong>ID:</strong></td>
-                                    <td><?php echo $data['gebruiker']->id; ?></td>
+                                    <td class="text-light"><strong>ID:</strong></td>
+                                    <td class="text-light"><?php echo $data['gebruiker']->id; ?></td>
                                 </tr>
                                 <tr>
-                                    <td><strong>Naam:</strong></td>
-                                    <td><?php echo htmlspecialchars($data['gebruiker']->voornaam . ' ' . $data['gebruiker']->achternaam); ?></td>
+                                    <td class="text-light"><strong>Naam:</strong></td>
+                                    <td class="text-light"><?php echo htmlspecialchars($data['gebruiker']->voornaam . ' ' . $data['gebruiker']->achternaam); ?></td>
                                 </tr>
                                 <tr>
-                                    <td><strong>Email:</strong></td>
-                                    <td><?php echo htmlspecialchars($data['gebruiker']->email); ?></td>
+                                    <td class="text-light"><strong>Email:</strong></td>
+                                    <td class="text-light"><?php echo htmlspecialchars($data['gebruiker']->email); ?></td>
                                 </tr>
                                 <tr>
                                     <td><strong>Rol:</strong></td>
@@ -62,8 +62,8 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td><strong>Aangemeld:</strong></td>
-                                    <td>
+                                    <td class="text-light"><strong>Aangemeld:</strong></td>
+                                    <td class="text-light">
                                         <?php 
                                         if(isset($data['gebruiker']->aangemaakt_op) && $data['gebruiker']->aangemaakt_op) {
                                             echo date('d-m-Y H:i', strtotime($data['gebruiker']->aangemaakt_op));
@@ -74,8 +74,8 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td><strong>Laatste login:</strong></td>
-                                    <td>
+                                    <td class="text-light"><strong>Laatste login:</strong></td>
+                                    <td class="text-light">
                                         <?php 
                                         if(isset($data['gebruiker']->laatste_login) && $data['gebruiker']->laatste_login) {
                                             echo date('d-m-Y H:i', strtotime($data['gebruiker']->laatste_login));
@@ -123,14 +123,14 @@
                         </div>
                         <div class="card-body">
                             <?php if($data['persoon']): ?>
-                                <table class="table table-borderless">
+                                <table class="table table-borderless table-dark">
                                     <tr>
-                                        <td><strong>Telefoon:</strong></td>
-                                        <td><?php echo htmlspecialchars($data['persoon']->telefoon ?: 'Niet opgegeven'); ?></td>
+                                        <td class="text-light"><strong>Telefoon:</strong></td>
+                                        <td class="text-light"><?php echo htmlspecialchars($data['persoon']->telefoon ?: 'Niet opgegeven'); ?></td>
                                     </tr>
                                     <tr>
-                                        <td><strong>Geboortedatum:</strong></td>
-                                        <td>
+                                        <td class="text-light"><strong>Geboortedatum:</strong></td>
+                                        <td class="text-light">
                                             <?php 
                                             if(isset($data['persoon']->geboortedatum) && $data['persoon']->geboortedatum) {
                                                 echo date('d-m-Y', strtotime($data['persoon']->geboortedatum));
@@ -143,28 +143,28 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td><strong>Adres:</strong></td>
-                                        <td><?php echo htmlspecialchars($data['persoon']->adres ?: 'Niet opgegeven'); ?></td>
+                                        <td class="text-light"><strong>Adres:</strong></td>
+                                        <td class="text-light"><?php echo htmlspecialchars($data['persoon']->adres ?: 'Niet opgegeven'); ?></td>
                                     </tr>
                                     <tr>
-                                        <td><strong>Postcode:</strong></td>
-                                        <td><?php echo htmlspecialchars($data['persoon']->postcode ?: 'Niet opgegeven'); ?></td>
+                                        <td class="text-light"><strong>Postcode:</strong></td>
+                                        <td class="text-light"><?php echo htmlspecialchars($data['persoon']->postcode ?: 'Niet opgegeven'); ?></td>
                                     </tr>
                                     <tr>
-                                        <td><strong>Plaats:</strong></td>
-                                        <td><?php echo htmlspecialchars($data['persoon']->plaats ?: 'Niet opgegeven'); ?></td>
+                                        <td class="text-light"><strong>Plaats:</strong></td>
+                                        <td class="text-light"><?php echo htmlspecialchars($data['persoon']->plaats ?: 'Niet opgegeven'); ?></td>
                                     </tr>
                                     <tr>
-                                        <td><strong>Gewicht:</strong></td>
-                                        <td><?php echo $data['persoon']->gewicht ? $data['persoon']->gewicht . ' kg' : 'Niet opgegeven'; ?></td>
+                                        <td class="text-light"><strong>Gewicht:</strong></td>
+                                        <td class="text-light"><?php echo $data['persoon']->gewicht ? $data['persoon']->gewicht . ' kg' : 'Niet opgegeven'; ?></td>
                                     </tr>
                                     <tr>
-                                        <td><strong>Lengte:</strong></td>
-                                        <td><?php echo $data['persoon']->lengte ? $data['persoon']->lengte . ' cm' : 'Niet opgegeven'; ?></td>
+                                        <td class="text-light"><strong>Lengte:</strong></td>
+                                        <td class="text-light"><?php echo $data['persoon']->lengte ? $data['persoon']->lengte . ' cm' : 'Niet opgegeven'; ?></td>
                                     </tr>
                                     <tr>
-                                        <td><strong>Ervaring:</strong></td>
-                                        <td>
+                                        <td class="text-light"><strong>Ervaring:</strong></td>
+                                        <td class="text-light">
                                             <?php 
                                             $ervaringen = ['beginner' => 'Beginner', 'gevorderd' => 'Gevorderd', 'expert' => 'Expert'];
                                             echo $ervaringen[$data['persoon']->ervaring_niveau] ?? 'Niet opgegeven';
@@ -173,7 +173,7 @@
                                     </tr>
                                 </table>
                             <?php else: ?>
-                                <p class="text-muted">Geen persoonlijke informatie beschikbaar.</p>
+                                <p class="text-light-emphasis">Geen persoonlijke informatie beschikbaar.</p>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -192,11 +192,11 @@
                             <?php if(!empty($data['reserveringen'])): ?>
                                 <div style="max-height: 400px; overflow-y: auto;">
                                     <?php foreach($data['reserveringen'] as $reservering): ?>
-                                        <div class="border-bottom py-2 mb-2">
+                                        <div class="border-bottom border-secondary py-2 mb-2">
                                             <div class="d-flex justify-content-between align-items-start">
                                                 <div>
-                                                    <h6 class="mb-1"><?php echo htmlspecialchars($reservering->lespakket_naam); ?></h6>
-                                                    <small class="text-muted">
+                                                    <h6 class="mb-1 text-light"><?php echo htmlspecialchars($reservering->lespakket_naam); ?></h6>
+                                                    <small class="text-light-emphasis">
                                                         <?php 
                                                         if(isset($reservering->gewenste_datum) && $reservering->gewenste_datum) {
                                                             echo date('d-m-Y', strtotime($reservering->gewenste_datum));
@@ -206,7 +206,7 @@
                                                         ?>
                                                     </small>
                                                     <br>
-                                                    <small class="text-muted">
+                                                    <small class="text-light-emphasis">
                                                         €<?php echo number_format($reservering->lespakket_prijs, 2); ?>
                                                     </small>
                                                 </div>
@@ -230,7 +230,7 @@
                                     <?php endforeach; ?>
                                 </div>
                             <?php else: ?>
-                                <p class="text-muted">Geen reserveringen gevonden.</p>
+                                <p class="text-light-emphasis">Geen reserveringen gevonden.</p>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -243,19 +243,19 @@
 <!-- Wijzig Rol Modal -->
 <div class="modal fade" id="wijzigRolModal" tabindex="-1" aria-labelledby="wijzigRolModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
+        <div class="modal-content bg-dark text-light">
+            <div class="modal-header border-secondary">
                 <h5 class="modal-title" id="wijzigRolModalLabel">Gebruikersrol Wijzigen</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form method="POST" action="<?php echo URLROOT; ?>/eigenaar/wijzig_rol/<?php echo $data['gebruiker']->id; ?>">
                 <div class="modal-body">
-                    <p>Weet je zeker dat je de rol wilt wijzigen voor gebruiker: 
-                       <strong><?php echo htmlspecialchars($data['gebruiker']->voornaam . ' ' . $data['gebruiker']->achternaam); ?></strong>?</p>
+                    <p class="text-light">Weet je zeker dat je de rol wilt wijzigen voor gebruiker: 
+                       <strong class="text-warning"><?php echo htmlspecialchars($data['gebruiker']->voornaam . ' ' . $data['gebruiker']->achternaam); ?></strong>?</p>
                     
                     <div class="mb-3">
-                        <label for="nieuwe_rol" class="form-label">Nieuwe Rol</label>
-                        <select name="nieuwe_rol" id="nieuwe_rol" class="form-select" required>
+                        <label for="nieuwe_rol" class="form-label text-light">Nieuwe Rol</label>
+                        <select name="nieuwe_rol" id="nieuwe_rol" class="form-select bg-dark text-light border-secondary" required>
                             <option value="">Selecteer een rol...</option>
                             <option value="klant" <?php echo ($data['gebruiker']->role == 'klant') ? 'disabled' : ''; ?>>Klant</option>
                             <option value="instructeur" <?php echo ($data['gebruiker']->role == 'instructeur') ? 'disabled' : ''; ?>>Instructeur</option>
@@ -268,7 +268,7 @@
                         <strong>Let op:</strong> De gebruiker ontvangt een email notificatie over deze wijziging.
                     </div>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer border-secondary">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuleren</button>
                     <button type="submit" class="btn btn-warning">Rol Wijzigen</button>
                 </div>
@@ -280,24 +280,24 @@
 <!-- Email Modal -->
 <div class="modal fade" id="emailModal" tabindex="-1" aria-labelledby="emailModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
+        <div class="modal-content bg-dark text-light">
+            <div class="modal-header border-secondary">
                 <h5 class="modal-title" id="emailModalLabel">Email Versturen</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form method="POST" action="<?php echo URLROOT; ?>/eigenaar/stuur_email/<?php echo $data['gebruiker']->id; ?>">
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="email_onderwerp" class="form-label">Onderwerp</label>
-                        <input type="text" name="onderwerp" id="email_onderwerp" class="form-control" required>
+                        <label for="email_onderwerp" class="form-label text-light">Onderwerp</label>
+                        <input type="text" name="onderwerp" id="email_onderwerp" class="form-control bg-dark text-light border-secondary" required>
                     </div>
                     
                     <div class="mb-3">
-                        <label for="email_bericht" class="form-label">Bericht</label>
-                        <textarea name="bericht" id="email_bericht" rows="6" class="form-control" required></textarea>
+                        <label for="email_bericht" class="form-label text-light">Bericht</label>
+                        <textarea name="bericht" id="email_bericht" rows="6" class="form-control bg-dark text-light border-secondary" required></textarea>
                     </div>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer border-secondary">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuleren</button>
                     <button type="submit" class="btn btn-primary">
                         <i class="fas fa-paper-plane"></i> Versturen
@@ -337,18 +337,85 @@
     color: #fff !important;
 }
 
-.card-dark .table {
+.card-dark .table-dark {
+    color: #fff;
+    background-color: transparent;
+}
+
+.card-dark .table-dark th,
+.card-dark .table-dark td {
+    border-color: rgba(255, 255, 255, 0.1);
     color: #fff;
 }
 
-.card-dark .table th,
-.card-dark .table td {
-    border-color: rgba(255, 255, 255, 0.1);
+.card-dark .table-borderless {
+    color: #fff;
 }
 
 .card-dark .table-borderless th,
 .card-dark .table-borderless td {
     color: #fff;
+    border: none;
+}
+
+.btn-outline-info,
+.btn-outline-danger,
+.btn-outline-success {
+    border-color: currentColor;
+}
+
+.btn-outline-info:hover {
+    background-color: #0dcaf0;
+    border-color: #0dcaf0;
+    color: #000;
+}
+
+.btn-outline-danger:hover {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+.btn-outline-success:hover {
+    background-color: #198754;
+    border-color: #198754;
+}
+
+.border-secondary {
+    border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Modal Dark Theme */
+.modal-content.bg-dark {
+    background-color: rgba(30, 30, 50, 0.95) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal-content.bg-dark .form-select,
+.modal-content.bg-dark .form-control {
+    background-color: rgba(0, 0, 0, 0.3);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #fff;
+}
+
+.modal-content.bg-dark .form-select:focus,
+.modal-content.bg-dark .form-control:focus {
+    background-color: rgba(0, 0, 0, 0.4);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: #fff;
+    box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.1);
+}
+
+.modal-content.bg-dark .form-select option {
+    background-color: #1e1e32;
+    color: #fff;
+}
+
+.modal-content.bg-dark .form-control::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.modal-content.bg-dark .border-secondary {
+    border-color: rgba(255, 255, 255, 0.2) !important;
 }
 </style>
 

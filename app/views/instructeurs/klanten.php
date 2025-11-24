@@ -117,16 +117,12 @@
             </div>
             <form method="POST" action="<?php echo URLROOT; ?>/instructeurs/nieuwe_klant">
                 <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="email" class="form-label">Email adres <span class="text-danger">*</span></label>
-                            <input type="email" class="form-control" id="email" name="email" required>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="wachtwoord" class="form-label">Tijdelijk wachtwoord <span class="text-danger">*</span></label>
-                            <input type="password" class="form-control" id="wachtwoord" name="wachtwoord" 
-                                   value="KiteSurf2024!" required>
-                            <div class="form-text">Standaard: KiteSurf2024!</div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email adres <span class="text-danger">*</span></label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                        <div class="form-text">
+                            <i class="fas fa-info-circle me-1"></i>
+                            De klant ontvangt een activatielink per email om een wachtwoord in te stellen
                         </div>
                     </div>
                     <div class="row">

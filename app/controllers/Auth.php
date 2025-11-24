@@ -183,7 +183,8 @@ class Auth extends BaseController
     public function logout()
     {
         if (isset($_SESSION['user_id'])) {
-            $this->userModel->logout($_SESSION['user_id'], $_SESSION['user_email']);
+            $email = $_SESSION['user_email'] ?? 'unknown';
+            $this->userModel->logout($_SESSION['user_id'], $email);
         }
         
         session_destroy();

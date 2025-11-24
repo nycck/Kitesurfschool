@@ -550,31 +550,8 @@ class Eigenaar extends BaseController {
 
     private function sendRolWijzigingEmail($gebruiker, $nieuwe_rol) {
         $emailService = new EmailService();
-        
-        $subject = 'Je account rol is bijgewerkt - Windkracht-12';
-        
-        $rol_beschrijving = [
-            'klant' => 'Je kunt nu lessen reserveren en je reserveringen beheren.',
-            'instructeur' => 'Je hebt nu toegang tot de instructeur functionaliteiten.',
-            'eigenaar' => 'Je hebt nu volledige toegang tot alle systeem functionaliteiten.'
-        ];
-        
-        $body = "
-        <h2>Beste {$gebruiker->voornaam},</h2>
-        
-        <p>Je account rol is bijgewerkt naar: <strong>" . ucfirst($nieuwe_rol) . "</strong></p>
-        
-        <p>{$rol_beschrijving[$nieuwe_rol]}</p>
-        
-        <p>Log opnieuw in om de nieuwe functionaliteiten te gebruiken.</p>
-        
-        <p>Heb je vragen over deze wijziging? Neem contact op via info@kitesurfschool-windkracht12.nl</p>
-        
-        <p>Met vriendelijke groet,<br>
-        Team Windkracht-12</p>
-        ";
-        
-                $emailService->sendEmail($gebruiker->email, $subject, $body);
+        $naam = $gebruiker->voornaam ? $gebruiker->voornaam : 'Gebruiker';
+        $emailService->sendRoleChangeEmail($gebruiker->email, $naam, $nieuwe_rol);
     }
 
     public function toggle_user_status($id) {

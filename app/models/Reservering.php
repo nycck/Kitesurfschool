@@ -45,7 +45,7 @@ class Reservering
         return $this->db->execute();
     }
 
-    // Haal reserveringen op van klant
+    // Haal reserveringen op van klant (user_id)
     public function getReserveringenByKlant($klantId, $withDetails = false)
     {
         if ($withDetails) {
@@ -56,26 +56,26 @@ class Reservering
                               FROM reserveringen r
                               LEFT JOIN lespakketten lp ON r.lespakket_id = lp.id
                               LEFT JOIN locaties l ON r.locatie_id = l.id
-                              LEFT JOIN users u ON r.klant_id = u.id
-                              LEFT JOIN personen p ON u.id = p.user_id
+                              LEFT JOIN personen p ON r.persoon_id = p.id
                               LEFT JOIN les_sessies ls ON r.id = ls.reservering_id
-                              WHERE r.klant_id = :klant_id
+                              WHERE p.user_id = :klant_id
                               GROUP BY r.id
-                              ORDER BY r.created_at DESC");
+                              ORDER BY r.aangemaakt_op DESC");
         } else {
             $this->db->query("SELECT r.*, lp.naam as pakket_naam, l.naam as locatie_naam 
                               FROM reserveringen r
                               LEFT JOIN lespakketten lp ON r.lespakket_id = lp.id
                               LEFT JOIN locaties l ON r.locatie_id = l.id
-                              WHERE r.klant_id = :klant_id
-                              ORDER BY r.created_at DESC");
+                              LEFT JOIN personen p ON r.persoon_id = p.id
+                              WHERE p.user_id = :klant_id
+                              ORDER BY r.aangemaakt_op DESC");
         }
         
         $this->db->bind(':klant_id', $klantId);
         return $this->db->resultSet();
     }
 
-    // Haal reservering op met ID en klant verificatie
+    // Haal reservering op met ID en klant verificatie (user_id)
     public function getReserveringByIdAndKlant($id, $klantId)
     {
         $this->db->query("SELECT r.*, lp.naam as pakket_naam, lp.beschrijving as pakket_beschrijving,
@@ -84,9 +84,8 @@ class Reservering
                           FROM reserveringen r
                           LEFT JOIN lespakketten lp ON r.lespakket_id = lp.id
                           LEFT JOIN locaties l ON r.locatie_id = l.id
-                          LEFT JOIN users u ON r.klant_id = u.id
-                          LEFT JOIN personen p ON u.id = p.user_id
-                          WHERE r.id = :id AND r.klant_id = :klant_id");
+                          LEFT JOIN personen p ON r.persoon_id = p.id
+                          WHERE r.id = :id AND p.user_id = :klant_id");
         
         $this->db->bind(':id', $id);
         $this->db->bind(':klant_id', $klantId);
@@ -109,7 +108,7 @@ class Reservering
         return $this->db->resultSet();
     }
 
-    // Haal aankomende lessen op voor klant
+    // Haal aankomende lessen op voor klant (user_id)
     public function getAankomendeLessen($klantId, $limit = 10)
     {
         $this->db->query("SELECT ls.*, r.id as reservering_id,
@@ -119,9 +118,9 @@ class Reservering
                           JOIN reserveringen r ON ls.reservering_id = r.id
                           LEFT JOIN lespakketten lp ON r.lespakket_id = lp.id
                           LEFT JOIN locaties l ON r.locatie_id = l.id
-                          LEFT JOIN users ui ON r.instructeur_id = ui.id
-                          LEFT JOIN personen pi ON ui.id = pi.user_id
-                          WHERE r.klant_id = :klant_id 
+                          LEFT JOIN personen p ON r.persoon_id = p.id
+                          LEFT JOIN personen pi ON r.instructeur_id = pi.id
+                          WHERE p.user_id = :klant_id 
                           AND ls.les_datum >= CURDATE() 
                           AND ls.status = 'gepland'
                           ORDER BY ls.les_datum ASC, ls.start_tijd ASC
@@ -132,13 +131,14 @@ class Reservering
         return $this->db->resultSet();
     }
 
-    // Tel voltooide lessen voor klant
+    // Tel voltooide lessen voor klant (user_id)
     public function getVoltooidelessenCount($klantId)
     {
         $this->db->query("SELECT COUNT(*) as count 
                           FROM les_sessies ls
                           JOIN reserveringen r ON ls.reservering_id = r.id
-                          WHERE r.klant_id = :klant_id AND ls.status = 'voltooid'");
+                          LEFT JOIN personen p ON r.persoon_id = p.id
+                          WHERE p.user_id = :klant_id AND ls.status = 'voltooid'");
         
         $this->db->bind(':klant_id', $klantId);
         $result = $this->db->single();
@@ -156,9 +156,10 @@ class Reservering
     // Haal les op bij ID
     public function getLesById($lesId)
     {
-        $this->db->query("SELECT ls.*, r.klant_id, lp.naam as pakket_naam, l.naam as locatie_naam
+        $this->db->query("SELECT ls.*, p.user_id as klant_id, lp.naam as pakket_naam, l.naam as locatie_naam
                           FROM les_sessies ls
                           JOIN reserveringen r ON ls.reservering_id = r.id
+                          LEFT JOIN personen p ON r.persoon_id = p.id
                           LEFT JOIN lespakketten lp ON r.lespakket_id = lp.id
                           LEFT JOIN locaties l ON r.locatie_id = l.id
                           WHERE ls.id = :id");

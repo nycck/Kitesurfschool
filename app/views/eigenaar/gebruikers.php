@@ -46,26 +46,26 @@
                 <div class="card-body">
                     <?php if(!empty($data['gebruikers'])): ?>
                         <div class="table-responsive">
-                            <table class="table table-hover">
+                            <table class="table table-hover table-dark">
                                 <thead class="border-bottom border-secondary">
                                     <tr>
-                                        <th class="text-light">ID</th>
-                                        <th class="text-light">Naam</th>
-                                        <th class="text-light">Email</th>
-                                        <th class="text-light">Rol</th>
-                                        <th class="text-light">Status</th>
-                                        <th class="text-light">Aangemeld op</th>
-                                        <th class="text-light">Acties</th>
+                                        <th>ID</th>
+                                        <th>Naam</th>
+                                        <th>Email</th>
+                                        <th>Rol</th>
+                                        <th>Status</th>
+                                        <th>Aangemeld op</th>
+                                        <th>Acties</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <?php foreach($data['gebruikers'] as $gebruiker): ?>
                                         <tr>
-                                            <td><?php echo $gebruiker->id; ?></td>
-                                            <td>
+                                            <td class="text-light"><?php echo $gebruiker->id; ?></td>
+                                            <td class="text-light">
                                                 <strong><?php echo htmlspecialchars($gebruiker->voornaam . ' ' . $gebruiker->achternaam); ?></strong>
                                             </td>
-                                            <td><?php echo htmlspecialchars($gebruiker->email); ?></td>
+                                            <td class="text-light"><?php echo htmlspecialchars($gebruiker->email); ?></td>
                                             <td>
                                                 <span class="badge bg-<?php 
                                                     echo $gebruiker->role == 'eigenaar' ? 'danger' : 
@@ -79,7 +79,7 @@
                                                     <?php echo $gebruiker->is_active ? 'Actief' : 'Inactief'; ?>
                                                 </span>
                                             </td>
-                                            <td>
+                                            <td class="text-light">
                                                 <?php 
                                                 if(isset($gebruiker->aangemaakt_op) && $gebruiker->aangemaakt_op) {
                                                     echo date('d-m-Y H:i', strtotime($gebruiker->aangemaakt_op));
@@ -127,18 +127,18 @@
 <!-- Wijzig Rol Modal -->
 <div class="modal fade" id="wijzigRolModal" tabindex="-1" aria-labelledby="wijzigRolModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
+        <div class="modal-content bg-dark text-light">
+            <div class="modal-header border-secondary">
                 <h5 class="modal-title" id="wijzigRolModalLabel">Gebruikersrol Wijzigen</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form id="wijzigRolForm" method="POST">
                 <div class="modal-body">
-                    <p>Weet je zeker dat je de rol wilt wijzigen voor gebruiker: <strong id="modalUserName"></strong>?</p>
+                    <p class="text-light">Weet je zeker dat je de rol wilt wijzigen voor gebruiker: <strong id="modalUserName" class="text-warning"></strong>?</p>
                     
                     <div class="mb-3">
-                        <label for="nieuwe_rol" class="form-label">Nieuwe Rol</label>
-                        <select name="nieuwe_rol" id="nieuwe_rol" class="form-select" required>
+                        <label for="nieuwe_rol" class="form-label text-light">Nieuwe Rol</label>
+                        <select name="nieuwe_rol" id="nieuwe_rol" class="form-select bg-dark text-light border-secondary" required>
                             <option value="">Selecteer een rol...</option>
                             <option value="klant">Klant</option>
                             <option value="instructeur">Instructeur</option>
@@ -151,7 +151,7 @@
                         <strong>Let op:</strong> De gebruiker ontvangt een email notificatie over deze wijziging.
                     </div>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer border-secondary">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuleren</button>
                     <button type="submit" class="btn btn-warning">Rol Wijzigen</button>
                 </div>
@@ -218,17 +218,24 @@ document.addEventListener('DOMContentLoaded', function() {
     color: #fff !important;
 }
 
-.card-dark .table {
+.card-dark .table-dark {
+    color: #fff;
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.card-dark .table-dark th,
+.card-dark .table-dark td {
+    border-color: rgba(255, 255, 255, 0.1);
     color: #fff;
 }
 
-.card-dark .table th,
-.card-dark .table td {
-    border-color: rgba(255, 255, 255, 0.1);
+.card-dark .table-dark tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
-.card-dark .table tbody tr:hover {
-    background-color: rgba(255, 255, 255, 0.05);
+.card-dark .table-dark thead th {
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+    font-weight: 600;
 }
 
 .card-dark .form-control,
@@ -238,8 +245,64 @@ document.addEventListener('DOMContentLoaded', function() {
     color: #fff;
 }
 
+.card-dark .form-control:focus,
+.card-dark .form-select:focus {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: #fff;
+    box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.1);
+}
+
+.card-dark .form-control::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
 .card-dark .form-label {
     color: rgba(255, 255, 255, 0.9);
+}
+
+.btn-outline-primary,
+.btn-outline-warning {
+    border-color: currentColor;
+}
+
+.btn-outline-primary:hover {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.btn-outline-warning:hover {
+    background-color: #ffc107;
+    border-color: #ffc107;
+    color: #000;
+}
+
+/* Modal Dark Theme */
+.modal-content.bg-dark {
+    background-color: rgba(30, 30, 50, 0.95) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal-content.bg-dark .form-select {
+    background-color: rgba(0, 0, 0, 0.3);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #fff;
+}
+
+.modal-content.bg-dark .form-select:focus {
+    background-color: rgba(0, 0, 0, 0.4);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: #fff;
+    box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.1);
+}
+
+.modal-content.bg-dark .form-select option {
+    background-color: #1e1e32;
+    color: #fff;
+}
+
+.modal-content.bg-dark .border-secondary {
+    border-color: rgba(255, 255, 255, 0.2) !important;
 }
 </style>
 

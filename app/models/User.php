@@ -50,7 +50,8 @@ class User
             return ['success' => false, 'message' => 'Wachtwoord voldoet niet aan de eisen: minimaal 12 tekens, hoofdletter, cijfer en speciaal teken (@, #, etc.)'];
         }
 
-        $this->db->query("SELECT id FROM users WHERE activation_token = :token AND is_active = 0");
+        // Zoek gebruiker met deze token (ongeacht is_active status voor development)
+        $this->db->query("SELECT id FROM users WHERE activation_token = :token");
         $this->db->bind(':token', $token);
         $user = $this->db->single();
 

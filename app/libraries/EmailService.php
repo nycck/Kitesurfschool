@@ -260,6 +260,54 @@ class EmailService
         }
     }
 
+    // Verstuur rol wijziging email
+    public function sendRoleChangeEmail($email, $naam, $nieuwe_rol)
+    {
+        if (ENVIRONMENT === 'development') {
+            error_log("DEV MODE: Role change email would be sent to {$email}");
+            return true;
+        }
+
+        try {
+            $this->mail->clearAddresses();
+            $this->mail->addAddress($email);
+            $this->mail->Subject = 'Je account rol is bijgewerkt - Windkracht-12';
+            
+            $rol_beschrijving = [
+                'klant' => 'Je kunt nu lessen reserveren en je reserveringen beheren.',
+                'instructeur' => 'Je hebt nu toegang tot de instructeur functionaliteiten.',
+                'eigenaar' => 'Je hebt nu volledige toegang tot alle systeem functionaliteiten.'
+            ];
+            
+            $message = "
+            <html>
+            <body>
+                <h2>Beste {$naam},</h2>
+                
+                <p>Je account rol is bijgewerkt naar: <strong>" . ucfirst($nieuwe_rol) . "</strong></p>
+                
+                <p>{$rol_beschrijving[$nieuwe_rol]}</p>
+                
+                <p>Log opnieuw in om de nieuwe functionaliteiten te gebruiken.</p>
+                
+                <p>Heb je vragen over deze wijziging? Neem contact op via info@kitesurfschool-windkracht12.nl</p>
+                
+                <p>Met vriendelijke groet,<br>Team Windkracht-12</p>
+            </body>
+            </html>";
+            
+            $this->mail->Body = $message;
+            
+            $result = $this->mail->send();
+            $this->logEmail($email, $this->mail->Subject, $message, 'overig');
+            
+            return $result;
+        } catch (\PHPMailer\PHPMailer\Exception $e) {
+            error_log("Email send error: {$this->mail->ErrorInfo}");
+            return false;
+        }
+    }
+
     // Log email voor tracking
     private function logEmail($to, $subject, $message, $type)
     {

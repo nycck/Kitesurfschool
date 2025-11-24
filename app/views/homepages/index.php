@@ -28,7 +28,7 @@
             </div>
             
             <div class="col-lg-6 text-center">
-                <img src="<?= URLROOT ?>/img/kitesurf-hero.jpg" 
+                <img src="<?= URLROOT ?>public/img/kitesurf1.jpg" 
                      alt="Kitesurfen aan de Nederlandse kust" 
                      class="img-fluid rounded shadow-lg"
                      style="max-height: 400px; object-fit: cover;">
