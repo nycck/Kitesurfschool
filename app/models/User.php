@@ -12,7 +12,7 @@ class User
     // Registreer nieuwe gebruiker
     public function register($email, $activationToken)
     {
-        $this->db->query("INSERT INTO users (email, activation_token, role) VALUES (:email, :activation_token, 'klant')");
+        $this->db->query("INSERT INTO users (email, activation_token, role, is_active, password_hash) VALUES (:email, :activation_token, 'klant', 0, '')");
         $this->db->bind(':email', $email);
         $this->db->bind(':activation_token', $activationToken);
         

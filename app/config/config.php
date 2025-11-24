@@ -10,7 +10,7 @@ define('DB_PASS', '');
 /**
  * Omgeving instellingen
  */
-define('ENVIRONMENT', 'development'); // 'development' of 'production'
+define('ENVIRONMENT', 'production'); // 'development' of 'production'
 
 /**
  * De naam van de virtualhost
