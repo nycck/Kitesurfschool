@@ -346,11 +346,14 @@ class User
     // Haal gebruikers op bij rol
     public function getUsersByRole($role)
     {
-        $this->db->query("SELECT u.*, p.voornaam, p.achternaam, p.telefoon 
+        $this->db->query("SELECT u.*, 
+                          COALESCE(p.voornaam, '') as voornaam, 
+                          COALESCE(p.achternaam, '') as achternaam, 
+                          p.telefoon 
                           FROM users u 
                           LEFT JOIN personen p ON u.id = p.user_id 
                           WHERE u.role = :role AND u.is_active = 1
-                          ORDER BY p.voornaam, p.achternaam");
+                          ORDER BY COALESCE(p.voornaam, u.email), COALESCE(p.achternaam, '')");
         $this->db->bind(':role', $role);
         return $this->db->resultSet();
     }

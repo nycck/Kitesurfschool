@@ -18,36 +18,37 @@
                     </h5>
                 </div>
                 <div class="card-body">
-                    <form method="GET" action="<?php echo URLROOT; ?>/eigenaar/instructeur_planning" class="row g-3">
+                    <form method="GET" id="planningForm" class="row g-3">
                         <div class="col-md-6">
                             <label for="instructeur_id" class="form-label text-light">Kies Instructeur</label>
-                            <select name="instructeur_id" id="instructeur_id" class="form-select" onchange="this.form.submit()">
+                            <select name="instructeur_id" id="instructeur_id" class="form-select" onchange="selectInstructeur()">
                                 <option value="">-- Selecteer een instructeur --</option>
                                 <?php foreach($data['instructeurs'] as $instructeur): ?>
                                     <option value="<?php echo $instructeur->id; ?>" 
                                             <?php echo (isset($data['geselecteerde_instructeur']) && $data['geselecteerde_instructeur']->id == $instructeur->id) ? 'selected' : ''; ?>>
-                                        <?php echo htmlspecialchars($instructeur->voornaam . ' ' . $instructeur->achternaam); ?>
+                                        <?php 
+                                        $naam = trim($instructeur->voornaam . ' ' . $instructeur->achternaam);
+                                        echo htmlspecialchars($naam ?: $instructeur->email);
+                                        ?>
                                     </option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
                         
                         <?php if(isset($data['geselecteerde_instructeur'])): ?>
-                            <input type="hidden" name="instructeur_id" value="<?php echo $data['geselecteerde_instructeur']->id; ?>">
-                            
                             <div class="col-md-3">
                                 <label for="view" class="form-label text-light">Weergave</label>
-                                <select name="view" id="view" class="form-select" onchange="this.form.submit()">
-                                    <option value="dag" <?php echo ($data['view'] == 'dag') ? 'selected' : ''; ?>>Dag</option>
-                                    <option value="week" <?php echo ($data['view'] == 'week') ? 'selected' : ''; ?>>Week</option>
-                                    <option value="maand" <?php echo ($data['view'] == 'maand') ? 'selected' : ''; ?>>Maand</option>
+                                <select name="view" id="view" class="form-select" onchange="updatePlanning()">
+                                    <option value="dag" <?php echo ($data['planning_view'] == 'dag') ? 'selected' : ''; ?>>Dag</option>
+                                    <option value="week" <?php echo ($data['planning_view'] == 'week') ? 'selected' : ''; ?>>Week</option>
+                                    <option value="maand" <?php echo ($data['planning_view'] == 'maand') ? 'selected' : ''; ?>>Maand</option>
                                 </select>
                             </div>
                             
                             <div class="col-md-3">
                                 <label for="datum" class="form-label text-light">Datum</label>
                                 <input type="date" name="datum" id="datum" class="form-control" 
-                                       value="<?php echo $data['datum']; ?>" onchange="this.form.submit()">
+                                       value="<?php echo $data['datum']; ?>" onchange="updatePlanning()">
                             </div>
                         <?php endif; ?>
                     </form>
@@ -67,7 +68,10 @@
                                     </div>
                                     <div>
                                         <h5 class="text-light mb-1">
-                                            <?php echo htmlspecialchars($data['geselecteerde_instructeur']->voornaam . ' ' . $data['geselecteerde_instructeur']->achternaam); ?>
+                                            <?php 
+                                            $naam = trim($data['geselecteerde_instructeur']->voornaam . ' ' . $data['geselecteerde_instructeur']->achternaam);
+                                            echo htmlspecialchars($naam ?: 'Naam niet ingevuld');
+                                            ?>
                                         </h5>
                                         <p class="text-light-emphasis mb-0">
                                             <i class="fas fa-envelope me-1"></i>
@@ -91,7 +95,7 @@
                                 <h6 class="text-light mb-2">Planning voor:</h6>
                                 <h4 class="text-warning mb-0">
                                     <?php 
-                                    switch($data['view']) {
+                                    switch($data['planning_view']) {
                                         case 'dag':
                                             echo date('d-m-Y', strtotime($data['datum']));
                                             break;
@@ -117,7 +121,7 @@
                     <div class="card-header bg-transparent border-0">
                         <h5 class="card-title mb-0 text-light">
                             <i class="fas fa-calendar-alt text-primary me-2"></i>
-                            Planning - <?php echo ucfirst($data['view']); ?>overzicht
+                            Planning - <?php echo ucfirst($data['planning_view']); ?>overzicht
                         </h5>
                     </div>
                     <div class="card-body">
@@ -273,7 +277,7 @@
                 $prevDate = '';
                 $nextDate = '';
                 
-                switch($data['view']) {
+                switch($data['planning_view']) {
                     case 'dag':
                         $prevDate = date('Y-m-d', strtotime($data['datum'] . ' -1 day'));
                         $nextDate = date('Y-m-d', strtotime($data['datum'] . ' +1 day'));
@@ -290,21 +294,21 @@
                 ?>
                 
                 <div class="d-flex justify-content-between align-items-center mt-4">
-                    <a href="<?= URLROOT ?>/eigenaar/instructeur_planning/<?= $data['geselecteerde_instructeur']->id ?>?view=<?= $data['view'] ?>&datum=<?= $prevDate ?>" 
+                    <a href="<?= URLROOT ?>/eigenaar/instructeur_planning/<?= $data['geselecteerde_instructeur']->id ?>?view=<?= $data['planning_view'] ?>&datum=<?= $prevDate ?>" 
                        class="btn btn-outline-secondary btn-dark-theme">
                         <i class="fas fa-chevron-left me-1"></i>
-                        Vorige <?= ucfirst($data['view']) ?>
+                        Vorige <?= ucfirst($data['planning_view']) ?>
                     </a>
                     
-                    <a href="<?= URLROOT ?>/eigenaar/instructeur_planning/<?= $data['geselecteerde_instructeur']->id ?>?view=<?= $data['view'] ?>&datum=<?= date('Y-m-d') ?>" 
+                    <a href="<?= URLROOT ?>/eigenaar/instructeur_planning/<?= $data['geselecteerde_instructeur']->id ?>?view=<?= $data['planning_view'] ?>&datum=<?= date('Y-m-d') ?>" 
                        class="btn btn-primary">
                         <i class="fas fa-calendar-day me-1"></i>
                         Vandaag
                     </a>
                     
-                    <a href="<?= URLROOT ?>/eigenaar/instructeur_planning/<?= $data['geselecteerde_instructeur']->id ?>?view=<?= $data['view'] ?>&datum=<?= $nextDate ?>" 
+                    <a href="<?= URLROOT ?>/eigenaar/instructeur_planning/<?= $data['geselecteerde_instructeur']->id ?>?view=<?= $data['planning_view'] ?>&datum=<?= $nextDate ?>" 
                        class="btn btn-outline-secondary btn-dark-theme">
-                        Volgende <?= ucfirst($data['view']) ?>
+                        Volgende <?= ucfirst($data['planning_view']) ?>
                         <i class="fas fa-chevron-right ms-1"></i>
                     </a>
                 </div>
@@ -373,5 +377,25 @@
     --bs-table-bg: transparent;
 }
 </style>
+
+<script>
+function selectInstructeur() {
+    const instructeurId = document.getElementById('instructeur_id').value;
+    if (instructeurId) {
+        window.location.href = '<?php echo URLROOT; ?>/eigenaar/instructeur_planning/' + instructeurId;
+    }
+}
+
+function updatePlanning() {
+    const instructeurId = document.getElementById('instructeur_id').value;
+    const view = document.getElementById('view').value;
+    const datum = document.getElementById('datum').value;
+    
+    if (instructeurId) {
+        window.location.href = '<?php echo URLROOT; ?>/eigenaar/instructeur_planning/' + instructeurId + 
+                              '?view=' + view + '&datum=' + datum;
+    }
+}
+</script>
 
 <?php require_once APPROOT . '/views/includes/footer.php'; ?>

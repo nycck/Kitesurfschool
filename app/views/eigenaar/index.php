@@ -14,7 +14,7 @@
                     <p class="text-light-emphasis mb-0">Overzicht van je kitesurfschool</p>
                 </div>
                 <div class="text-end">
-                    <small class="text-light-emphasis">Laatste update: <?= date('d-m-Y H:i') ?></small>
+                    <small class="text-light-emphasis">Laatste update: <?= date('d-m-Y H:i', strtotime('+1 hour')) ?></small>
                 </div>
             </div>
             
@@ -168,26 +168,26 @@
                         </div>
                         <div class="card-body pt-3">
                             <div class="d-grid gap-3">
-                                <button type="button" class="btn btn-primary btn-lg d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#toevoegKlantModal">
-                                    <i class="fas fa-user-plus me-3"></i>
-                                    <div class="text-start">
-                                        <div class="fw-semibold">Klant Toevoegen</div>
-                                        <small style="opacity: 0.8;">Nieuwe klant aanmaken met activatiemail</small>
-                                    </div>
-                                </button>
-
-                                <button type="button" class="btn btn-success btn-lg d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#toevoegInstructeurModal">
-                                    <i class="fas fa-chalkboard-teacher me-3"></i>
-                                    <div class="text-start">
-                                        <div class="fw-semibold">Instructeur Toevoegen</div>
-                                        <small style="opacity: 0.8;">Nieuwe instructeur aanmaken met activatiemail</small>
-                                    </div>
-                                </button>
-                                
-                                <a href="<?php echo URLROOT; ?>/eigenaar/gebruikers" class="btn btn-outline-primary btn-lg d-flex align-items-center btn-dark-theme">
+                                <a href="<?php echo URLROOT; ?>/eigenaar/klanten" class="btn btn-primary btn-lg d-flex align-items-center">
                                     <i class="fas fa-users me-3"></i>
                                     <div class="text-start">
-                                        <div class="fw-semibold">Beheer Gebruikers</div>
+                                        <div class="fw-semibold">Klanten Beheren</div>
+                                        <small style="opacity: 0.8;">Overzicht en beheer van alle klanten</small>
+                                    </div>
+                                </a>
+
+                                <a href="<?php echo URLROOT; ?>/eigenaar/instructeurs" class="btn btn-success btn-lg d-flex align-items-center">
+                                    <i class="fas fa-chalkboard-teacher me-3"></i>
+                                    <div class="text-start">
+                                        <div class="fw-semibold">Instructeurs Beheren</div>
+                                        <small style="opacity: 0.8;">Overzicht en beheer van alle instructeurs</small>
+                                    </div>
+                                </a>
+                                
+                                <a href="<?php echo URLROOT; ?>/eigenaar/gebruikers" class="btn btn-outline-primary btn-lg d-flex align-items-center btn-dark-theme">
+                                    <i class="fas fa-users-cog me-3"></i>
+                                    <div class="text-start">
+                                        <div class="fw-semibold">Alle Gebruikers</div>
                                         <small class="text-light-emphasis">Bekijk en beheer alle gebruikers</small>
                                     </div>
                                 </a>
@@ -197,14 +197,6 @@
                                     <div class="text-start">
                                         <div class="fw-semibold">Bekijk Betalingen</div>
                                         <small class="text-light-emphasis">Beheer betalingen en facturen</small>
-                                    </div>
-                                </a>
-                                
-                                <a href="<?php echo URLROOT; ?>/eigenaar/rapporten" class="btn btn-outline-info btn-lg d-flex align-items-center btn-dark-theme">
-                                    <i class="fas fa-chart-bar me-3"></i>
-                                    <div class="text-start">
-                                        <div class="fw-semibold">Genereer Rapporten</div>
-                                        <small class="text-light-emphasis">Bekijk uitgebreide statistieken</small>
                                     </div>
                                 </a>
                                 
@@ -221,14 +213,6 @@
                                     <div class="text-start">
                                         <div class="fw-semibold">Instructeur Planning</div>
                                         <small class="text-light-emphasis">Bekijk planning van instructeurs</small>
-                                    </div>
-                                </a>
-                                
-                                <a href="<?php echo URLROOT; ?>/eigenaar/instellingen" class="btn btn-outline-secondary btn-lg d-flex align-items-center btn-dark-theme">
-                                    <i class="fas fa-cogs me-3"></i>
-                                    <div class="text-start">
-                                        <div class="fw-semibold">Systeem Instellingen</div>
-                                        <small class="text-light-emphasis">Configureer de applicatie</small>
                                     </div>
                                 </a>
                             </div>
@@ -335,177 +319,5 @@
     color: #fff !important;
 }
 </style>
-
-<!-- Klant Toevoegen Modal -->
-<div class="modal fade" id="toevoegKlantModal" tabindex="-1" aria-labelledby="toevoegKlantModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content bg-dark text-light">
-            <div class="modal-header" style="background: #1a202c; border-bottom: 1px solid #4a5568;">
-                <h5 class="modal-title" id="toevoegKlantModalLabel">
-                    <i class="fas fa-user-plus me-2"></i>Nieuwe Klant Toevoegen
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form method="POST" action="<?php echo URLROOT; ?>/eigenaar/nieuwe_klant">
-                <div class="modal-body" style="background: #2d3748;">
-                    <div class="alert alert-info" style="background: rgba(59, 130, 246, 0.1); border-color: rgba(59, 130, 246, 0.3); color: #93c5fd;">
-                        <i class="fas fa-info-circle me-2"></i>
-                        De klant ontvangt een activatielink via email om hun wachtwoord in te stellen.
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="klant_email" class="form-label" style="color: #f7fafc;">Email <span class="text-danger">*</span></label>
-                            <input type="email" class="form-control bg-dark text-light" id="klant_email" name="email" required
-                                   style="border-color: #4a5568;">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="klant_telefoon" class="form-label" style="color: #f7fafc;">Telefoon <span class="text-danger">*</span></label>
-                            <input type="tel" class="form-control bg-dark text-light" id="klant_telefoon" name="telefoon" required
-                                   style="border-color: #4a5568;">
-                        </div>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="klant_voornaam" class="form-label" style="color: #f7fafc;">Voornaam <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control bg-dark text-light" id="klant_voornaam" name="voornaam" required
-                                   style="border-color: #4a5568;">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="klant_achternaam" class="form-label" style="color: #f7fafc;">Achternaam <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control bg-dark text-light" id="klant_achternaam" name="achternaam" required
-                                   style="border-color: #4a5568;">
-                        </div>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="klant_geboortedatum" class="form-label" style="color: #f7fafc;">Geboortedatum <span class="text-danger">*</span></label>
-                        <input type="date" class="form-control bg-dark text-light" id="klant_geboortedatum" name="geboortedatum" required
-                               style="border-color: #4a5568;">
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="klant_adres" class="form-label" style="color: #f7fafc;">Adres <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control bg-dark text-light" id="klant_adres" name="adres" required
-                               style="border-color: #4a5568;">
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-4 mb-3">
-                            <label for="klant_postcode" class="form-label" style="color: #f7fafc;">Postcode <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control bg-dark text-light" id="klant_postcode" name="postcode" required
-                                   style="border-color: #4a5568;">
-                        </div>
-                        <div class="col-md-8 mb-3">
-                            <label for="klant_woonplaats" class="form-label" style="color: #f7fafc;">Woonplaats <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control bg-dark text-light" id="klant_woonplaats" name="woonplaats" required
-                                   style="border-color: #4a5568;">
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer" style="background: #1a202c; border-top: 1px solid #4a5568;">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        <i class="fas fa-times me-2"></i>Annuleren
-                    </button>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-user-plus me-2"></i>Klant Toevoegen
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<!-- Instructeur Toevoegen Modal -->
-<div class="modal fade" id="toevoegInstructeurModal" tabindex="-1" aria-labelledby="toevoegInstructeurModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content bg-dark text-light">
-            <div class="modal-header" style="background: #1a202c; border-bottom: 1px solid #4a5568;">
-                <h5 class="modal-title" id="toevoegInstructeurModalLabel">
-                    <i class="fas fa-chalkboard-teacher me-2"></i>Nieuwe Instructeur Toevoegen
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form method="POST" action="<?php echo URLROOT; ?>/eigenaar/nieuwe_instructeur">
-                <div class="modal-body" style="background: #2d3748;">
-                    <div class="alert alert-info" style="background: rgba(59, 130, 246, 0.1); border-color: rgba(59, 130, 246, 0.3); color: #93c5fd;">
-                        <i class="fas fa-info-circle me-2"></i>
-                        De instructeur ontvangt een activatielink via email om hun wachtwoord in te stellen.
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="instructeur_email" class="form-label" style="color: #f7fafc;">Email <span class="text-danger">*</span></label>
-                            <input type="email" class="form-control bg-dark text-light" id="instructeur_email" name="email" required
-                                   style="border-color: #4a5568;">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="instructeur_telefoon" class="form-label" style="color: #f7fafc;">Telefoon <span class="text-danger">*</span></label>
-                            <input type="tel" class="form-control bg-dark text-light" id="instructeur_telefoon" name="telefoon" required
-                                   style="border-color: #4a5568;">
-                        </div>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="instructeur_voornaam" class="form-label" style="color: #f7fafc;">Voornaam <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control bg-dark text-light" id="instructeur_voornaam" name="voornaam" required
-                                   style="border-color: #4a5568;">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="instructeur_achternaam" class="form-label" style="color: #f7fafc;">Achternaam <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control bg-dark text-light" id="instructeur_achternaam" name="achternaam" required
-                                   style="border-color: #4a5568;">
-                        </div>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="instructeur_geboortedatum" class="form-label" style="color: #f7fafc;">Geboortedatum <span class="text-danger">*</span></label>
-                        <input type="date" class="form-control bg-dark text-light" id="instructeur_geboortedatum" name="geboortedatum" required
-                               style="border-color: #4a5568;">
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="instructeur_adres" class="form-label" style="color: #f7fafc;">Adres <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control bg-dark text-light" id="instructeur_adres" name="adres" required
-                               style="border-color: #4a5568;">
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-4 mb-3">
-                            <label for="instructeur_postcode" class="form-label" style="color: #f7fafc;">Postcode <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control bg-dark text-light" id="instructeur_postcode" name="postcode" required
-                                   style="border-color: #4a5568;">
-                        </div>
-                        <div class="col-md-8 mb-3">
-                            <label for="instructeur_woonplaats" class="form-label" style="color: #f7fafc;">Woonplaats <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control bg-dark text-light" id="instructeur_woonplaats" name="woonplaats" required
-                                   style="border-color: #4a5568;">
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer" style="background: #1a202c; border-top: 1px solid #4a5568;">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        <i class="fas fa-times me-2"></i>Annuleren
-                    </button>
-                    <button type="submit" class="btn btn-success">
-                        <i class="fas fa-chalkboard-teacher me-2"></i>Instructeur Toevoegen
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<script>
-// Scroll to top if flash message exists
-document.addEventListener('DOMContentLoaded', function() {
-    const alerts = document.querySelectorAll('.alert');
-    if (alerts.length > 0) {
-        window.scrollTo({top: 0, behavior: 'smooth'});
-    }
-});
-</script>
 
 <?php require_once APPROOT . '/views/includes/footer.php'; ?>

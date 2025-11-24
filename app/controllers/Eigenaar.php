@@ -42,6 +42,24 @@ class Eigenaar extends BaseController {
         $this->view('eigenaar/index', $data);
     }
 
+    public function klanten() {
+        $data = [
+            'title' => 'Klanten Beheren',
+            'klanten' => $this->persoonModel->getKlantenMetStatistieken()
+        ];
+
+        $this->view('eigenaar/klanten', $data);
+    }
+
+    public function instructeurs() {
+        $data = [
+            'title' => 'Instructeurs Beheren',
+            'instructeurs' => $this->persoonModel->getInstructeurs()
+        ];
+
+        $this->view('eigenaar/instructeurs', $data);
+    }
+
     public function gebruikers() {
         $filter = isset($_GET['filter']) ? $_GET['filter'] : 'alle';
         $zoekterm = isset($_GET['zoek']) ? $_GET['zoek'] : '';
@@ -302,8 +320,8 @@ class Eigenaar extends BaseController {
     }
 
     public function instructeur_planning($instructeur_id = null) {
-        // Get all instructors for dropdown
-        $instructeurs = $this->userModel->getAlleGebruikers('instructeur');
+        // Get all instructors for dropdown - use getUsersByRole for active instructors only
+        $instructeurs = $this->userModel->getUsersByRole('instructeur');
         
         $data = [
             'title' => 'Instructeur Planning Overzicht',
@@ -320,14 +338,14 @@ class Eigenaar extends BaseController {
                 redirect('eigenaar/instructeur_planning');
             }
             
-            $view = isset($_GET['view']) ? $_GET['view'] : 'week';
+            $planningView = isset($_GET['view']) ? $_GET['view'] : 'week';
             $datum = isset($_GET['datum']) ? $_GET['datum'] : date('Y-m-d');
             
             $data['geselecteerde_instructeur'] = $instructeur;
             $data['instructeur_persoon'] = $persoon;
-            $data['view'] = $view;
+            $data['planning_view'] = $planningView;
             $data['datum'] = $datum;
-            $data['planning'] = $this->getPlanningData($instructeur_id, $view, $datum);
+            $data['planning'] = $this->getPlanningData($instructeur_id, $planningView, $datum);
         }
         
         $this->view('eigenaar/instructeur_planning', $data);
@@ -335,6 +353,11 @@ class Eigenaar extends BaseController {
     
     private function getPlanningData($instructeur_id, $view, $datum) {
         $persoon = $this->persoonModel->getPersoonByUserId($instructeur_id);
+        
+        // Als instructeur geen persoon record heeft, return lege array
+        if (!$persoon || !isset($persoon->id)) {
+            return [];
+        }
         
         switch ($view) {
             case 'dag':
@@ -780,7 +803,7 @@ class Eigenaar extends BaseController {
             }
         }
         
-        redirect('eigenaar/index');
+        redirect('eigenaar/klanten');
     }
 
     public function nieuwe_instructeur() {
@@ -868,6 +891,6 @@ class Eigenaar extends BaseController {
             }
         }
         
-        redirect('eigenaar/index');
+        redirect('eigenaar/instructeurs');
     }
 }

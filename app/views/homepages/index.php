@@ -150,6 +150,13 @@
         <h2 class="text-center mb-5">Ons Ervaren Team</h2>
         <div class="row">
             <div class="col-lg-8 mx-auto">
+                <div class="mb-4 text-center">
+                    <img src="<?= URLROOT ?>public/img/kitesurf2.jpg" 
+                         alt="Ons instructeursteam in actie" 
+                         class="img-fluid rounded shadow-lg"
+                         style="max-height: 400px; object-fit: cover; width: 100%;">
+                </div>
+                
                 <p class="text-center lead mb-4">
                     Onze kitesurfschool werkt met 5 ervaren instructeurs die samen met eigenaar 
                     Terence Olieslager zorgen voor veilige en leuke kitesurflessen.

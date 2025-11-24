@@ -17,7 +17,7 @@
             <div class="col-lg-6 mb-4">
                 <h2 class="mb-4">Onze Geschiedenis</h2>
                 <p class="lead">
-                    Kitesurfschool Windkracht-12 werd 8 jaar geleden opgericht door Terence Olieslager 
+                    Kitesurfschool Windkracht-12 werd opgericht door Terence Olieslager 
                     uit passie voor de kitesurfsport en de wens om deze fantastische sport veilig 
                     en professioneel te onderwijzen.
                 </p>
@@ -27,19 +27,9 @@
                     Met onze moderne uitrusting en kleine groepsgroottes garanderen we persoonlijke 
                     aandacht en snelle voortgang.
                 </p>
-                <div class="row mt-4">
-                    <div class="col-6 text-center">
-                        <div class="stat-number text-primary">8</div>
-                        <div class="stat-label">Jaar Ervaring</div>
-                    </div>
-                    <div class="col-6 text-center">
-                        <div class="stat-number text-primary">6</div>
-                        <div class="stat-label">Instructeurs</div>
-                    </div>
-                </div>
             </div>
             <div class="col-lg-6">
-                <img src="<?= URLROOT ?>img/about-kitesurfing.jpg" 
+                <img src="<?= URLROOT ?>public/img/kitesurf3.jpg" 
                      alt="Kitesurfschool Windkracht-12 team" 
                      class="img-fluid rounded shadow-lg">
             </div>
