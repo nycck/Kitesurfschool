@@ -427,6 +427,67 @@ class Instructeurs extends BaseController {
         $this->view('instructeurs/les_details', $data);
     }
 
+    public function les_afronden($reservering_id) {
+        if ($_SERVER['REQUEST_METHOD'] != 'POST') {
+            redirect('instructeurs/planning');
+        }
+
+        $reservering = $this->reserveringModel->getReserveringById($reservering_id);
+        
+        if (!$reservering) {
+            flash('error_message', 'Les niet gevonden.', 'alert alert-danger');
+            redirect('instructeurs/planning');
+        }
+
+        // Check if this instructor can complete this lesson
+        $instructeurPersoon = $this->persoonModel->getPersoonByUserId($_SESSION['user_id']);
+        if ($reservering->instructeur_id != $instructeurPersoon->id) {
+            flash('error_message', 'Je kunt alleen je eigen lessen afronden.', 'alert alert-danger');
+            redirect('instructeurs/planning');
+        }
+
+        // Get form data
+        $evaluatie = trim($_POST['evaluatie'] ?? '');
+        $voortgang = trim($_POST['voortgang'] ?? '');
+        $aanbevelingen = trim($_POST['aanbevelingen'] ?? '');
+        $instructeur_opmerking = trim($_POST['instructeur_opmerking'] ?? '');
+
+        // Update reservation with evaluation data
+        $data = [
+            'id' => $reservering_id,
+            'status' => 'afgerond',
+            'evaluatie' => $evaluatie,
+            'voortgang' => $voortgang,
+            'aanbevelingen' => $aanbevelingen,
+            'instructeur_opmerking' => $instructeur_opmerking
+        ];
+
+        if ($this->reserveringModel->updateLesEvaluatie($data)) {
+            // Send email to client
+            $klant = $this->userModel->getUserById($reservering->user_id);
+            
+            // Get persoon info for email
+            $persoon = $this->persoonModel->getPersoonById($reservering->persoon_id);
+            if ($persoon) {
+                $klant->voornaam = $persoon->voornaam;
+            }
+            
+            $afronding = [
+                'evaluatie' => $evaluatie,
+                'voortgang' => $voortgang,
+                'aanbevelingen' => $aanbevelingen
+            ];
+            
+            $this->sendLesAfgerondEmail($klant, $reservering, $afronding);
+            
+            flash('success_message', 'Les succesvol afgerond! De klant is per email geïnformeerd met de evaluatie.', 'alert alert-success');
+        } else {
+            flash('error_message', 'Er is iets misgegaan bij het afronden van de les.', 'alert alert-danger');
+        }
+
+        redirect('instructeurs/les_details/' . $reservering_id);
+    }
+
     public function bevestigen($reservering_id) {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $bevestigde_datum = trim($_POST['bevestigde_datum']);

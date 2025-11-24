@@ -433,6 +433,28 @@ class Reservering
         return $this->db->execute();
     }
 
+    // Update les evaluatie (inclusief instructeur opmerking)
+    public function updateLesEvaluatie($data)
+    {
+        $this->db->query("UPDATE reserveringen SET 
+                          status = :status,
+                          evaluatie = :evaluatie,
+                          voortgang = :voortgang,
+                          aanbevelingen = :aanbevelingen,
+                          instructeur_opmerking = :instructeur_opmerking,
+                          bijgewerkt_op = NOW()
+                          WHERE id = :id");
+        
+        $this->db->bind(':id', $data['id']);
+        $this->db->bind(':status', $data['status']);
+        $this->db->bind(':evaluatie', $data['evaluatie']);
+        $this->db->bind(':voortgang', $data['voortgang']);
+        $this->db->bind(':aanbevelingen', $data['aanbevelingen']);
+        $this->db->bind(':instructeur_opmerking', $data['instructeur_opmerking']);
+        
+        return $this->db->execute();
+    }
+
     // Haal beschikbaarheid op voor datum/locatie
     public function getBeschikbaarheidByDate($locatie_id, $datum)
     {

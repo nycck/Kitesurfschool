@@ -167,7 +167,9 @@
                                 <span class="badge bg-<?= $reservering->status === 'definitief' ? 'success' : ($reservering->status === 'geannuleerd' ? 'danger' : 'warning') ?>">
                                     <?= ucfirst($reservering->status) ?>
                                 </span><br>
-                                <small class="text-muted"><?= formatMoney($reservering->totaal_prijs) ?></small>
+                                <?php if (isset($reservering->totaal_prijs)): ?>
+                                <small class="text-muted">€<?= number_format($reservering->totaal_prijs, 2, ',', '.') ?></small>
+                                <?php endif; ?>
                             </div>
                         </div>
                         <?php endforeach; ?>
