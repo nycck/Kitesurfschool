@@ -47,11 +47,12 @@ function renderWeekLes($les) {
 }
 ?>
 
-<div class="container-fluid py-4">
-    <div class="row">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1><i class="fas fa-calendar-alt"></i> Lessenplanning</h1>
+<div class="container-fluid py-4" style="background-color: #1a202c; min-height: 100vh;">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1 class="text-light"><i class="fas fa-calendar-alt me-2"></i> Lessenplanning</h1>
                 <div>
                     <button type="button" id="openModalBtn" class="btn btn-success me-2">
                         <i class="fas fa-plus"></i> Les Toevoegen
@@ -83,7 +84,7 @@ function renderWeekLes($les) {
     <!-- Datum navigatie -->
     <div class="row mb-4">
         <div class="col-12">
-            <div class="card bg-light">
+            <div class="card" style="background-color: #2d3748; border: 1px solid #4a5568;">
                 <div class="card-body py-2">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
@@ -102,7 +103,7 @@ function renderWeekLes($les) {
                                    id="datumPicker" value="<?= $datum ?>" style="width: auto;">
                         </div>
                         <div>
-                            <h5 class="mb-0" id="huidigeperiode">
+                            <h5 class="mb-0 text-light" id="huidigeperiode">
                                 <?php
                                 $datumObj = new DateTime($datum);
                                 switch($viewType) {
@@ -136,9 +137,9 @@ function renderWeekLes($les) {
     <!-- Planning Content -->
     <div class="row">
         <div class="col-12">
-            <div class="card shadow">
-                <div class="card-header bg-warning text-dark">
-                    <h4 class="mb-0">
+            <div class="card shadow" style="background-color: #2d3748; border: 1px solid #4a5568;">
+                <div class="card-header" style="background-color: #1a202c; border-bottom: 1px solid #4a5568;">
+                    <h4 class="mb-0 text-light">
                         <i class="fas fa-chalkboard-teacher me-2"></i>
                         Mijn Lessen - <?= ucfirst($viewType) ?>overzicht
                     </h4>
@@ -146,29 +147,29 @@ function renderWeekLes($les) {
                 <div class="card-body">
                     <?php if (empty($lessen)): ?>
                         <div class="text-center py-5">
-                            <i class="fas fa-calendar-times fa-4x text-muted mb-3"></i>
-                            <h5 class="text-muted">Geen lessen gepland</h5>
-                            <p class="text-muted">Je hebt geen lessen in deze periode.</p>
+                            <i class="fas fa-calendar-times fa-4x text-secondary mb-3"></i>
+                            <h5 class="text-light">Geen lessen gepland</h5>
+                            <p class="text-secondary">Je hebt geen lessen in deze periode.</p>
                         </div>
                     <?php else: ?>
                         <?php if ($viewType == 'dag'): ?>
                             <!-- Dag weergave -->
                             <div class="timeline-container">
                                 <?php foreach ($lessen as $les): ?>
-                                    <div class="les-item card mb-3 border-left-<?= getStatusColor($les->status) ?>">
+                                    <div class="les-item card mb-3 border-left-<?= getStatusColor($les->status) ?>" style="background-color: #1a202c; border: 1px solid #4a5568;">
                                         <div class="card-body">
                                             <div class="row align-items-center">
                                                 <div class="col-md-2">
                                                     <h5 class="text-primary mb-1"><?= $les->tijd ?? 'Tijd TBD' ?></h5>
-                                                    <small class="text-muted"><?= date('d-m-Y', strtotime($les->datum)) ?></small>
+                                                    <small class="text-secondary"><?= date('d-m-Y', strtotime($les->datum)) ?></small>
                                                 </div>
                                                 <div class="col-md-4">
-                                                    <h6 class="mb-1"><?= htmlspecialchars($les->klant_naam) ?></h6>
-                                                    <p class="mb-1">
+                                                    <h6 class="mb-1 text-light"><?= htmlspecialchars($les->klant_naam) ?></h6>
+                                                    <p class="mb-1 text-light">
                                                         <i class="fas fa-graduation-cap me-1"></i>
                                                         <?= htmlspecialchars($les->pakket_naam) ?>
                                                     </p>
-                                                    <p class="mb-0">
+                                                    <p class="mb-0 text-secondary">
                                                         <i class="fas fa-map-marker-alt me-1"></i>
                                                         <?= htmlspecialchars($les->locatie_naam) ?>
                                                     </p>
@@ -202,7 +203,7 @@ function renderWeekLes($les) {
                                             <th width="12.5%">Zondag</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody style="background-color: #1a202c;">
                                         <?php
                                         $tijden = ['09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00'];
                                         $weekdagen = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
@@ -210,9 +211,9 @@ function renderWeekLes($les) {
                                         foreach ($tijden as $tijd):
                                         ?>
                                             <tr>
-                                                <td class="table-secondary"><strong><?= $tijd ?></strong></td>
+                                                <td style="background-color: #2d3748; border-color: #4a5568;"><strong class="text-light"><?= $tijd ?></strong></td>
                                                 <?php foreach ($weekdagen as $day): ?>
-                                                    <td class="lesson-cell">
+                                                    <td class="lesson-cell" style="background-color: #1a202c; border-color: #4a5568;">
                                                         <?php
                                                         foreach ($lessen as $les) {
                                                             $lesDatum = new DateTime($les->datum);
@@ -246,19 +247,19 @@ function renderWeekLes($les) {
                                 foreach ($gegroepeerd as $dag => $dagLessen):
                                 ?>
                                     <div class="col-lg-4 col-md-6 mb-4">
-                                        <div class="card border-warning">
-                                            <div class="card-header bg-warning text-dark">
-                                                <h6 class="mb-0">
+                                        <div class="card" style="background-color: #1a202c; border: 1px solid #4a5568;">
+                                            <div class="card-header" style="background-color: #2d3748; border-bottom: 1px solid #4a5568;">
+                                                <h6 class="mb-0 text-light">
                                                     <i class="fas fa-calendar-day me-2"></i>
                                                     <?= $dag ?> <?= date('F', strtotime($dagLessen[0]->datum)) ?>
                                                 </h6>
                                             </div>
                                             <div class="card-body p-2">
                                                 <?php foreach ($dagLessen as $les): ?>
-                                                    <div class="les-item-small mb-2 p-2 border rounded">
+                                                    <div class="les-item-small mb-2 p-2 rounded" style="background-color: #2d3748; border: 1px solid #4a5568;">
                                                         <small class="fw-bold text-primary"><?= $les->tijd ?></small><br>
-                                                        <small><?= htmlspecialchars($les->klant_naam) ?></small><br>
-                                                        <small class="text-muted"><?= htmlspecialchars($les->pakket_naam) ?></small>
+                                                        <small class="text-light"><?= htmlspecialchars($les->klant_naam) ?></small><br>
+                                                        <small class="text-secondary"><?= htmlspecialchars($les->pakket_naam) ?></small>
                                                         <span class="badge bg-<?= getStatusColor($les->status) ?> float-end">
                                                             <?= ucfirst($les->status) ?>
                                                         </span>
@@ -280,16 +281,16 @@ function renderWeekLes($les) {
 <!-- Modal voor nieuwe les toevoegen -->
 <div class="modal fade" id="nieuweLesModal" tabindex="-1">
     <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header bg-success text-white">
-                <h5 class="modal-title"><i class="fas fa-plus-circle"></i> Nieuwe Les Toevoegen</h5>
+        <div class="modal-content" style="background-color: #2d3748; border: 1px solid #4a5568;">
+            <div class="modal-header" style="background-color: #1a202c; border-bottom: 1px solid #4a5568;">
+                <h5 class="modal-title text-light"><i class="fas fa-plus-circle me-2"></i> Nieuwe Les Toevoegen</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <form action="<?= URLROOT ?>/instructeurs/nieuwe_les" method="POST">
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="klant_id" class="form-label">Klant <span class="text-danger">*</span></label>
-                        <select class="form-select" id="klant_id" name="klant_id" required>
+                        <label for="klant_id" class="form-label text-light">Klant <span class="text-danger">*</span></label>
+                        <select class="form-select bg-secondary text-light border-secondary" id="klant_id" name="klant_id" required>
                             <option value="">Selecteer klant...</option>
                             <?php
                             $persoonModel = new Persoon();
@@ -308,8 +309,8 @@ function renderWeekLes($les) {
                     </div>
 
                     <div class="mb-3">
-                        <label for="lespakket_id" class="form-label">Lespakket <span class="text-danger">*</span></label>
-                        <select class="form-select" id="lespakket_id" name="lespakket_id" required>
+                        <label for="lespakket_id" class="form-label text-light">Lespakket <span class="text-danger">*</span></label>
+                        <select class="form-select bg-secondary text-light border-secondary" id="lespakket_id" name="lespakket_id" required>
                             <option value="">Selecteer lespakket...</option>
                             <?php
                             $lespakketModel = new Lespakket();
@@ -324,8 +325,8 @@ function renderWeekLes($les) {
                     </div>
 
                     <div class="mb-3">
-                        <label for="locatie_id" class="form-label">Locatie <span class="text-danger">*</span></label>
-                        <select class="form-select" id="locatie_id" name="locatie_id" required>
+                        <label for="locatie_id" class="form-label text-light">Locatie <span class="text-danger">*</span></label>
+                        <select class="form-select bg-secondary text-light border-secondary" id="locatie_id" name="locatie_id" required>
                             <option value="">Selecteer locatie...</option>
                             <?php
                             $locatieModel = new Locatie();
@@ -341,12 +342,12 @@ function renderWeekLes($les) {
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="bevestigde_datum" class="form-label">Datum <span class="text-danger">*</span></label>
-                            <input type="date" class="form-control" id="bevestigde_datum" name="bevestigde_datum" required>
+                            <label for="bevestigde_datum" class="form-label text-light">Datum <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control bg-secondary text-light border-secondary" id="bevestigde_datum" name="bevestigde_datum" required>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="bevestigde_tijd" class="form-label">Tijd <span class="text-danger">*</span></label>
-                            <input type="time" class="form-control" id="bevestigde_tijd" name="bevestigde_tijd" required>
+                            <label for="bevestigde_tijd" class="form-label text-light">Tijd <span class="text-danger">*</span></label>
+                            <input type="time" class="form-control bg-secondary text-light border-secondary" id="bevestigde_tijd" name="bevestigde_tijd" required>
                         </div>
                     </div>
 

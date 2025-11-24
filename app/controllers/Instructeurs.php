@@ -358,7 +358,15 @@ class Instructeurs extends BaseController {
         redirect('instructeurs/klanten');
     }
 
-    public function snelle_annulering($reservering_id, $template) {
+    public function snelle_annulering($reservering_id) {
+        // Get template from POST data
+        $template = $_POST['template'] ?? null;
+        
+        if (!$template) {
+            flash('error_message', 'Geen annuleringsreden opgegeven.', 'alert alert-danger');
+            redirect('instructeurs/planning');
+        }
+        
         $reservering = $this->reserveringModel->getReserveringById($reservering_id);
         
         if (!$reservering) {

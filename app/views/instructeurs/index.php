@@ -1,66 +1,69 @@
 <?php include_once '../app/views/includes/header.php'; ?>
 
-<div class="container">
-    <div class="row">
-        <div class="col-md-12">
-            <div class="dashboard-header">
-                <h1>Instructeur Dashboard</h1>
-                <p class="lead">Welkom terug, <?php echo isset($_SESSION['user_email']) ? $_SESSION['user_email'] : 'Instructeur'; ?>!</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="row mt-4">
-        <!-- Vandaag's Lessen -->
-        <div class="col-md-6 mb-4">
-            <div class="card">
-                <div class="card-header">
-                    <h4><i class="fas fa-calendar-day"></i> Vandaag's Lessen</h4>
-                </div>
-                <div class="card-body">
-                    <?php if (empty($data['vandaag_lessen'])): ?>
-                        <p class="text-muted">Geen lessen vandaag</p>
-                    <?php else: ?>
-                        <?php foreach ($data['vandaag_lessen'] as $les): ?>
-                            <div class="reservation-item mb-2 p-2 border-left border-primary">
-                                <strong><?php echo isset($les->tijd) ? $les->tijd : 'Tijd onbekend'; ?></strong> - 
-                                <?php echo isset($les->klant_naam) ? $les->klant_naam : 'Klant onbekend'; ?>
-                                <br>
-                                <small class="text-muted">
-                                    <?php echo isset($les->pakket_naam) ? $les->pakket_naam : 'Pakket onbekend'; ?> | 
-                                    <?php echo isset($les->locatie_naam) ? $les->locatie_naam : 'Locatie onbekend'; ?>
-                                </small>
-                            </div>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
+<div class="container-fluid" style="background-color: #1a202c; min-height: 100vh; padding-top: 20px;">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="dashboard-header mb-4">
+                    <h1 class="text-light">Instructeur Dashboard</h1>
+                    <p class="lead text-secondary">Welkom terug, <?php echo isset($_SESSION['user_email']) ? $_SESSION['user_email'] : 'Instructeur'; ?>!</p>
                 </div>
             </div>
         </div>
 
-        <!-- Aankomende Lessen -->
-        <div class="col-md-6 mb-4">
-            <div class="card">
-                <div class="card-header">
-                    <h4><i class="fas fa-calendar-alt"></i> Aankomende Lessen</h4>
-                </div>
-                <div class="card-body">
-                    <?php if (empty($data['aankomende_lessen'])): ?>
-                        <p class="text-muted">Geen aankomende lessen</p>
-                    <?php else: ?>
-                        <?php foreach (array_slice($data['aankomende_lessen'], 0, 5) as $les): ?>
-                            <div class="reservation-item mb-2 p-2 border-left border-info">
-                                <strong><?php echo isset($les->datum) ? date('d-m-Y', strtotime($les->datum)) : 'Datum onbekend'; ?></strong> 
-                                om <?php echo isset($les->tijd) ? $les->tijd : 'Tijd onbekend'; ?>
-                                <br>
-                                <?php echo isset($les->klant_naam) ? $les->klant_naam : 'Klant onbekend'; ?> - 
-                                <?php echo isset($les->pakket_naam) ? $les->pakket_naam : 'Pakket onbekend'; ?>
-                            </div>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
+        <div class="row mt-4">
+            <!-- Vandaag's Lessen -->
+            <div class="col-md-6 mb-4">
+                <div class="card" style="background-color: #2d3748; border: 1px solid #4a5568;">
+                    <div class="card-header" style="background-color: #1a202c; border-bottom: 1px solid #4a5568;">
+                        <h4 class="text-light mb-0"><i class="fas fa-calendar-day me-2"></i> Vandaag's Lessen</h4>
+                    </div>
+                    <div class="card-body">
+                        <?php if (empty($data['vandaag_lessen'])): ?>
+                            <p class="text-secondary">Geen lessen vandaag</p>
+                        <?php else: ?>
+                            <?php foreach ($data['vandaag_lessen'] as $les): ?>
+                                <div class="reservation-item mb-2 p-3 rounded" style="background-color: #1a202c; border-left: 4px solid #3b82f6;">
+                                    <strong class="text-light"><?php echo isset($les->tijd) ? $les->tijd : 'Tijd onbekend'; ?></strong> - 
+                                    <span class="text-light"><?php echo isset($les->klant_naam) ? $les->klant_naam : 'Klant onbekend'; ?></span>
+                                    <br>
+                                    <small class="text-secondary">
+                                        <?php echo isset($les->pakket_naam) ? $les->pakket_naam : 'Pakket onbekend'; ?> | 
+                                        <?php echo isset($les->locatie_naam) ? $les->locatie_naam : 'Locatie onbekend'; ?>
+                                    </small>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                 </div>
             </div>
         </div>
-    </div>
+
+            <!-- Aankomende Lessen -->
+            <div class="col-md-6 mb-4">
+                <div class="card" style="background-color: #2d3748; border: 1px solid #4a5568;">
+                    <div class="card-header" style="background-color: #1a202c; border-bottom: 1px solid #4a5568;">
+                        <h4 class="text-light mb-0"><i class="fas fa-calendar-alt me-2"></i> Aankomende Lessen</h4>
+                    </div>
+                    <div class="card-body">
+                        <?php if (empty($data['aankomende_lessen'])): ?>
+                            <p class="text-secondary">Geen aankomende lessen</p>
+                        <?php else: ?>
+                            <?php foreach (array_slice($data['aankomende_lessen'], 0, 5) as $les): ?>
+                                <div class="reservation-item mb-2 p-3 rounded" style="background-color: #1a202c; border-left: 4px solid #06b6d4;">
+                                    <strong class="text-light"><?php echo isset($les->datum) ? date('d-m-Y', strtotime($les->datum)) : 'Datum onbekend'; ?></strong> 
+                                    <span class="text-light">om <?php echo isset($les->tijd) ? $les->tijd : 'Tijd onbekend'; ?></span>
+                                    <br>
+                                    <small class="text-secondary">
+                                        <?php echo isset($les->klant_naam) ? $les->klant_naam : 'Klant onbekend'; ?> - 
+                                        <?php echo isset($les->pakket_naam) ? $les->pakket_naam : 'Pakket onbekend'; ?>
+                                    </small>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+        </div>
 
     <!-- Statistieken -->
     <div class="row mb-4">
@@ -98,14 +101,14 @@
         </div>
     </div>
 
-    <div class="row">
-        <!-- Snelle Acties -->
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-header">
-                    <h4><i class="fas fa-tachometer-alt"></i> Snelle Acties</h4>
-                </div>
-                <div class="card-body">
+        <div class="row mb-4">
+            <!-- Snelle Acties -->
+            <div class="col-md-12">
+                <div class="card" style="background-color: #2d3748; border: 1px solid #4a5568;">
+                    <div class="card-header" style="background-color: #1a202c; border-bottom: 1px solid #4a5568;">
+                        <h4 class="text-light mb-0"><i class="fas fa-tachometer-alt me-2"></i> Snelle Acties</h4>
+                    </div>
+                    <div class="card-body">
                     <div class="row">
                         <div class="col-md-3 mb-3">
                             <a href="<?php echo URLROOT; ?>/instructeurs/planning" class="btn btn-primary btn-lg btn-block">
